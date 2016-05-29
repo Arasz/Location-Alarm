@@ -1,0 +1,67 @@
+﻿<common:BindablePage
+    x:Class="ArrivalAlarm.View.MapPage"
+    xmlns:converters="using:LocationAlarm.Converters"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:ArrivalAlarm.View"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:map="using:Windows.UI.Xaml.Controls.Maps"
+    xmlns:i="using:Microsoft.Xaml.Interactivity"
+    xmlns:core="using:Microsoft.Xaml.Interactions.Core"
+    xmlns:cmd="clr-namespace:GalaSoft.MvvmLight.Command;assembly=GalaSoft.MvvmLight.Extras.WP8"
+    mc:Ignorable="d"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
+    DataContext="{Binding Source={StaticResource Locator}, Path=Map}">
+
+    <common:BindablePage.Resources>
+        <ResourceDictionary>
+            <x:String x:Key="selectionString">Select alarm location:</x:String>
+            <converters:VisibilityConverter x:Key="visibilityConverter" />
+            <converters:AutoSuggestionBoxTextChangeToBoolConverter x:Key="AutoSuggestionBoxTextChangeToBoolConverter" />
+            <converters:AutoSuggestBoxSuggestionChosenEventArgsToSelectedItemConverter x:Key="ArgsToSelectedItemConverter" />
+        </ResourceDictionary>
+    </common:BindablePage.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="1*" />
+            <RowDefinition Height="2*" />
+        </Grid.RowDefinitions>
+
+        <StackPanel Grid.Row="0" Orientation="Vertical">
+            <TextBlock Text="{StaticResource selectionString}" Margin="5,15,5,5"
+                       Style="{StaticResource  GroupHeaderTextBlockStyle}" />
+            <AutoSuggestBox ItemsSource="{Binding FoundLocations}" Margin="5,5" AllowDrop="True"
+                            Text="{Binding AutoSuggestBoxText, Mode=TwoWay}">
+                <i:Interaction.Behaviors>
+
+                    <core:EventTriggerBehavior EventName="SuggestionChosen">
+                        <core:InvokeCommandAction Command="{Binding SuggestionChosenCommand}"
+                                                  InputConverter="{StaticResource ArgsToSelectedItemConverter}" />
+                    </core:EventTriggerBehavior>
+                    <core:EventTriggerBehavior EventName="TextChanged">
+                        <core:InvokeCommandAction Command="{Binding TextChangeCommand}"
+                                                  InputConverter="{StaticResource AutoSuggestionBoxTextChangeToBoolConverter}" />
+                    </core:EventTriggerBehavior>
+                </i:Interaction.Behaviors>
+            </AutoSuggestBox>
+        </StackPanel>
+
+        <map:MapControl  Grid.Row="1" x:Name="mapControl" Margin="5,5"
+                         VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+            <Image map:MapControl.Location="{Binding  ActualLocation}"
+                   map:MapControl.NormalizedAnchorPoint="0.5, 1"
+                   Source="ms-appx:///Assets/pushpin-google-green-hi.png"
+                   Stretch="Fill" Width="40"
+                   Visibility="{Binding PushpinVisible, Converter={StaticResource visibilityConverter}}" />
+        </map:MapControl>
+    </Grid>
+
+    <common:BindablePage.BottomAppBar>
+        <CommandBar>
+            <AppBarButton Label="Find me" Icon="Target"
+                          Command="{Binding FindMeCommand}" />
+        </CommandBar>
+    </common:BindablePage.BottomAppBar>
+</common:BindablePage>
