@@ -10,23 +10,23 @@ namespace LocationAlarm.Model
     {
         private GeofenceMonitor _geofenceMonitor = GeofenceMonitor.Current;
 
-        private IDictionary<string, ILocationAlarm> _locationAlarms;
+        private IDictionary<string, AlarmModel> _locationAlarms;
 
         public AlarmsMonitor()
         {
-            _locationAlarms = new Dictionary<string, ILocationAlarm>();
+            _locationAlarms = new Dictionary<string, AlarmModel>();
 
             _geofenceMonitor.GeofenceStateChanged += GeofenceMonitorOnGeofenceStateChanged;
             _geofenceMonitor.StatusChanged += GeofenceMonitorOnStatusChanged;
         }
 
-        public void AddAlarm(ILocationAlarm alarm)
+        public void AddAlarm(AlarmModel alarm)
         {
-            _locationAlarms[alarm.LocationMarker.Id] = alarm;
-            _geofenceMonitor.Geofences.Add(alarm.LocationMarker);
+            _locationAlarms[alarm.MonitoredLocation.Id] = alarm;
+            _geofenceMonitor.Geofences.Add(alarm.MonitoredLocation);
         }
 
-        public void RemoveAlarm(ILocationAlarm alarm)
+        public void RemoveAlarm(ILocationAlarmAlarmModel alarm)
         {
             _locationAlarms.Remove(alarm.LocationMarker.Id);
             _geofenceMonitor.Geofences.Remove(alarm.LocationMarker);
