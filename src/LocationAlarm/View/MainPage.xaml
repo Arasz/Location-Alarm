@@ -1,14 +1,61 @@
-﻿<Page
-    x:Class="LocationAlarm.MainPage"
+﻿<view:BindablePage
+    x:Class="LocationAlarm.View.MainPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:local="using:LocationAlarm"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:view="using:LocationAlarm.View"
+    xmlns:controls="using:LocationAlarm.Controls"
     mc:Ignorable="d"
-    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
+    DataContext="{Binding Source={StaticResource Locator}, Path=Main}">
 
-    <Grid>
+    <view:BindablePage.Resources>
+        <ResourceDictionary>
+            <x:String x:Key="AppName">ArrivalAlarm</x:String>
+            <x:String x:Key="PageTitle">Main Page</x:String>
 
+            <DataTemplate x:Key="alarmModelTemplate">
+                <controls:AlarmItemControl DataContext="{Binding}"
+                                        Width="{Binding RelativeSource={RelativeSource TemplatedParent} ,Path=Width}" />
+            </DataTemplate>
+        </ResourceDictionary>
+    </view:BindablePage.Resources>
+
+    <Grid x:Name="LayoutRoot">
+
+        <Grid.ChildrenTransitions>
+            <TransitionCollection>
+                <EntranceThemeTransition />
+            </TransitionCollection>
+        </Grid.ChildrenTransitions>
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <!-- Title Panel -->
+        <StackPanel Grid.Row="0" Margin="19,0,0,0">
+            <TextBlock Text="{StaticResource AppName}" Style="{ThemeResource TitleTextBlockStyle}" Margin="0,12,0,0" />
+            <TextBlock Text="{StaticResource PageTitle}" Margin="0,-6.5,0,26.5" Style="{ThemeResource HeaderTextBlockStyle}" CharacterSpacing="{ThemeResource PivotHeaderItemCharacterSpacing}" />
+        </StackPanel>
+
+        <!--TODO: Content should be placed within the following grid-->
+        <Grid Grid.Row="1" x:Name="ContentRoot" Margin="19,9.5,19,0">
+            <StackPanel Orientation="Vertical">
+                <ListView ItemsSource="{Binding AlarmsCollection}"
+                      ItemTemplate="{StaticResource alarmModelTemplate}">
+                </ListView>
+                <Button HorizontalAlignment="Center" Content="Go to map selction"
+                    Command="{Binding NavigateToSelectLocationPage}" />
+            </StackPanel>
+        </Grid>
     </Grid>
-</Page>
+
+    <view:BindablePage.BottomAppBar>
+        <CommandBar>
+            <AppBarButton Label="Add alarm" Icon="Add" />
+        </CommandBar>
+    </view:BindablePage.BottomAppBar>
+</view:BindablePage>

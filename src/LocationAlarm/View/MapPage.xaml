@@ -1,27 +1,27 @@
-﻿<common:BindablePage
-    x:Class="ArrivalAlarm.View.MapPage"
-    xmlns:converters="using:LocationAlarm.Converters"
+﻿<view:BindablePage
+    x:Class="LocationAlarm.View.MapPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:local="using:ArrivalAlarm.View"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:map="using:Windows.UI.Xaml.Controls.Maps"
     xmlns:i="using:Microsoft.Xaml.Interactivity"
     xmlns:core="using:Microsoft.Xaml.Interactions.Core"
     xmlns:cmd="clr-namespace:GalaSoft.MvvmLight.Command;assembly=GalaSoft.MvvmLight.Extras.WP8"
+    xmlns:view="using:LocationAlarm.View"
+    xmlns:converters="using:LocationAlarm.Converters"
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
     DataContext="{Binding Source={StaticResource Locator}, Path=Map}">
 
-    <common:BindablePage.Resources>
+    <view:BindablePage.Resources>
         <ResourceDictionary>
             <x:String x:Key="selectionString">Select alarm location:</x:String>
             <converters:VisibilityConverter x:Key="visibilityConverter" />
             <converters:AutoSuggestionBoxTextChangeToBoolConverter x:Key="AutoSuggestionBoxTextChangeToBoolConverter" />
             <converters:AutoSuggestBoxSuggestionChosenEventArgsToSelectedItemConverter x:Key="ArgsToSelectedItemConverter" />
         </ResourceDictionary>
-    </common:BindablePage.Resources>
+    </view:BindablePage.Resources>
 
     <Grid>
         <Grid.RowDefinitions>
@@ -58,10 +58,10 @@
         </map:MapControl>
     </Grid>
 
-    <common:BindablePage.BottomAppBar>
+    <view:BindablePage.BottomAppBar>
         <CommandBar>
             <AppBarButton Label="Find me" Icon="Target"
                           Command="{Binding FindMeCommand}" />
         </CommandBar>
-    </common:BindablePage.BottomAppBar>
-</common:BindablePage>
+    </view:BindablePage.BottomAppBar>
+</view:BindablePage>

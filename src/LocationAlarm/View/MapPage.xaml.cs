@@ -1,11 +1,11 @@
-﻿using ArrivalAlarm.ViewModel;
-using GalaSoft.MvvmLight.Messaging;
+﻿using GalaSoft.MvvmLight.Messaging;
+using LocationAlarm.ViewModel;
 using System;
 using Windows.Devices.Geolocation;
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkID=390556
 
-namespace ArrivalAlarm.View
+namespace LocationAlarm.View
 {
     /// <summary>
     /// An empty page that can be used on its own or navigated to within a Frame. 
@@ -20,7 +20,7 @@ namespace ArrivalAlarm.View
 
             _viewModel = DataContext as MapViewModel;
 
-            Messenger.Default.Register<Geopoint>(this, Messages.Tokens.MapViewToken, SetMapViewAsync);
+            Messenger.Default.Register<Geopoint>(this, ArrivalAlarm.Messages.Tokens.MapViewToken, SetMapViewAsync);
         }
 
         private async void SetMapViewAsync(Geopoint location)
