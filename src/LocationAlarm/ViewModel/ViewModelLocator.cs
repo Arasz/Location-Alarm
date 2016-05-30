@@ -58,6 +58,7 @@ namespace LocationAlarm.ViewModel
             // Add views to navigation service
             navigationService.Configure(nameof(MainPage), typeof(MainPage));
             navigationService.Configure(nameof(MapPage), typeof(MapPage));
+            navigationService.Configure(nameof(AlarmSettingsPage), typeof(AlarmSettingsPage));
 
             // Register navigation service (object)
             SimpleIoc.Default.Register<INavigationService>(() => navigationService);

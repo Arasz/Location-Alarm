@@ -62,6 +62,8 @@ namespace LocationAlarm.ViewModel
             private set { Set(nameof(PushpinVisible), ref _pushpinVisible, value); }
         }
 
+        public ICommand SaveLocationCommand { get; private set; }
+
         /// <summary>
         /// </summary>
         public ICommand SuggestionChosenCommand { get; private set; }
@@ -84,7 +86,10 @@ namespace LocationAlarm.ViewModel
             _model = new MapModel(TimeSpan.FromMinutes(2));
             _navigationService = ServiceLocator.Current.GetInstance<INavigationService>();
 
-            CreateCommands();
+            FindMeCommand = new RelayCommand(UpdateUserLocation);
+            TextChangeCommand = new RelayCommand<bool>(TextChangedCommandExecute);
+            SuggestionChosenCommand = new RelayCommand<object>(SuggestionChosenExecute);
+            SaveLocationCommand = new RelayCommand(SaveLocationExecute);
         }
 
         public void GoBack()
@@ -102,21 +107,19 @@ namespace LocationAlarm.ViewModel
             UpdateUserLocation();
         }
 
-        /// <summary>
-        /// Creates all commands 
-        /// </summary>
-        private void CreateCommands()
-        {
-            FindMeCommand = new RelayCommand(UpdateUserLocation);
-            TextChangeCommand = new RelayCommand<bool>(TextChangedCommandExecute);
-            SuggestionChosenCommand = new RelayCommand<object>(SuggestionChosenExecute);
-        }
-
         private string GetReadableName(MapLocation location)
         {
             var address = location.Address;
 
             return $"{address.Town} {address.Street} {address.StreetNumber}";
+        }
+
+        private void SaveLocationExecute()
+        {
+            //TODO: Create real location object
+            object locationData = new object();
+
+            _navigationService.NavigateTo(nameof(View.AlarmSettingsPage), locationData);
         }
 
         private void SetProvidedLocation(MapLocation location)

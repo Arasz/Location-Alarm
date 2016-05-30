@@ -6,18 +6,16 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:view="using:LocationAlarm.View"
     xmlns:controls="using:LocationAlarm.Controls"
+    xmlns:res="clr-namespace:LocationAlarm.Resources"
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
     DataContext="{Binding Source={StaticResource Locator}, Path=Main}">
 
     <view:BindablePage.Resources>
         <ResourceDictionary>
-            <x:String x:Key="AppName">ArrivalAlarm</x:String>
-            <x:String x:Key="PageTitle">Main Page</x:String>
-
             <DataTemplate x:Key="alarmModelTemplate">
-                <controls:AlarmItemControl DataContext="{Binding}"
-                                        Width="{Binding RelativeSource={RelativeSource TemplatedParent} ,Path=Width}" />
+                <controls:AlarmItemControl DataContext="{Binding}" Width="{Binding
+                    RelativeSource={RelativeSource TemplatedParent} ,Path=Width}" />
             </DataTemplate>
         </ResourceDictionary>
     </view:BindablePage.Resources>
@@ -37,8 +35,8 @@
 
         <!-- Title Panel -->
         <StackPanel Grid.Row="0" Margin="19,0,0,0">
-            <TextBlock Text="{StaticResource AppName}" Style="{ThemeResource TitleTextBlockStyle}" Margin="0,12,0,0" />
-            <TextBlock Text="{StaticResource PageTitle}" Margin="0,-6.5,0,26.5" Style="{ThemeResource HeaderTextBlockStyle}" CharacterSpacing="{ThemeResource PivotHeaderItemCharacterSpacing}" />
+            <TextBlock x:Uid="AppName" Text="Designer text"  Style="{ThemeResource TitleTextBlockStyle}" Margin="0,12,0,0" />
+            <TextBlock x:Uid="MainPageName" Text="Designer text" Margin="0,-6.5,0,26.5" Style="{ThemeResource HeaderTextBlockStyle}" CharacterSpacing="{ThemeResource PivotHeaderItemCharacterSpacing}" />
         </StackPanel>
 
         <!--TODO: Content should be placed within the following grid-->
@@ -47,15 +45,13 @@
                 <ListView ItemsSource="{Binding AlarmsCollection}"
                       ItemTemplate="{StaticResource alarmModelTemplate}">
                 </ListView>
-                <Button HorizontalAlignment="Center" Content="Go to map selction"
-                    Command="{Binding NavigateToSelectLocationPage}" />
             </StackPanel>
         </Grid>
     </Grid>
 
     <view:BindablePage.BottomAppBar>
         <CommandBar>
-            <AppBarButton Label="Add alarm" Icon="Add" />
+            <AppBarButton Label="Add alarm" Icon="Add" Command="{Binding NavigateToSelectLocationPage}" />
         </CommandBar>
     </view:BindablePage.BottomAppBar>
 </view:BindablePage>

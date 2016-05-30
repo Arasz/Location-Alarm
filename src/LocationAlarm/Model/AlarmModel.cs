@@ -65,7 +65,7 @@ namespace LocationAlarm.Model
         /// Snooze time after alarm sleep 
         /// </summary>
         [DataMember]
-        public DateTime SnoozeTime { get; set; }
+        public TimeSpan SnoozeTime { get; set; }
 
         /// <summary>
         /// </summary>
