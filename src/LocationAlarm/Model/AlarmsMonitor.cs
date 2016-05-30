@@ -22,14 +22,14 @@ namespace LocationAlarm.Model
 
         public void AddAlarm(AlarmModel alarm)
         {
-            _locationAlarms[alarm.MonitoredLocation.Id] = alarm;
-            _geofenceMonitor.Geofences.Add(alarm.MonitoredLocation);
+            _locationAlarms[alarm.MonitoredArea.Id] = alarm;
+            _geofenceMonitor.Geofences.Add((Geofence)alarm.MonitoredArea);
         }
 
-        public void RemoveAlarm(ILocationAlarmAlarmModel alarm)
+        public void RemoveAlarm(AlarmModel alarm)
         {
-            _locationAlarms.Remove(alarm.LocationMarker.Id);
-            _geofenceMonitor.Geofences.Remove(alarm.LocationMarker);
+            _locationAlarms.Remove(alarm.MonitoredArea.Id);
+            _geofenceMonitor.Geofences.Remove((Geofence)alarm.MonitoredArea);
         }
 
         private void ChoseActionBasedOnState(Geofence geofence, GeofenceState newState)

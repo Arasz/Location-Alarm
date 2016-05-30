@@ -80,6 +80,22 @@ namespace ArrivalAlarm.Model
         public MonitoredArea(string name, GeofenceBuilder builder)
         {
             Name = name;
+            _geofence = builder.Build();
+
+            var geoshape = Geoshape as Geocircle;
+
+            Geoposition = geoshape.Center;
+            Radius = geoshape.Radius;
+        }
+
+        public static explicit operator Geofence(MonitoredArea monitoredArea)
+        {
+            return monitoredArea._geofence;
+        }
+
+        public static implicit operator MonitoredArea(Geofence geofence)
+        {
+            return new MonitoredArea("", new GeofenceBuilder(geofence));
         }
     }
 }

@@ -1,3 +1,4 @@
+using ArrivalAlarm.Model;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using GalaSoft.MvvmLight.Views;
@@ -16,7 +17,9 @@ namespace LocationAlarm.ViewModel
 {
     /// <summary>
     /// This class contains properties that the main View can data bind to. 
-    /// <para> Use the <strong> mvvminpc </strong> snippet to add bindable properties to this ViewModel. </para>
+    /// <para>
+    /// Use the <strong> mvvminpc </strong> snippet to add bindable properties to this ViewModel.
+    /// </para>
     /// <para> You can also use Blend to data bind with the tool's support. </para>
     /// <para> See http://www.galasoft.ch/mvvm </para>
     /// </summary>
@@ -24,7 +27,7 @@ namespace LocationAlarm.ViewModel
     {
         private readonly ObservableCollection<AlarmModel> _alarmsCollection = new ObservableCollection<AlarmModel>()
         {
-            new AlarmModel(new AlarmLocation("Poznan", new BasicGeoposition()))
+            new AlarmModel(new MonitoredArea("Poznan", new GeofenceBuilder().SetRequiredId("P1").ThenSetGeocircle(new BasicGeoposition(),4d)))
             {
                 Label = "Alarm praca",
                 ActiveDays = new HashSet<DayOfWeek>() {DayOfWeek.Monday, DayOfWeek.Tuesday},
@@ -32,7 +35,7 @@ namespace LocationAlarm.ViewModel
                 IsCyclic = true,
             },
 
-            new AlarmModel(new AlarmLocation("Wroclaw", new BasicGeoposition()))
+            new AlarmModel(new MonitoredArea("Wroc³aw", new GeofenceBuilder().SetRequiredId("W1").ThenSetGeocircle(new BasicGeoposition(),6d)))
             {
                 Label = "Uczelnia",
                 ActiveDays = new HashSet<DayOfWeek>() {DayOfWeek.Friday, DayOfWeek.Wednesday},

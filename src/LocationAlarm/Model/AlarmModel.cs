@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
-using System.Text;
 using Windows.Devices.Geolocation;
 using Windows.Devices.Geolocation.Geofencing;
 using Windows.Foundation.Metadata;
@@ -32,8 +31,6 @@ namespace LocationAlarm.Model
         /// </summary>
         [DataMember]
         public bool IsActive { get; set; }
-
-        public
 
         /// <summary>
         /// Alarm cyclic 
@@ -75,16 +72,19 @@ namespace LocationAlarm.Model
         /// <param name="alarmLocation"> Location in which alarm will be triggered </param>
         public AlarmModel(MonitoredArea monitoredArea)
         {
-            monitoredArea = monitoredArea;
-
-            LocationMarker = new Geofence(AlarmLocation.GetHashCode().ToString(), new Geocircle(AlarmLocation.Geoposition, alarmLocation.Radius), MonitoredGeofenceStates.Entered, IsCyclic, TimeSpan.FromSeconds(30));
-
-            Id = UniqueIdProvider.Id;
+            MonitoredArea = monitoredArea;
         }
 
         public AlarmModel()
         {
-            MonitoredLocation = new Geofence(Id.ToString(), new Geocircle(new BasicGeoposition() { Latitude = 52.403343, Longitude = 16.950777 }, 2), MonitoredGeofenceStates.Entered, false);
+            var builder = new GeofenceBuilder();
+            var id = Label + Id;
+            builder.SetRequiredId(id)
+                .ThenSetGeocircle(new BasicGeoposition(), 4d)
+                .ConfigureMonitoredStates(MonitoredGeofenceStates.Entered)
+                .SetDwellTime(TimeSpan.FromMinutes(2));
+
+            MonitoredArea = new MonitoredArea("Poznań", builder);
         }
 
         /// <summary>
@@ -104,24 +104,5 @@ namespace LocationAlarm.Model
         {
             throw new NotImplementedException();
         }
-
-        public override string ToString()
-        {
-            StringBuilder textRepresentation = new StringBuilder();
-
-            textRepresentation.AppendLine($"Label: {Label}");
-            textRepresentation.AppendLine($"IsActive: {IsActive}");
-            textRepresentation.AppendLine($"Location:\n{AlarmLocation}");
-            textRepresentation.Append($"Active days: ");
-            foreach (var activeDay in ActiveDays)
-                textRepresentation.Append($"{activeDay} ");
-            textRepresentation.AppendLine();
-            return textRepresentation.ToString();
-        }
-    }
-
-    public class UniqueIdProvider
-    {
-        public static long Id { get; set; }
     }
 }
