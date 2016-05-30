@@ -1,7 +1,7 @@
-﻿using System;
+﻿using ArrivalAlarm.Model;
+using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
-using System.Text;
 using Windows.Devices.Geolocation;
 using Windows.Devices.Geolocation.Geofencing;
 using Windows.Foundation.Metadata;
@@ -9,100 +9,16 @@ using Windows.Foundation.Metadata;
 namespace LocationAlarm.Model
 {
     /// <summary>
-    /// Common interface for all alarms 
-    /// </summary>
-    public interface IAlarm
-    {
-        /// <summary>
-        /// Days in which alarm is active 
-        /// </summary>
-        ISet<DayOfWeek> ActiveDays { get; set; }
-
-        /// <summary>
-        /// Alarm state 
-        /// </summary>
-        bool IsActive { get; set; }
-
-        /// <summary>
-        /// Alarm cyclic 
-        /// </summary>
-        bool IsCyclic { get; set; }
-
-        /// <summary>
-        /// Alarm label 
-        /// </summary>
-        string Label { get; set; }
-
-        /// <summary>
-        /// User is informed only with notification 
-        /// </summary>
-        bool OnlyNotifications { get; set; }
-
-        /// <summary>
-        /// Ringtone 
-        /// </summary>
-        string Ringtone { get; set; }
-
-        /// <summary>
-        /// Snooze time 
-        /// </summary>
-        DateTime SnoozeTime { get; set; }
-
-        /// <summary>
-        /// Activates alarm 
-        /// </summary>
-        void Activate();
-
-        /// <summary>
-        /// Deactivates alarm 
-        /// </summary>
-        void Deactivate();
-
-        /// <summary>
-        /// Turns on alarm snooze 
-        /// </summary>
-        void Sleep();
-    }
-
-    /// <summary>
-    /// Common interface of objects which have alarm based on location functionality 
-    /// </summary>
-    public interface ILocationAlarm : IAlarm, ILocationMarker
-    {
-        /// <summary>
-        /// Location where alarm will be triggered 
-        /// </summary>
-        AlarmLocation AlarmLocation { get; set; }
-    }
-
-    /// <summary>
-    /// Common interface for objects which have location marker for monitoring purpose 
-    /// </summary>
-    public interface ILocationMarker
-    {
-        /// <summary>
-        /// Monitored location 
-        /// </summary>
-        Geofence LocationMarker { get; set; }
-    }
-
-    /// <summary>
     /// Location alarm data model 
     /// </summary>
     [DataContract]
-    public class AlarmModel : ILocationAlarm
+    public class AlarmModel
     {
         /// <summary>
         /// Days in which alarm is active 
         /// </summary>
         [DataMember]
         public ISet<DayOfWeek> ActiveDays { get; set; } = new HashSet<DayOfWeek>() { DayOfWeek.Monday, DayOfWeek.Friday, DayOfWeek.Saturday };
-
-        /// <summary>
-        /// Location where alarm will be triggered 
-        /// </summary>
-        [DataMember]
-        public AlarmLocation AlarmLocation { get; set; } = new AlarmLocation("DefaultLocation", new BasicGeoposition() { Latitude = 52.403343, Longitude = 16.950777 });
 
         /// <summary>
         /// Alarm id 
@@ -131,7 +47,7 @@ namespace LocationAlarm.Model
         /// <summary>
         /// Area on enter to which alarm will be activated 
         /// </summary>
-        public Geofence LocationMarker { get; set; }
+        public MonitoredArea MonitoredArea { get; set; }
 
         /// <summary>
         /// User is informed only with notification 
@@ -154,17 +70,21 @@ namespace LocationAlarm.Model
         /// <summary>
         /// </summary>
         /// <param name="alarmLocation"> Location in which alarm will be triggered </param>
-        public AlarmModel(AlarmLocation alarmLocation)
+        public AlarmModel(MonitoredArea monitoredArea)
         {
-            AlarmLocation = alarmLocation;
-
-            LocationMarker = new Geofence(AlarmLocation.GetHashCode().ToString(), new Geocircle(AlarmLocation.Geoposition, alarmLocation.Radius), MonitoredGeofenceStates.Entered, IsCyclic, TimeSpan.FromSeconds(30));
-
-            Id = UniqueIdProvider.Id;
+            MonitoredArea = monitoredArea;
         }
 
         public AlarmModel()
         {
+            var builder = new GeofenceBuilder();
+            var id = Label + Id;
+            builder.SetRequiredId(id)
+                .ThenSetGeocircle(new BasicGeoposition(), 4d)
+                .ConfigureMonitoredStates(MonitoredGeofenceStates.Entered)
+                .SetDwellTime(TimeSpan.FromMinutes(2));
+
+            MonitoredArea = new MonitoredArea("Poznań", builder);
         }
 
         /// <summary>
@@ -184,24 +104,5 @@ namespace LocationAlarm.Model
         {
             throw new NotImplementedException();
         }
-
-        public override string ToString()
-        {
-            StringBuilder textRepresentation = new StringBuilder();
-
-            textRepresentation.AppendLine($"Label: {Label}");
-            textRepresentation.AppendLine($"IsActive: {IsActive}");
-            textRepresentation.AppendLine($"Location:\n{AlarmLocation}");
-            textRepresentation.Append($"Active days: ");
-            foreach (var activeDay in ActiveDays)
-                textRepresentation.Append($"{activeDay} ");
-            textRepresentation.AppendLine();
-            return textRepresentation.ToString();
-        }
-    }
-
-    public class UniqueIdProvider
-    {
-        public static long Id { get; set; }
     }
 }
