@@ -75,7 +75,7 @@
                             <DataTemplate>
                                 <StackPanel Orientation="Horizontal">
                                     <AppBarButton Icon="Play" Command="{Binding Source={StaticResource Locator}, Path=AlarmSettings.PlaySoundCommand}"
-                                                  Margin="10,0" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                                                  CommandParameter="{Binding}"  Margin="10,0" VerticalAlignment="Center" HorizontalAlignment="Center" />
                                     <TextBlock Text="{Binding}" Style="{StaticResource ControlHeaderTextBlockStyle}" HorizontalAlignment="Center"
                                                VerticalAlignment="Center" />
                                 </StackPanel>

@@ -89,9 +89,9 @@ namespace LocationAlarm.ViewModel
         }
 
         [OnCommand("PlaySoundCommand")]
-        public void OnPlaySound()
+        public void OnPlaySound(string soundName)
         {
-            _mediaPlayer.SetUriSource(new Uri(_resourceLoader.GetString("SoundFileAppendix") + SelectedNotificationSound));
+            _mediaPlayer.SetUriSource(new Uri(_resourceLoader.GetString("SoundFileAppendix") + soundName + ".mp3"));
             _mediaPlayer.Play();
         }
 
@@ -123,7 +123,8 @@ namespace LocationAlarm.ViewModel
 
         private async void InitializeSoundFileNames()
         {
-            NotificationSounds = await ServiceLocator.Current.GetInstance<IAssetsNamesReader>().ReadAsync("Sounds").ConfigureAwait(true);
+            var notificationSounds = await ServiceLocator.Current.GetInstance<IAssetsNamesReader>().ReadAsync("Sounds").ConfigureAwait(true);
+            NotificationSounds = notificationSounds.Select(s => s.Replace(".mp3", ""));
             SelectedNotificationSound = NotificationSounds.First();
         }
     }
