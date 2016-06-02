@@ -21,12 +21,6 @@ namespace LocationAlarm.Model
         public ISet<DayOfWeek> ActiveDays { get; set; } = new HashSet<DayOfWeek>() { DayOfWeek.Monday, DayOfWeek.Friday, DayOfWeek.Saturday };
 
         /// <summary>
-        /// Alarm id 
-        /// </summary>
-        [DataMember]
-        public long Id { get; set; }
-
-        /// <summary>
         /// Alarm state 
         /// </summary>
         [DataMember]
@@ -77,14 +71,14 @@ namespace LocationAlarm.Model
 
         public AlarmModel()
         {
+            Label = "Poznań";
             var builder = new GeofenceBuilder();
-            var id = Label + Id;
-            builder.SetRequiredId(id)
+            builder.SetRequiredId(Label)
                 .ThenSetGeocircle(new BasicGeoposition(), 4d)
                 .ConfigureMonitoredStates(MonitoredGeofenceStates.Entered)
                 .SetDwellTime(TimeSpan.FromMinutes(2));
 
-            MonitoredArea = new MonitoredArea("Poznań", builder);
+            MonitoredArea = new MonitoredArea(Label, builder);
         }
 
         /// <summary>
