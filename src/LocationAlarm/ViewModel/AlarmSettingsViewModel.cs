@@ -4,6 +4,8 @@ using GalaSoft.MvvmLight.Ioc;
 using GalaSoft.MvvmLight.Views;
 using LocationAlarm.Model;
 using LocationAlarm.Navigation;
+using LocationAlarm.Utils;
+using Microsoft.Practices.ServiceLocation;
 using PropertyChanged;
 using System;
 using System.Collections.Generic;
@@ -25,7 +27,6 @@ namespace LocationAlarm.ViewModel
 
         private AlarmModel _alarmModel;
 
-        private string _appendix = "ms-appx:///Assets/Sounds/";
         private MediaPlayer _mediaPlayer = BackgroundMediaPlayer.Current;
 
         /// <summary>
@@ -42,8 +43,7 @@ namespace LocationAlarm.ViewModel
 
         /// <summary>
         /// </summary>
-        public IEnumerable<string> NotificationSounds { get; private set; } = new List<string>
-        { "Unique Notification0.mp3"};
+        public IEnumerable<string> NotificationSounds { get; private set; }
 
         /// <summary>
         /// </summary>
@@ -66,10 +66,10 @@ namespace LocationAlarm.ViewModel
             _resourceLoader = ResourceLoader.GetForCurrentView("Resources");
 
             SelectedDaysConcated = _resourceLoader.GetString("RepeatOnce");
-            SelectedNotificationSound = NotificationSounds.First();
 
             InitializeAlarmTypes();
             InitializeDaysOfWeek();
+            InitializeSoundFileNames();
 
             _navigationService = SimpleIoc.Default.GetInstance<INavigationService>();
         }
@@ -89,9 +89,9 @@ namespace LocationAlarm.ViewModel
         }
 
         [OnCommand("PlaySoundCommand")]
-        public void OnPlaySound()
+        public void OnPlaySound(string soundName)
         {
-            _mediaPlayer.SetUriSource(new Uri(_appendix + SelectedNotificationSound));
+            _mediaPlayer.SetUriSource(new Uri(_resourceLoader.GetString("SoundFileAppendix") + soundName + ".mp3"));
             _mediaPlayer.Play();
         }
 
@@ -119,6 +119,13 @@ namespace LocationAlarm.ViewModel
         private void InitializeDaysOfWeek()
         {
             DaysOfWeek = Enum.GetNames(typeof(DayOfWeek)).Select(s => "  " + _resourceLoader.GetString(s)).ToList();
+        }
+
+        private async void InitializeSoundFileNames()
+        {
+            var notificationSounds = await ServiceLocator.Current.GetInstance<IAssetsNamesReader>().ReadAsync("Sounds").ConfigureAwait(true);
+            NotificationSounds = notificationSounds.Select(s => s.Replace(".mp3", ""));
+            SelectedNotificationSound = NotificationSounds.First();
         }
     }
 }

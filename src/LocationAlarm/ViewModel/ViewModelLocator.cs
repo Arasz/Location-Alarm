@@ -14,6 +14,7 @@
 
 using GalaSoft.MvvmLight.Ioc;
 using GalaSoft.MvvmLight.Views;
+using LocationAlarm.Utils;
 using LocationAlarm.View;
 using Microsoft.Practices.ServiceLocation;
 
@@ -38,7 +39,7 @@ namespace LocationAlarm.ViewModel
         {
             ServiceLocator.SetLocatorProvider(() => SimpleIoc.Default);
 
-            NavigationServiceConfiguration();
+            RegisterServices();
 
             SimpleIoc.Default.Register<MapViewModel>();
             SimpleIoc.Default.Register<MainViewModel>();
@@ -65,6 +66,17 @@ namespace LocationAlarm.ViewModel
 
             // Register navigation service (object)
             SimpleIoc.Default.Register<INavigationService>(() => navigationService);
+        }
+
+        /// <summary>
+        /// Registers all services 
+        /// </summary>
+        private void RegisterServices()
+        {
+            var assetsNameReader = new AssetsNamesReader();
+            SimpleIoc.Default.Register<IAssetsNamesReader>(() => assetsNameReader);
+
+            NavigationServiceConfiguration();
         }
     }
 }
