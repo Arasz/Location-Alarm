@@ -117,8 +117,26 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="AlarmSettingsAlarmTone.Text" xml:space="preserve">
+    <value>Alarm tone</value>
+  </data>
+  <data name="AlarmSettingsAlarmType.Text" xml:space="preserve">
+    <value>Alarm type</value>
+  </data>
+  <data name="AlarmSettingsAlarmTypeCollection" xml:space="preserve">
+    <value>Sound, Notification</value>
+  </data>
+  <data name="AlarmSettingsComboBox.PlaceholderText" xml:space="preserve">
+    <value>choose an item</value>
+  </data>
   <data name="AlarmSettingsPageName" xml:space="preserve">
     <value>Alarm settings</value>
+  </data>
+  <data name="AlarmSettingsRepeat.Text" xml:space="preserve">
+    <value>Repeat weekly</value>
+  </data>
+  <data name="AlarmSettingsSave.Label" xml:space="preserve">
+    <value>Save</value>
   </data>
   <data name="AppName.Text" xml:space="preserve">
     <value>LocationAlarm</value>

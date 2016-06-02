@@ -1,8 +1,14 @@
-﻿using GalaSoft.MvvmLight;
+﻿using Commander;
+using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Ioc;
 using GalaSoft.MvvmLight.Views;
+using LocationAlarm.Model;
 using LocationAlarm.Navigation;
 using PropertyChanged;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
+using Windows.ApplicationModel.Resources;
 using Windows.UI.Xaml.Media.Imaging;
 
 namespace LocationAlarm.ViewModel
@@ -10,12 +16,26 @@ namespace LocationAlarm.ViewModel
     [ImplementPropertyChanged]
     public class AlarmSettingsViewModel : ViewModelBase, INavigable
     {
-        private INavigationService _navigationService;
+        /// <summary>
+        /// Navigation service 
+        /// </summary>
+        private readonly INavigationService _navigationService;
 
-        public BitmapImage MapScreen { get; set; }
+        /// <summary>
+        /// Alarm which settings are edited 
+        /// </summary>
+        private AlarmModel _alarmModel;
+
+        public IEnumerable<string> AlarmTypes { get; }
+
+        public BitmapImage MapScreen { get; private set; }
+
+        public string SelectedAlarmType { get; set; }
 
         public AlarmSettingsViewModel()
         {
+            AlarmTypes = ResourceLoader.GetForCurrentView("Resources").GetString("AlarmSettingsAlarmTypeCollection").Split(',').Select(s => s.Trim());
+            SelectedAlarmType = AlarmTypes.First();
             _navigationService = SimpleIoc.Default.GetInstance<INavigationService>();
         }
 
@@ -31,6 +51,12 @@ namespace LocationAlarm.ViewModel
         public void OnNavigatedTo(object parameter)
         {
             MapScreen = parameter as BitmapImage;
+        }
+
+        [OnCommand("SaveSettingsCommand")]
+        public void OnSaveAlarmSettings()
+        {
+            Debug.WriteLine("In On save");
         }
     }
 }

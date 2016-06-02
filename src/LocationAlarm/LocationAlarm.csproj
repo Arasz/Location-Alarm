@@ -160,6 +160,10 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="Commander, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Commander.Fody.0.8.1.2\lib\Commander.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="ConfigureAwait, Version=1.0.0.0, Culture=neutral, PublicKeyToken=233850a516558a98, processorArchitecture=MSIL">
       <HintPath>..\..\packages\ConfigureAwait.Fody.1.0.0\lib\portable-net45+wp8+win+wpa81\ConfigureAwait.dll</HintPath>
       <Private>False</Private>

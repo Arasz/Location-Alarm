@@ -4,4 +4,5 @@
   <AsyncErrorHandler />
   <ConfigureAwait />
   <Visualize />
+  <Commander />
 </Weavers>
