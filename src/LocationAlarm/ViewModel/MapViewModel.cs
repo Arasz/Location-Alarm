@@ -1,4 +1,5 @@
 ﻿using ArrivalAlarm.Messages;
+using Commander;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using GalaSoft.MvvmLight.Messaging;
@@ -12,6 +13,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows.Input;
 using Windows.Devices.Geolocation;
 using Windows.Services.Maps;
@@ -43,11 +45,6 @@ namespace LocationAlarm.ViewModel
         /// </summary>
         public string AutoSuggestBoxText { get; set; } = "";
 
-        /// <summary>
-        /// Command launched when user wants update of his current location 
-        /// </summary>
-        public ICommand FindMeCommand { get; private set; }
-
         public INotifyCollectionChanged FoundLocations => _foundLocations;
 
         /// <summary>
@@ -56,8 +53,6 @@ namespace LocationAlarm.ViewModel
         public BitmapImage MapScreenshot { get; set; }
 
         public bool PushpinVisible { get; private set; }
-
-        public ICommand SaveLocationCommand { get; private set; }
 
         /// <summary>
         /// </summary>
@@ -81,10 +76,8 @@ namespace LocationAlarm.ViewModel
             _model = new MapModel(TimeSpan.FromMinutes(2));
             _navigationService = ServiceLocator.Current.GetInstance<INavigationService>();
 
-            FindMeCommand = new RelayCommand(UpdateUserLocation);
             TextChangeCommand = new RelayCommand<bool>(TextChangedCommandExecute);
             SuggestionChosenCommand = new RelayCommand<object>(SuggestionChosenExecute);
-            SaveLocationCommand = new RelayCommand(SaveLocationExecute);
         }
 
         public void GoBack()
@@ -94,10 +87,12 @@ namespace LocationAlarm.ViewModel
 
         public void OnNavigatedFrom(object parameter)
         {
+            MapScreenshot = null;
         }
 
         public void OnNavigatedTo(object parameter)
         {
+            MapScreenshot = null;
             UpdateUserLocation();
         }
 
@@ -108,9 +103,11 @@ namespace LocationAlarm.ViewModel
             return $"{address.Town} {address.Street} {address.StreetNumber}";
         }
 
-        private void SaveLocationExecute()
+        [OnCommand("SaveLocationCommand")]
+        private async void SaveLocationExecute()
         {
             //TODO: Create real location object
+            await TakeMapScreenshotAsync();
             object locationData = MapScreenshot;
 
             _navigationService.NavigateTo(nameof(View.AlarmSettingsPage), locationData);
@@ -137,6 +134,19 @@ namespace LocationAlarm.ViewModel
             SetProvidedLocation(locations.First());
         }
 
+        /// <summary>
+        /// </summary>
+        /// <returns></returns>
+        private async Task TakeMapScreenshotAsync()
+        {
+            Messenger.Default.Send(new MapMessage(), Tokens.TakeScreenshot);
+
+            await Task.Factory.StartNew(() =>
+            {
+                while (MapScreenshot == null) ;
+            });
+        }
+
         private async void TextChangedCommandExecute(bool isUserInputReason)
         {
             _foundLocations.Clear();
@@ -160,6 +170,7 @@ namespace LocationAlarm.ViewModel
         /// <summary>
         /// Updates actual user location 
         /// </summary>
+        [OnCommand("FindMeCommand")]
         private async void UpdateUserLocation()
         {
             var actualLocation = await _model.GetActualLocationAsync().ConfigureAwait(true);
