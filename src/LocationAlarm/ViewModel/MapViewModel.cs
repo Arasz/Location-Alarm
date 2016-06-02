@@ -48,6 +48,11 @@ namespace LocationAlarm.ViewModel
         public INotifyCollectionChanged FoundLocations => _foundLocations;
 
         /// <summary>
+        /// State of map loading 
+        /// </summary>
+        public bool IsMapLoaded { get; private set; }
+
+        /// <summary>
         /// Map control screen shoot 
         /// </summary>
         public BitmapImage MapScreenshot { get; set; }
@@ -78,6 +83,8 @@ namespace LocationAlarm.ViewModel
 
             TextChangeCommand = new RelayCommand<bool>(TextChangedCommandExecute);
             SuggestionChosenCommand = new RelayCommand<object>(SuggestionChosenExecute);
+
+            Messenger.Default.Register<bool>(this, Tokens.MapLoaded, (isMapLoaded) => IsMapLoaded = isMapLoaded);
         }
 
         public void GoBack()
@@ -87,11 +94,13 @@ namespace LocationAlarm.ViewModel
 
         public void OnNavigatedFrom(object parameter)
         {
+            IsMapLoaded = false;
             MapScreenshot = null;
         }
 
         public void OnNavigatedTo(object parameter)
         {
+            IsMapLoaded = false;
             MapScreenshot = null;
             UpdateUserLocation();
         }
@@ -106,7 +115,6 @@ namespace LocationAlarm.ViewModel
         [OnCommand("SaveLocationCommand")]
         private async void SaveLocationExecute()
         {
-            //TODO: Create real location object
             await TakeMapScreenshotAsync();
             object locationData = MapScreenshot;
 

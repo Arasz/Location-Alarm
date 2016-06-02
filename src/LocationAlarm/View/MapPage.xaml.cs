@@ -28,6 +28,14 @@ namespace LocationAlarm.View
 
             _viewModel = DataContext as MapViewModel;
 
+            mapControl.LoadingStatusChanged += (sender, args) =>
+            {
+                if (sender.LoadingStatus == MapLoadingStatus.Loaded)
+                {
+                    Messenger.Default.Send(true, Tokens.MapLoaded);
+                }
+            };
+
             Messenger.Default.Register<Geopoint>(this, Tokens.SetMapView, SetMapViewAsync);
             Messenger.Default.Register<MapMessage>(this, Tokens.TakeScreenshot, TakeMapScreenshotAsync);
         }

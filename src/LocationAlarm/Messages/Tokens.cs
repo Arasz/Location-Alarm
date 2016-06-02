@@ -4,5 +4,6 @@
     {
         SetMapView,
         TakeScreenshot,
+        MapLoaded,
     }
 }
