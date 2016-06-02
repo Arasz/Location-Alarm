@@ -132,4 +132,7 @@
   <data name="MapPageSaveLocation.Label" xml:space="preserve">
     <value>Save</value>
   </data>
+  <data name="MapPageSelectLocation.Text" xml:space="preserve">
+    <value>Select alarm location</value>
+  </data>
 </root>

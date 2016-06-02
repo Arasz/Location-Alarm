@@ -16,7 +16,6 @@
 
     <view:BindablePage.Resources>
         <ResourceDictionary>
-            <x:String x:Key="selectionString">Select alarm location:</x:String>
             <converters:VisibilityConverter x:Key="visibilityConverter" />
             <converters:AutoSuggestionBoxTextChangeToBoolConverter x:Key="AutoSuggestionBoxTextChangeToBoolConverter" />
             <converters:AutoSuggestBoxSuggestionChosenEventArgsToSelectedItemConverter x:Key="ArgsToSelectedItemConverter" />
@@ -30,7 +29,7 @@
         </Grid.RowDefinitions>
 
         <StackPanel Grid.Row="0" Orientation="Vertical">
-            <TextBlock Text="{StaticResource selectionString}" Margin="5,15,5,5"
+            <TextBlock x:Uid="MapPageSelectLocation" Text="Placeholder" Margin="5,15,5,5"
                        Style="{StaticResource  GroupHeaderTextBlockStyle}" />
             <AutoSuggestBox ItemsSource="{Binding FoundLocations}" Margin="5,5" AllowDrop="True"
                             Text="{Binding AutoSuggestBoxText, Mode=TwoWay}">
