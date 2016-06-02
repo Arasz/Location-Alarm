@@ -25,6 +25,8 @@ namespace LocationAlarm.ViewModel
     /// </summary>
     public class ViewModelLocator
     {
+        public AlarmSettingsViewModel AlarmSettings => ServiceLocator.Current.GetInstance<AlarmSettingsViewModel>();
+
         public MainViewModel Main => ServiceLocator.Current.GetInstance<MainViewModel>();
 
         public MapViewModel Map => ServiceLocator.Current.GetInstance<MapViewModel>();
@@ -40,6 +42,7 @@ namespace LocationAlarm.ViewModel
 
             SimpleIoc.Default.Register<MapViewModel>();
             SimpleIoc.Default.Register<MainViewModel>();
+            SimpleIoc.Default.Register<AlarmSettingsViewModel>();
         }
 
         public static void Cleanup()
