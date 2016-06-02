@@ -3,7 +3,6 @@ using GalaSoft.MvvmLight.Messaging;
 using LocationAlarm.ViewModel;
 using System;
 using System.Runtime.InteropServices.WindowsRuntime;
-using System.Threading.Tasks;
 using Windows.Devices.Geolocation;
 using Windows.Foundation;
 using Windows.Graphics.Display;
@@ -11,7 +10,6 @@ using Windows.Graphics.Imaging;
 using Windows.Storage.Streams;
 using Windows.UI.Xaml.Controls.Maps;
 using Windows.UI.Xaml.Media.Imaging;
-using Windows.UI.Xaml.Navigation;
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkID=390556
 
@@ -23,7 +21,6 @@ namespace LocationAlarm.View
     public sealed partial class MapPage
     {
         private readonly MapViewModel _viewModel;
-        private bool _screenTaken;
 
         public MapPage()
         {
@@ -31,30 +28,24 @@ namespace LocationAlarm.View
 
             _viewModel = DataContext as MapViewModel;
 
-            mapControl.LoadingStatusChanged += MapControlOnLoadingStatusChanged;
-
             Messenger.Default.Register<Geopoint>(this, Tokens.SetMapView, SetMapViewAsync);
-        }
-
-        protected override void OnNavigatedTo(NavigationEventArgs e)
-        {
-            base.OnNavigatedTo(e);
-            _screenTaken = false;
-        }
-
-        private async void MapControlOnLoadingStatusChanged(MapControl sender, object args)
-        {
-            if (sender.LoadingStatus == MapLoadingStatus.Loaded && !_screenTaken)
-                await MapScreenshotAsync().ConfigureAwait(true);
+            Messenger.Default.Register<MapMessage>(this, Tokens.TakeScreenshot, TakeMapScreenshotAsync);
         }
 
         /// <summary>
         /// </summary>
-        private async Task MapScreenshotAsync()
+        /// <param name="location"></param>
+        private async void SetMapViewAsync(Geopoint location)
+        {
+            await mapControl.TrySetViewAsync(location, _viewModel.ZoomLevel, 0, 0, MapAnimationKind.Bow);
+        }
+
+        /// <summary>
+        /// </summary>
+        private async void TakeMapScreenshotAsync(MapMessage mapMessage)
         {
             if (mapControl.RenderSize == new Size(0, 0))
                 return;
-            _screenTaken = true;
             var dpi = DisplayInformation.GetForCurrentView().LogicalDpi;
 
             var renderTargetBitmap = new RenderTargetBitmap();
@@ -78,15 +69,6 @@ namespace LocationAlarm.View
             await bitmapImage.SetSourceAsync(randomAccessStream);
 
             _viewModel.MapScreenshot = bitmapImage;
-        }
-
-        /// <summary>
-        /// </summary>
-        /// <param name="location"></param>
-        private async void SetMapViewAsync(Geopoint location)
-        {
-            _screenTaken = false;
-            await mapControl.TrySetViewAsync(location, _viewModel.ZoomLevel, 0, 0, MapAnimationKind.Bow);
         }
     }
 }
