@@ -2,6 +2,7 @@
 {
     internal enum Tokens
     {
-        MapViewToken,
+        SetMapView,
+        TakeScreenshot,
     }
 }

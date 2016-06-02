@@ -1,7 +1,15 @@
-﻿using GalaSoft.MvvmLight.Messaging;
+﻿using ArrivalAlarm.Messages;
+using GalaSoft.MvvmLight.Messaging;
 using LocationAlarm.ViewModel;
 using System;
+using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.Devices.Geolocation;
+using Windows.Foundation;
+using Windows.Graphics.Display;
+using Windows.Graphics.Imaging;
+using Windows.Storage.Streams;
+using Windows.UI.Xaml.Controls.Maps;
+using Windows.UI.Xaml.Media.Imaging;
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkID=390556
 
@@ -20,12 +28,47 @@ namespace LocationAlarm.View
 
             _viewModel = DataContext as MapViewModel;
 
-            Messenger.Default.Register<Geopoint>(this, ArrivalAlarm.Messages.Tokens.MapViewToken, SetMapViewAsync);
+            Messenger.Default.Register<Geopoint>(this, Tokens.SetMapView, SetMapViewAsync);
+            Messenger.Default.Register<MapMessage>(this, Tokens.TakeScreenshot, TakeMapScreenshotAsync);
         }
 
+        /// <summary>
+        /// </summary>
+        /// <param name="location"></param>
         private async void SetMapViewAsync(Geopoint location)
         {
-            await mapControl.TrySetViewAsync(location, _viewModel.ZoomLevel, 0, 0, Windows.UI.Xaml.Controls.Maps.MapAnimationKind.Bow);
+            await mapControl.TrySetViewAsync(location, _viewModel.ZoomLevel, 0, 0, MapAnimationKind.Bow);
+        }
+
+        /// <summary>
+        /// </summary>
+        private async void TakeMapScreenshotAsync(MapMessage mapMessage)
+        {
+            if (mapControl.RenderSize == new Size(0, 0))
+                return;
+            var dpi = DisplayInformation.GetForCurrentView().LogicalDpi;
+
+            var renderTargetBitmap = new RenderTargetBitmap();
+            await renderTargetBitmap.RenderAsync(mapControl);
+            var pixelBuffer = await renderTargetBitmap.GetPixelsAsync();
+            var randomAccessStream = new InMemoryRandomAccessStream();
+
+            var encoder = await BitmapEncoder.CreateAsync(BitmapEncoder.PngEncoderId, randomAccessStream);
+            encoder.SetPixelData(
+                BitmapPixelFormat.Bgra8,
+                BitmapAlphaMode.Ignore,
+                (uint)renderTargetBitmap.PixelWidth,
+                (uint)renderTargetBitmap.PixelHeight,
+                dpi,
+                dpi,
+                pixelBuffer.ToArray());
+
+            await encoder.FlushAsync();
+
+            var bitmapImage = new BitmapImage();
+            await bitmapImage.SetSourceAsync(randomAccessStream);
+
+            _viewModel.MapScreenshot = bitmapImage;
         }
     }
 }

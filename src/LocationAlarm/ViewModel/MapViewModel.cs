@@ -1,26 +1,30 @@
-﻿using GalaSoft.MvvmLight;
+﻿using ArrivalAlarm.Messages;
+using Commander;
+using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using GalaSoft.MvvmLight.Messaging;
 using GalaSoft.MvvmLight.Views;
 using LocationAlarm.Model;
 using LocationAlarm.Navigation;
 using Microsoft.Practices.ServiceLocation;
+using PropertyChanged;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows.Input;
 using Windows.Devices.Geolocation;
 using Windows.Services.Maps;
+using Windows.UI.Xaml.Media.Imaging;
 
 namespace LocationAlarm.ViewModel
 {
+    [ImplementPropertyChanged]
     public class MapViewModel : ViewModelBase, INavigable
     {
         private readonly ObservableCollection<string> _foundLocations = new ObservableCollection<string>();
-
-        private Geopoint _actualLocation;
 
         private MapModel _model;
 
@@ -29,38 +33,26 @@ namespace LocationAlarm.ViewModel
         /// </summary>
         private INavigationService _navigationService;
 
-        private bool _pushpinVisible;
+        /// <summary>
+        /// Location name selected in auto suggestion box 
+        /// </summary>
         private string _selectedLocation;
 
-        /// <summary>
-        /// Actual user location on map 
-        /// </summary>
-        public Geopoint ActualLocation
-        {
-            get { return _actualLocation; }
-            private set { Set(nameof(ActualLocation), ref _actualLocation, value); }
-        }
+        public Geopoint ActualLocation { get; private set; }
 
         /// <summary>
         /// Text from auto suggest box 
         /// </summary>
         public string AutoSuggestBoxText { get; set; } = "";
 
+        public INotifyCollectionChanged FoundLocations => _foundLocations;
+
         /// <summary>
-        /// Command launched when user wants update of his current location 
+        /// Map control screen shoot 
         /// </summary>
-        public ICommand FindMeCommand { get; private set; }
+        public BitmapImage MapScreenshot { get; set; }
 
-        public INotifyCollectionChanged FoundLocations
-        {
-            get { return _foundLocations; }
-        }
-
-        public bool PushpinVisible
-        {
-            get { return _pushpinVisible; }
-            private set { Set(nameof(PushpinVisible), ref _pushpinVisible, value); }
-        }
+        public bool PushpinVisible { get; private set; }
 
         /// <summary>
         /// </summary>
@@ -84,7 +76,8 @@ namespace LocationAlarm.ViewModel
             _model = new MapModel(TimeSpan.FromMinutes(2));
             _navigationService = ServiceLocator.Current.GetInstance<INavigationService>();
 
-            CreateCommands();
+            TextChangeCommand = new RelayCommand<bool>(TextChangedCommandExecute);
+            SuggestionChosenCommand = new RelayCommand<object>(SuggestionChosenExecute);
         }
 
         public void GoBack()
@@ -94,22 +87,13 @@ namespace LocationAlarm.ViewModel
 
         public void OnNavigatedFrom(object parameter)
         {
-            //MyProperty = (parameter as string) ?? string.Empty;
+            MapScreenshot = null;
         }
 
         public void OnNavigatedTo(object parameter)
         {
+            MapScreenshot = null;
             UpdateUserLocation();
-        }
-
-        /// <summary>
-        /// Creates all commands 
-        /// </summary>
-        private void CreateCommands()
-        {
-            FindMeCommand = new RelayCommand(UpdateUserLocation);
-            TextChangeCommand = new RelayCommand<bool>(TextChangedCommandExecute);
-            SuggestionChosenCommand = new RelayCommand<object>(SuggestionChosenExecute);
         }
 
         private string GetReadableName(MapLocation location)
@@ -119,6 +103,16 @@ namespace LocationAlarm.ViewModel
             return $"{address.Town} {address.Street} {address.StreetNumber}";
         }
 
+        [OnCommand("SaveLocationCommand")]
+        private async void SaveLocationExecute()
+        {
+            //TODO: Create real location object
+            await TakeMapScreenshotAsync();
+            object locationData = MapScreenshot;
+
+            _navigationService.NavigateTo(nameof(View.AlarmSettingsPage), locationData);
+        }
+
         private void SetProvidedLocation(MapLocation location)
         {
             if (location == null)
@@ -126,7 +120,7 @@ namespace LocationAlarm.ViewModel
 
             ActualLocation = location.Point;
             ZoomLevel = 12;
-            Messenger.Default.Send(ActualLocation, ArrivalAlarm.Messages.Tokens.MapViewToken);
+            Messenger.Default.Send(ActualLocation, Tokens.SetMapView);
             PushpinVisible = true;
         }
 
@@ -138,6 +132,19 @@ namespace LocationAlarm.ViewModel
             _selectedLocation = (string)selectedItem;
             var locations = await _model.FindLocationAsync(_selectedLocation).ConfigureAwait(true);
             SetProvidedLocation(locations.First());
+        }
+
+        /// <summary>
+        /// </summary>
+        /// <returns></returns>
+        private async Task TakeMapScreenshotAsync()
+        {
+            Messenger.Default.Send(new MapMessage(), Tokens.TakeScreenshot);
+
+            await Task.Factory.StartNew(() =>
+            {
+                while (MapScreenshot == null) ;
+            });
         }
 
         private async void TextChangedCommandExecute(bool isUserInputReason)
@@ -163,12 +170,13 @@ namespace LocationAlarm.ViewModel
         /// <summary>
         /// Updates actual user location 
         /// </summary>
+        [OnCommand("FindMeCommand")]
         private async void UpdateUserLocation()
         {
-            var actualLocation = await _model.GetActualLocationAsync();
+            var actualLocation = await _model.GetActualLocationAsync().ConfigureAwait(true);
             ActualLocation = actualLocation.Coordinate.Point;
             ZoomLevel = 12;
-            Messenger.Default.Send(ActualLocation, ArrivalAlarm.Messages.Tokens.MapViewToken);
+            Messenger.Default.Send(ActualLocation, Tokens.SetMapView);
             PushpinVisible = true;
         }
     }
