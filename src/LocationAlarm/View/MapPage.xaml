@@ -61,8 +61,8 @@
         <CommandBar>
             <AppBarButton x:Uid="MapPageFindMe" Label="Find me" Icon="Target"
                           Command="{Binding FindMeCommand}" />
-            <AppBarButton x:Uid="MapPageSaveLocation" Label="Save location" Icon="Save"
-                          Command="{Binding SaveLocationCommand}" />
+            <AppBarButton x:Name="saveLoacationButton" x:Uid="MapPageSaveLocation" Label="Save location" Icon="Save"
+                          IsEnabled="{Binding IsMapLoaded}" Command="{Binding SaveLocationCommand}" />
         </CommandBar>
     </view:BindablePage.BottomAppBar>
 </view:BindablePage>
