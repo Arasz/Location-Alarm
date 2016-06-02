@@ -165,6 +165,9 @@
   <data name="Saturday" xml:space="preserve">
     <value>Saturday</value>
   </data>
+  <data name="SoundFileAppendix" xml:space="preserve">
+    <value>ms-appx:///Assets/Sounds/</value>
+  </data>
   <data name="Sunday" xml:space="preserve">
     <value>Sunday</value>
   </data>
