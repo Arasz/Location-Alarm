@@ -76,8 +76,8 @@
                                 <StackPanel Orientation="Horizontal">
                                     <AppBarButton Icon="Play" Command="{Binding Source={StaticResource Locator}, Path=AlarmSettings.PlaySoundCommand}"
                                                   CommandParameter="{Binding}"  Margin="10,0" VerticalAlignment="Center" HorizontalAlignment="Center" />
-                                    <TextBlock Text="{Binding}" Style="{StaticResource ControlHeaderTextBlockStyle}" HorizontalAlignment="Center"
-                                               VerticalAlignment="Center" />
+                                    <TextBlock Text="{Binding}" Style="{StaticResource GroupHeaderTextBlockStyle}" HorizontalAlignment="Center"
+                                               VerticalAlignment="Center" Margin="10,0,0,20" />
                                 </StackPanel>
                             </DataTemplate>
                         </ListPickerFlyout.ItemTemplate>

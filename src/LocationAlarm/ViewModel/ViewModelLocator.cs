@@ -68,6 +68,9 @@ namespace LocationAlarm.ViewModel
             SimpleIoc.Default.Register<INavigationService>(() => navigationService);
         }
 
+        /// <summary>
+        /// Registers all services 
+        /// </summary>
         private void RegisterServices()
         {
             var assetsNameReader = new AssetsNamesReader();
