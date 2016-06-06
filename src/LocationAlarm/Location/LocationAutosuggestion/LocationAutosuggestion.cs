@@ -71,13 +71,12 @@ namespace LocationAlarm.Location.LocationAutosuggestion
 
             if (LocationQueryResults == null) return;
 
-            foreach (var location in LocationQueryResults)
+            foreach (var location in LocationQueryResults.OrderByDescending(location => (location.Address.Town + location.Address.Street + location.Address.StreetNumber).Length))
             {
                 var readableName = _locationNameExtractor.Extract(location, userInput);
                 if (!string.IsNullOrEmpty(readableName))
                     SuggestedLocations.Add(readableName);
             }
-            SuggestedLocations.OrderByDescending(s => s.Length);
         }
     }
 }
