@@ -85,6 +85,10 @@
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
     <Compile Include="Interceptors\AsyncErrorHandler.cs" />
+    <Compile Include="Location\ILocationNameExtractor.cs" />
+    <Compile Include="Location\IReverseGeolocationQuery.cs" />
+    <Compile Include="Location\LocationAutosuggestion\LocationAutosuggestion.cs" />
+    <Compile Include="Location\LocationNameExtractor.cs" />
     <Compile Include="Model\GeofenceBuilder.cs" />
     <Compile Include="Model\MonitoredArea.cs" />
     <Compile Include="Utils\AssetsNamesReader.cs" />

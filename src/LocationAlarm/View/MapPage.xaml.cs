@@ -35,7 +35,6 @@ namespace LocationAlarm.View
                     Messenger.Default.Send(true, Tokens.MapLoaded);
                 }
             };
-
             Messenger.Default.Register<Geopoint>(this, Tokens.SetMapView, SetMapViewAsync);
             Messenger.Default.Register<MapMessage>(this, Tokens.TakeScreenshot, TakeMapScreenshotAsync);
         }

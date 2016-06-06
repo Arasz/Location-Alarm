@@ -1,4 +1,5 @@
-﻿using System;
+﻿using LocationAlarm.Location;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -7,7 +8,7 @@ using Windows.Services.Maps;
 
 namespace LocationAlarm.Model
 {
-    public class MapModel
+    public class MapModel : IReverseGeolocationQuery
     {
         /// <summary>
         /// Object which contains all logic responsible for localization 
@@ -56,12 +57,7 @@ namespace LocationAlarm.Model
             _geolocator.StatusChanged += StatusChangedHandler;
         }
 
-        /// <summary>
-        /// Finds location on map given location name 
-        /// </summary>
-        /// <param name="locationQuery"> Searched location name </param>
-        /// <returns> List of locations matched with given location name </returns>
-        public async Task<IReadOnlyList<MapLocation>> FindLocationAsync(string locationQuery, uint maxResultsCount = 6)
+        public async Task<IReadOnlyList<MapLocation>> FindLocationsAsync(string locationQuery, uint maxResultsCount = 6)
         {
             // Give as a hint actual user location because we don't have any informations about
             // searched location
@@ -69,7 +65,10 @@ namespace LocationAlarm.Model
                 LastKnownLocation = await GetActualLocationAsync().ConfigureAwait(false);
 
             // Find given location
-            var mapLocationFinderResult = await MapLocationFinder.FindLocationsAsync(locationQuery, LastKnownLocation.Coordinate.Point, maxResultsCount);
+            var mapLocationFinderResult =
+                await
+                    MapLocationFinder.FindLocationsAsync(locationQuery, LastKnownLocation.Coordinate.Point,
+                        maxResultsCount);
 
             if (mapLocationFinderResult.Status == MapLocationFinderStatus.Success &&
                 mapLocationFinderResult.Locations.Any())
@@ -99,3 +98,4 @@ namespace LocationAlarm.Model
         {
         }
     }
+}
