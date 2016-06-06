@@ -26,12 +26,12 @@ namespace LocationAlarm.ViewModel
     {
         private readonly ObservableCollection<string> _foundLocations = new ObservableCollection<string>();
 
-        private MapModel _model;
+        private readonly MapModel _mapModel;
 
         /// <summary>
         /// Navigation service used for navigation between pages 
         /// </summary>
-        private INavigationService _navigationService;
+        private readonly INavigationService _navigationService;
 
         /// <summary>
         /// Location name selected in auto suggestion box 
@@ -51,8 +51,6 @@ namespace LocationAlarm.ViewModel
         /// State of map loading 
         /// </summary>
         public bool IsMapLoaded { get; private set; }
-
-        //BUG: To rozwiązanie nie działa z komendami z drugiej strony CanExecute też nie działa
 
         /// <summary>
         /// Map control screen shoot 
@@ -80,7 +78,7 @@ namespace LocationAlarm.ViewModel
 
         public MapViewModel()
         {
-            _model = new MapModel(TimeSpan.FromMinutes(2));
+            _mapModel = new MapModel(TimeSpan.FromMinutes(2));
             _navigationService = ServiceLocator.Current.GetInstance<INavigationService>();
 
             TextChangeCommand = new RelayCommand<bool>(TextChangedCommandExecute);
@@ -140,41 +138,37 @@ namespace LocationAlarm.ViewModel
                 return;
 
             _selectedLocation = (string)selectedItem;
-            var locations = await _model.FindLocationAsync(_selectedLocation).ConfigureAwait(true);
+            var locations = await _mapModel.FindLocationAsync(_selectedLocation).ConfigureAwait(true);
             SetProvidedLocation(locations.First());
         }
 
-        /// <summary>
-        /// </summary>
-        /// <returns></returns>
         private async Task TakeMapScreenshotAsync()
         {
             Messenger.Default.Send(new MapMessage(), Tokens.TakeScreenshot);
 
             await Task.Factory.StartNew(() =>
             {
-                while (MapScreenshot == null) ;
+                while (MapScreenshot == null)
+                {
+                }
             });
         }
 
         private async void TextChangedCommandExecute(bool isUserInputReason)
         {
             _foundLocations.Clear();
-            if (isUserInputReason && !string.IsNullOrEmpty(AutoSuggestBoxText))
-            {
-                var userInput = AutoSuggestBoxText;
-                var locations = await _model.FindLocationAsync(userInput).ConfigureAwait(true);
+            if (!isUserInputReason || string.IsNullOrEmpty(AutoSuggestBoxText)) return;
 
-                if (locations?.Count == 0)
-                    return;
+            var userInput = AutoSuggestBoxText;
+            var locations = await _mapModel.FindLocationAsync(userInput).ConfigureAwait(true);
 
-                var foundLocations = locations?.Where(location => GetReadableName(location).Contains(userInput)) ?? new List<MapLocation>();
+            if (locations?.Count == 0)
+                return;
 
-                foreach (var location in foundLocations)
-                {
-                    _foundLocations.Add(GetReadableName(location));
-                }
-            }
+            var foundLocations = locations?.Where(location => GetReadableName(location).Contains(userInput)) ?? new List<MapLocation>();
+
+            foreach (var location in foundLocations)
+                _foundLocations.Add(GetReadableName(location));
         }
 
         /// <summary>
@@ -183,11 +177,13 @@ namespace LocationAlarm.ViewModel
         [OnCommand("FindMeCommand")]
         private async void UpdateUserLocation()
         {
-            var actualLocation = await _model.GetActualLocationAsync().ConfigureAwait(true);
+            var actualLocation = await _mapModel.GetActualLocationAsync().ConfigureAwait(true);
             ActualLocation = actualLocation.Coordinate.Point;
             ZoomLevel = 12;
             Messenger.Default.Send(ActualLocation, Tokens.SetMapView);
             PushpinVisible = true;
         }
     }
+
+>>>>>>> 3374c7f258a3d73de02af13fbaf0a53712e149cd
 }
