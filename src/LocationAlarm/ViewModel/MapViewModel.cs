@@ -52,6 +52,8 @@ namespace LocationAlarm.ViewModel
         /// </summary>
         public bool IsMapLoaded { get; private set; }
 
+        //BUG: To rozwiązanie nie działa z komendami z drugiej strony CanExecute też nie działa
+
         /// <summary>
         /// Map control screen shoot 
         /// </summary>
