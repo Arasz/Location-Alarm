@@ -9,13 +9,14 @@ namespace LocationAlarm.Model
 {
     public class MapModel
     {
+        private readonly Geocircle _geocircle;
+
         /// <summary>
         /// Object which contains all logic responsible for localization 
         /// </summary>
         private readonly Geolocator _geolocator;
 
         private readonly TimeSpan _getPositionTimeout = TimeSpan.FromSeconds(10);
-        private Geocircle _geocircle;
         private TimeSpan _locationFetchInterval;
 
         /// <summary>
