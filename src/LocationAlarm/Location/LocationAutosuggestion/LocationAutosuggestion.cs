@@ -77,6 +77,7 @@ namespace LocationAlarm.Location.LocationAutosuggestion
                 if (!string.IsNullOrEmpty(readableName))
                     SuggestedLocations.Add(readableName);
             }
+            SuggestedLocations.OrderByDescending(s => s.Length);
         }
     }
 }
