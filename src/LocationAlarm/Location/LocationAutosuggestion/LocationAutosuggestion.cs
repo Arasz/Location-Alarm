@@ -68,7 +68,7 @@ namespace LocationAlarm.Location.LocationAutosuggestion
             LocationQueryResults = await _reverseGeolocationQueryService.FindLocationsAsync(userInput).ConfigureAwait(true);
 
             LocationQueryResults?
-                .OrderByDescending(location => (location.Address.Town + location.Address.Street + location.Address.StreetNumber).Length)
+                //.OrderByDescending(location => (location.Address.Town + location.Address.Street + location.Address.StreetNumber).Length)
                 .Select(location => new ReadableLocationName(location, userInput))
                 .Where(locationName => !string.IsNullOrEmpty(locationName.MainLocationName))
                 .ForEach(locationName => SuggestedLocations.Add(locationName));

@@ -43,6 +43,7 @@
                         </StackPanel>
                     </DataTemplate>
                 </AutoSuggestBox.ItemTemplate>
+
                 <i:Interaction.Behaviors>
 
                     <core:EventTriggerBehavior EventName="SuggestionChosen">
