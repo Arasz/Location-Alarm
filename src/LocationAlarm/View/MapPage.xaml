@@ -25,6 +25,7 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="1*" />
+            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
         <StackPanel Grid.Row="0" Orientation="Vertical">
@@ -60,19 +61,29 @@
 
         <map:MapControl  Grid.Row="1" x:Name="mapControl" Margin="5,5"
                          VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
-            <Image map:MapControl.Location="{Binding  ActualLocation}"
-                   map:MapControl.NormalizedAnchorPoint="0.5, 1"
-                   Source="ms-appx:///Assets/pushpin-google-green-hi.png"
-                   Stretch="Fill" Width="40"
-                   Visibility="{Binding PushpinVisible, Converter={StaticResource visibilityConverter}}" />
+            <Canvas map:MapControl.Location="{Binding  ActualLocation}"
+                    map:MapControl.NormalizedAnchorPoint="0.5, 1">
+                <Image Source="ms-appx:///Assets/pushpin-google-green-hi.png" Stretch="Fill" Width="40" Canvas.Left="-7"
+                       Canvas.Top="-32" Visibility="{Binding PushpinVisible, Converter={StaticResource visibilityConverter}}"
+                       RenderTransformOrigin="0.5,0.5" />
+                <Ellipse StrokeThickness="2" Width="10" Height="10" Fill="#7F2A32E0"
+                         RenderTransformOrigin="0.5,0.5">
+                    <Ellipse.RenderTransform>
+                        <ScaleTransform CenterX="0.5" CenterY="0.5" ScaleX="{Binding GeocircleRadius}" ScaleY="{Binding GeocircleRadius}" />
+                    </Ellipse.RenderTransform>
+                </Ellipse>
+            </Canvas>
+            <Grid>
+            </Grid>
         </map:MapControl>
+        <Slider Grid.Row="2" Margin="5,0" Value="{Binding GeocircleRadius, Mode=TwoWay}" Minimum="1" />
     </Grid>
 
     <view:BindablePage.BottomAppBar>
         <CommandBar>
             <AppBarButton x:Uid="MapPageFindMe" Label="Find me" Icon="Target"
                           Command="{Binding FindMeCommand}" />
-            <AppBarButton x:Name="saveLoacationButton" x:Uid="MapPageSaveLocation" Label="Save location" Icon="Save"
+            <AppBarButton x:Name="saveLocationButton" x:Uid="MapPageSaveLocation" Label="Save location" Icon="Save"
                           IsEnabled="{Binding IsMapLoaded}" Command="{Binding SaveLocationCommand}" />
         </CommandBar>
     </view:BindablePage.BottomAppBar>

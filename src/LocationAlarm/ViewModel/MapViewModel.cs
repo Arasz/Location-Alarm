@@ -33,6 +33,11 @@ namespace LocationAlarm.ViewModel
         public Geopoint ActualLocation { get; private set; }
 
         /// <summary>
+        /// Radius of geocircle 
+        /// </summary>
+        public int GeocircleRadius { get; set; } = 20;
+
+        /// <summary>
         /// State of map loading 
         /// </summary>
         public bool IsMapLoaded { get; private set; }
