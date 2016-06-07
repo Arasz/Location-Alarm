@@ -9,7 +9,7 @@ using LocationAlarm.Model;
 using LocationAlarm.Navigation;
 using Microsoft.Practices.ServiceLocation;
 using PropertyChanged;
-using System.Collections.Specialized;
+using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Windows.Devices.Geolocation;
@@ -53,7 +53,7 @@ namespace LocationAlarm.ViewModel
 
         public bool PushpinVisible { get; private set; }
 
-        public INotifyCollectionChanged SuggestedLocations => _autoSuggestion.SuggestedLocations;
+        public ObservableCollection<ReadableLocationName> SuggestedLocations => _autoSuggestion.SuggestedLocations;
 
         /// <summary>
         /// </summary>
@@ -72,9 +72,9 @@ namespace LocationAlarm.ViewModel
             get; private set;
         }
 
-        public MapViewModel(MapModel mapModel, ILocationNameExtractor extractor)
+        public MapViewModel(MapModel mapModel)
         {
-            _autoSuggestion = new LocationAutoSuggestion(mapModel, extractor);
+            _autoSuggestion = new LocationAutoSuggestion(mapModel);
             _mapModel = mapModel;
             _navigationService = ServiceLocator.Current.GetInstance<INavigationService>();
 

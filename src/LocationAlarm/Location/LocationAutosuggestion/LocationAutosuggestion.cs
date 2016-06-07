@@ -10,9 +10,8 @@ namespace LocationAlarm.Location.LocationAutosuggestion
 {
     public class LocationAutoSuggestion
     {
-        public ObservableCollection<string> SuggestedLocations = new ObservableCollection<string>();
+        public ObservableCollection<ReadableLocationName> SuggestedLocations = new ObservableCollection<ReadableLocationName>();
 
-        private readonly ILocationNameExtractor _locationNameExtractor;
         private readonly IReverseGeolocationQuery _reverseGeolocationQueryService;
 
         /// <summary>
@@ -34,11 +33,10 @@ namespace LocationAlarm.Location.LocationAutosuggestion
         /// <summary>
         /// Location name selected in auto suggestion box 
         /// </summary>
-        public string UserSelectedSuggestion { get; set; }
+        public ReadableLocationName UserSelectedSuggestion { get; set; }
 
-        public LocationAutoSuggestion(IReverseGeolocationQuery reverseGeolocationQueryService, ILocationNameExtractor extractor)
+        public LocationAutoSuggestion(IReverseGeolocationQuery reverseGeolocationQueryService)
         {
-            _locationNameExtractor = extractor;
             _reverseGeolocationQueryService = reverseGeolocationQueryService;
 
             TextChangedCommand = new RelayCommand<bool>(TextChanged);
@@ -56,8 +54,8 @@ namespace LocationAlarm.Location.LocationAutosuggestion
             if (selectedItem == null)
                 return;
 
-            UserSelectedSuggestion = (string)selectedItem;
-            LocationQueryResults = await _reverseGeolocationQueryService.FindLocationsAsync(UserSelectedSuggestion).ConfigureAwait(true);
+            UserSelectedSuggestion = (ReadableLocationName)selectedItem;
+            LocationQueryResults = await _reverseGeolocationQueryService.FindLocationsAsync(UserSelectedSuggestion.FullLocationName).ConfigureAwait(true);
             OnSuggestionSelected(LocationQueryResults.FirstOrDefault());
         }
 
@@ -69,14 +67,11 @@ namespace LocationAlarm.Location.LocationAutosuggestion
             var userInput = ProvidedLocationQuery;
             LocationQueryResults = await _reverseGeolocationQueryService.FindLocationsAsync(userInput).ConfigureAwait(true);
 
-            if (LocationQueryResults == null) return;
-
-            foreach (var location in LocationQueryResults.OrderByDescending(location => (location.Address.Town + location.Address.Street + location.Address.StreetNumber).Length))
-            {
-                var readableName = _locationNameExtractor.Extract(location, userInput);
-                if (!string.IsNullOrEmpty(readableName))
-                    SuggestedLocations.Add(readableName);
-            }
+            LocationQueryResults?
+                .OrderByDescending(location => (location.Address.Town + location.Address.Street + location.Address.StreetNumber).Length)
+                .Select(location => new ReadableLocationName(location, userInput))
+                .Where(locationName => !string.IsNullOrEmpty(locationName.MainLocationName))
+                .ForEach(locationName => SuggestedLocations.Add(locationName));
         }
     }
 }

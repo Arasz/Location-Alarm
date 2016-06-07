@@ -7,7 +7,6 @@
     xmlns:map="using:Windows.UI.Xaml.Controls.Maps"
     xmlns:i="using:Microsoft.Xaml.Interactivity"
     xmlns:core="using:Microsoft.Xaml.Interactions.Core"
-    xmlns:cmd="clr-namespace:GalaSoft.MvvmLight.Command;assembly=GalaSoft.MvvmLight.Extras.WP8"
     xmlns:view="using:LocationAlarm.View"
     xmlns:converters="using:LocationAlarm.Converters"
     mc:Ignorable="d"
@@ -31,8 +30,19 @@
         <StackPanel Grid.Row="0" Orientation="Vertical">
             <TextBlock x:Uid="MapPageSelectLocation" Text="Placeholder" Margin="5,15,5,5"
                        Style="{StaticResource  GroupHeaderTextBlockStyle}" />
-            <AutoSuggestBox ItemsSource="{Binding SuggestedLocations}" Margin="5,5" AllowDrop="True"
+            <AutoSuggestBox ItemsSource="{Binding SuggestedLocations, Mode=OneWay}" Margin="5,5" AllowDrop="True"
                             Text="{Binding LocationQuery, Mode=TwoWay}">
+                <AutoSuggestBox.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Orientation="Vertical">
+                            <TextBlock>
+                                <Run Text="{Binding MainLocationName}" FontSize="20" />
+                                <LineBreak />
+                                <Run Text="{Binding LocationNameDetails}" FontSize="15" />
+                            </TextBlock>
+                        </StackPanel>
+                    </DataTemplate>
+                </AutoSuggestBox.ItemTemplate>
                 <i:Interaction.Behaviors>
 
                     <core:EventTriggerBehavior EventName="SuggestionChosen">
