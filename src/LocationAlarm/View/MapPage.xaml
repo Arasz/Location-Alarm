@@ -24,15 +24,15 @@
 
     <Grid>
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="1*" />
-            <RowDefinition Height="2*" />
         </Grid.RowDefinitions>
 
         <StackPanel Grid.Row="0" Orientation="Vertical">
             <TextBlock x:Uid="MapPageSelectLocation" Text="Placeholder" Margin="5,15,5,5"
                        Style="{StaticResource  GroupHeaderTextBlockStyle}" />
-            <AutoSuggestBox ItemsSource="{Binding FoundLocations}" Margin="5,5" AllowDrop="True"
-                            Text="{Binding AutoSuggestBoxText, Mode=TwoWay}">
+            <AutoSuggestBox ItemsSource="{Binding SuggestedLocations}" Margin="5,5" AllowDrop="True"
+                            Text="{Binding LocationQuery, Mode=TwoWay}">
                 <i:Interaction.Behaviors>
 
                     <core:EventTriggerBehavior EventName="SuggestionChosen">
