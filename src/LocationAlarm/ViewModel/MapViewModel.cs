@@ -14,7 +14,6 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 using Windows.Devices.Geolocation;
 using Windows.Services.Maps;
-using Windows.UI.ViewManagement;
 using Windows.UI.Xaml.Media.Imaging;
 
 namespace LocationAlarm.ViewModel
@@ -107,7 +106,7 @@ namespace LocationAlarm.ViewModel
 
         private void AutoSuggestionOnSuggestionSelected(object sender, MapLocation selectedLocation)
         {
-            InputPane.GetForCurrentView().TryHide();
+            Messenger.Default.Send(new MapMessage(), Tokens.FocusOnMap);
             SetProvidedLocation(selectedLocation);
         }
 

@@ -8,6 +8,7 @@ using Windows.Foundation;
 using Windows.Graphics.Display;
 using Windows.Graphics.Imaging;
 using Windows.Storage.Streams;
+using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls.Maps;
 using Windows.UI.Xaml.Media.Imaging;
 
@@ -37,6 +38,12 @@ namespace LocationAlarm.View
             };
             Messenger.Default.Register<Geopoint>(this, Tokens.SetMapView, SetMapViewAsync);
             Messenger.Default.Register<MapMessage>(this, Tokens.TakeScreenshot, TakeMapScreenshotAsync);
+            Messenger.Default.Register<MapMessage>(this, Tokens.FocusOnMap, SetFocusOnMap);
+        }
+
+        private void SetFocusOnMap(MapMessage mapMessage)
+        {
+            mapControl.Focus(FocusState.Pointer);
         }
 
         /// <summary>

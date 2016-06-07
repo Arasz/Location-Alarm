@@ -5,5 +5,6 @@
         SetMapView,
         TakeScreenshot,
         MapLoaded,
+        FocusOnMap,
     }
 }
