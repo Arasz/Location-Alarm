@@ -5,6 +5,7 @@ using LocationAlarm.ViewModel;
 using System;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using System.Threading.Tasks;
 using Windows.Devices.Geolocation;
 using Windows.Foundation;
 using Windows.Graphics.Display;
@@ -41,22 +42,13 @@ namespace LocationAlarm.View
                     Messenger.Default.Send(true, Tokens.MapLoaded);
                 }
             };
-            Messenger.Default.Register<Geopoint>(this, Tokens.SetMapView, SetMapViewAsync);
+            _viewModel.CurrentLocationLoaded += ViewModelOnCurrentLocationLoaded;
             Messenger.Default.Register<MapMessage>(this, Tokens.TakeScreenshot, TakeMapScreenshotAsync);
             Messenger.Default.Register<MapMessage>(this, Tokens.FocusOnMap, SetFocusOnMap);
 
             mapControl.Tapped += MapControlOnTapped;
-            mapControl.LoadingStatusChanged += MapControlOnLoadingStatusChanged;
             mapControl.PitchChanged += MapControlOnPitchChanged;
             mapControl.ZoomLevelChanged += MapControlOnZoomLevelChanged;
-        }
-
-        private void MapControlOnLoadingStatusChanged(MapControl sender, object args)
-        {
-            if (mapControl.LoadingStatus == MapLoadingStatus.Loaded)
-                LoadingProgressBar.Opacity = 0;
-            else if (LoadingProgressBar.Opacity <= 1 && mapControl.LoadingStatus == MapLoadingStatus.Loaded)
-                LoadingProgressBar.Opacity = 100;
         }
 
         private void MapControlOnPitchChanged(MapControl sender, object args)
@@ -99,14 +91,6 @@ namespace LocationAlarm.View
 
         /// <summary>
         /// </summary>
-        /// <param name="location"></param>
-        private async void SetMapViewAsync(Geopoint location)
-        {
-            await mapControl.TrySetViewAsync(location, _viewModel.ZoomLevel, 0, 0, MapAnimationKind.Linear);
-        }
-
-        /// <summary>
-        /// </summary>
         private async void TakeMapScreenshotAsync(MapMessage mapMessage)
         {
             if (mapControl.RenderSize == new Size(0, 0))
@@ -134,6 +118,13 @@ namespace LocationAlarm.View
             await bitmapImage.SetSourceAsync(randomAccessStream);
 
             _viewModel.MapScreenshot = bitmapImage;
+        }
+
+        private async Task ViewModelOnCurrentLocationLoaded(object o, Geopoint geopoint)
+        {
+            LoadingProgressBar.Opacity = 100;
+            await mapControl.TrySetViewAsync(geopoint, _viewModel.ZoomLevel, 0, 0, MapAnimationKind.Linear);
+            LoadingProgressBar.Opacity = 0;
         }
     }
 }

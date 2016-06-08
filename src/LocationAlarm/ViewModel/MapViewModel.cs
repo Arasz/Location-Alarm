@@ -1,4 +1,5 @@
 ﻿using ArrivalAlarm.Messages;
+using AsyncEventHandler;
 using Commander;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Messaging;
@@ -9,7 +10,9 @@ using LocationAlarm.Model;
 using LocationAlarm.Navigation;
 using Microsoft.Practices.ServiceLocation;
 using PropertyChanged;
+using System;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Windows.Devices.Geolocation;
@@ -29,6 +32,8 @@ namespace LocationAlarm.ViewModel
         private readonly INavigationService _navigationService;
 
         private LocationAutoSuggestion _autoSuggestion;
+
+        public event AsyncEventHandler<Geopoint> CurrentLocationLoaded;
 
         public Geopoint ActualLocation { get; private set; }
 
@@ -87,7 +92,7 @@ namespace LocationAlarm.ViewModel
             _mapModel = mapModel;
             _navigationService = ServiceLocator.Current.GetInstance<INavigationService>();
 
-            _autoSuggestion.SuggestionSelected += AutoSuggestionOnSuggestionSelected;
+            _autoSuggestion.SuggestionSelected += OnSuggestionSelected;
 
             TextChangeCommand = _autoSuggestion.TextChangedCommand;
             SuggestionChosenCommand = _autoSuggestion.SuggestionChosenCommand;
@@ -113,10 +118,23 @@ namespace LocationAlarm.ViewModel
             UpdateUserLocation();
         }
 
-        private void AutoSuggestionOnSuggestionSelected(object sender, MapLocation selectedLocation)
+        protected virtual async Task OnCurrentLocationLoadedAsync(Geopoint actualLocation)
+        {
+            var handler = CurrentLocationLoaded;
+
+            if (handler == null) return;
+
+            var invocationList = handler.GetInvocationList().Cast<Func<object, Geopoint, Task>>();
+
+            var handlerTasks = invocationList.Select(invocation => invocation.Invoke(this, actualLocation));
+
+            await Task.WhenAll(handlerTasks).ConfigureAwait(true);
+        }
+
+        private async void OnSuggestionSelected(object sender, MapLocation selectedLocation)
         {
             Messenger.Default.Send(new MapMessage(), Tokens.FocusOnMap);
-            SetProvidedLocation(selectedLocation);
+            await SetProvidedLocation(selectedLocation).ConfigureAwait(true);
         }
 
         [OnCommand("SaveLocationCommand")]
@@ -128,14 +146,14 @@ namespace LocationAlarm.ViewModel
             _navigationService.NavigateTo(nameof(View.AlarmSettingsPage), locationData);
         }
 
-        private void SetProvidedLocation(MapLocation location)
+        private async Task SetProvidedLocation(MapLocation location)
         {
             if (location == null)
                 return;
 
             ActualLocation = location.Point;
             ZoomLevel = 12;
-            Messenger.Default.Send(ActualLocation, Tokens.SetMapView);
+            await OnCurrentLocationLoadedAsync(ActualLocation).ConfigureAwait(true);
             PushpinVisible = true;
         }
 
@@ -162,9 +180,14 @@ namespace LocationAlarm.ViewModel
         {
             var actualLocation = await _mapModel.GetActualLocationAsync().ConfigureAwait(true);
             ActualLocation = actualLocation.Coordinate.Point;
+            LocationQuery = (await _mapModel.FindLocationAtAsync().ConfigureAwait(true))?
+                .Take(new[] { 0 })
+                .Select(location => new ReadableLocationName(location))
+                .First()
+                .ToString();
             ZoomLevel = 12;
-            Messenger.Default.Send(ActualLocation, Tokens.SetMapView);
             PushpinVisible = true;
+            await OnCurrentLocationLoadedAsync(ActualLocation).ConfigureAwait(true);
         }
     }
 }

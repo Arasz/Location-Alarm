@@ -227,6 +227,12 @@
   <ItemGroup>
     <Folder Include="Resources\Strings\pl-PL\" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\AsyncEventHandler\AsyncEventHandler.csproj">
+      <Project>{70326a21-cd63-474a-a762-0e4437e1ceea}</Project>
+      <Name>AsyncEventHandler</Name>
+    </ProjectReference>
+  </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '12.0' ">
     <VisualStudioVersion>12.0</VisualStudioVersion>
   </PropertyGroup>
