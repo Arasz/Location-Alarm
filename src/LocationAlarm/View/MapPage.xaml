@@ -65,24 +65,25 @@
                          PitchChanged="MapControl_OnPitchChanged">
             <Border Background="#7FFFFFFF">
                 <TextBlock Visibility="{Binding PushpinVisible, Converter={StaticResource VisibilityConverter}}"
-                      Foreground="Black" FontSize="15" SelectionHighlightColor="Transparent">
+                      Foreground="Black" FontSize="20" SelectionHighlightColor="Transparent">
                 <Run x:Uid="GeocircleRadius" Text="Radius" />
                 <Run Text="{Binding GeocircleRadius}" />
                 <Run Text=" m" />
                 </TextBlock>
             </Border>
-            <Ellipse Width="{Binding GeocircleRadius}" Height="{Binding GeocircleRadius}" Fill="#7F2A32E0"
-                     map:MapControl.Location="{Binding ActualLocation}" map:MapControl.NormalizedAnchorPoint="0.5, 0.5"
-                     Visibility="{Binding PushpinVisible, Converter={StaticResource VisibilityConverter}}" />
             <Image Source="ms-appx:///Assets/pushpin-google-green-hi.png" Stretch="Fill" Width="40" Height="40"
                    map:MapControl.Location="{Binding ActualLocation}" map:MapControl.NormalizedAnchorPoint="0.3, 1"
                    Visibility="{Binding PushpinVisible, Converter={StaticResource VisibilityConverter}}" />
+            <Ellipse Width="{Binding GeocircleRadius}" Height="{Binding GeocircleRadius}" Fill="#66060606"
+                     map:MapControl.Location="{Binding ActualLocation}" map:MapControl.NormalizedAnchorPoint="0.5, 0.5"
+                     Visibility="{Binding PushpinVisible, Converter={StaticResource VisibilityConverter}}" Stroke="#C8000000" />
         </map:MapControl>
 
-        <Slider Grid.Row="2" Margin="5,0" Value="{Binding GeocircleRadius, Mode=TwoWay, Converter={StaticResource SliderValueConverter}}"
+        <Border Grid.Row="1" Background="#3F000000"  VerticalAlignment="Bottom">
+            <Slider Margin="5,0" Value="{Binding GeocircleRadius, Mode=TwoWay, Converter={StaticResource SliderValueConverter}}"
                 Minimum="100"  Maximum="5000" LargeChange="100" SmallChange="10" StepFrequency="10"
-                ValueChanged="RangeBase_OnValueChanged" IsThumbToolTipEnabled="True">
-        </Slider>
+                ValueChanged="RangeBase_OnValueChanged" IsThumbToolTipEnabled="True" Foreground="#E5FFFFFF" Background="Black" BorderBrush="{x:Null}" />
+        </Border>
     </Grid>
 
     <view:BindablePage.BottomAppBar>
