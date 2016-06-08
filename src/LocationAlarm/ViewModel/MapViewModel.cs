@@ -1,4 +1,5 @@
 ﻿using ArrivalAlarm.Messages;
+using AsyncEventHandler;
 using Commander;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Messaging;
@@ -32,7 +33,7 @@ namespace LocationAlarm.ViewModel
 
         private LocationAutoSuggestion _autoSuggestion;
 
-        public event Func<object, Geopoint, Task> CurrentLocationLoaded;
+        public event AsyncEventHandler<Geopoint> CurrentLocationLoaded;
 
         public Geopoint ActualLocation { get; private set; }
 
@@ -91,7 +92,7 @@ namespace LocationAlarm.ViewModel
             _mapModel = mapModel;
             _navigationService = ServiceLocator.Current.GetInstance<INavigationService>();
 
-            _autoSuggestion.SuggestionSelected += AutoSuggestionOnSuggestionSelected;
+            _autoSuggestion.SuggestionSelected += OnSuggestionSelected;
 
             TextChangeCommand = _autoSuggestion.TextChangedCommand;
             SuggestionChosenCommand = _autoSuggestion.SuggestionChosenCommand;
@@ -130,10 +131,10 @@ namespace LocationAlarm.ViewModel
             await Task.WhenAll(handlerTasks).ConfigureAwait(true);
         }
 
-        private void AutoSuggestionOnSuggestionSelected(object sender, MapLocation selectedLocation)
+        private async void OnSuggestionSelected(object sender, MapLocation selectedLocation)
         {
             Messenger.Default.Send(new MapMessage(), Tokens.FocusOnMap);
-            SetProvidedLocation(selectedLocation);
+            await SetProvidedLocation(selectedLocation).ConfigureAwait(true);
         }
 
         [OnCommand("SaveLocationCommand")]
@@ -145,14 +146,14 @@ namespace LocationAlarm.ViewModel
             _navigationService.NavigateTo(nameof(View.AlarmSettingsPage), locationData);
         }
 
-        private void SetProvidedLocation(MapLocation location)
+        private async Task SetProvidedLocation(MapLocation location)
         {
             if (location == null)
                 return;
 
             ActualLocation = location.Point;
             ZoomLevel = 12;
-            Messenger.Default.Send(ActualLocation, Tokens.SetMapView);
+            await OnCurrentLocationLoadedAsync(ActualLocation).ConfigureAwait(true);
             PushpinVisible = true;
         }
 
