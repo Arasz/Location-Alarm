@@ -1,5 +1,7 @@
 ﻿// The Basic Page item template is documented at http://go.microsoft.com/fwlink/?LinkID=390556
 
+using LocationAlarm.ViewModel;
+
 namespace LocationAlarm.View
 {
     /// <summary>
@@ -7,9 +9,12 @@ namespace LocationAlarm.View
     /// </summary>
     public sealed partial class MainPage
     {
+        private MainViewModel _viewModel;
+
         public MainPage()
         {
             InitializeComponent();
+            _viewModel = DataContext as MainViewModel;
         }
     }
 }

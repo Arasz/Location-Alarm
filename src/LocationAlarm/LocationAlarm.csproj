@@ -91,6 +91,7 @@
     <Compile Include="Location\ReadableLocationName.cs" />
     <Compile Include="Model\GeofenceBuilder.cs" />
     <Compile Include="Model\MonitoredArea.cs" />
+    <Compile Include="Repository\AlarmsRepository.cs" />
     <Compile Include="Utils\AssetsNamesReader.cs" />
     <Compile Include="Utils\IAssetsNamesReader.cs" />
     <Compile Include="ViewModel\AlarmSettingsViewModel.cs" />
