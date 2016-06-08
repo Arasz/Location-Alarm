@@ -57,6 +57,17 @@ namespace LocationAlarm.Model
             _geolocator.StatusChanged += StatusChangedHandler;
         }
 
+        public async Task<IReadOnlyList<MapLocation>> FindLocationAtAsync(Geopoint queryPoint = null)
+        {
+            if (queryPoint == null && LastKnownLocation != null)
+                queryPoint = LastKnownLocation.Coordinate.Point;
+
+            var result = await MapLocationFinder.FindLocationsAtAsync(queryPoint);
+            if (result.Status == MapLocationFinderStatus.Success)
+                return result.Locations;
+            return null;
+        }
+
         public async Task<IReadOnlyList<MapLocation>> FindLocationsAsync(string locationQuery, uint maxResultsCount = 6)
         {
             // Give as a hint actual user location because we don't have any informations about
@@ -66,8 +77,7 @@ namespace LocationAlarm.Model
 
             // Find given location
             var mapLocationFinderResult =
-                await
-                    MapLocationFinder.FindLocationsAsync(locationQuery, LastKnownLocation.Coordinate.Point,
+                await MapLocationFinder.FindLocationsAsync(locationQuery, LastKnownLocation.Coordinate.Point,
                         maxResultsCount);
 
             if (mapLocationFinderResult.Status == MapLocationFinderStatus.Success &&
@@ -85,7 +95,9 @@ namespace LocationAlarm.Model
         {
             LastLocationFetchTime = DateTime.Now;
 
-            return await _geolocator.GetGeopositionAsync(LocationFetchInterval, GetPositionTimeout);
+            LastKnownLocation = await _geolocator.GetGeopositionAsync(LocationFetchInterval, GetPositionTimeout);
+
+            return LastKnownLocation;
         }
 
         private void PositionChangedHandler(Geolocator sender, PositionChangedEventArgs args)

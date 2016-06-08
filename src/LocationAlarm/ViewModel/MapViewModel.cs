@@ -9,7 +9,9 @@ using LocationAlarm.Model;
 using LocationAlarm.Navigation;
 using Microsoft.Practices.ServiceLocation;
 using PropertyChanged;
+using System;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Windows.Devices.Geolocation;
@@ -29,6 +31,8 @@ namespace LocationAlarm.ViewModel
         private readonly INavigationService _navigationService;
 
         private LocationAutoSuggestion _autoSuggestion;
+
+        public event Func<object, Geopoint, Task> CurrentLocationLoaded;
 
         public Geopoint ActualLocation { get; private set; }
 
@@ -113,6 +117,19 @@ namespace LocationAlarm.ViewModel
             UpdateUserLocation();
         }
 
+        protected virtual async Task OnCurrentLocationLoadedAsync(Geopoint actualLocation)
+        {
+            var handler = CurrentLocationLoaded;
+
+            if (handler == null) return;
+
+            var invocationList = handler.GetInvocationList().Cast<Func<object, Geopoint, Task>>();
+
+            var handlerTasks = invocationList.Select(invocation => invocation.Invoke(this, actualLocation));
+
+            await Task.WhenAll(handlerTasks).ConfigureAwait(true);
+        }
+
         private void AutoSuggestionOnSuggestionSelected(object sender, MapLocation selectedLocation)
         {
             Messenger.Default.Send(new MapMessage(), Tokens.FocusOnMap);
@@ -162,9 +179,14 @@ namespace LocationAlarm.ViewModel
         {
             var actualLocation = await _mapModel.GetActualLocationAsync().ConfigureAwait(true);
             ActualLocation = actualLocation.Coordinate.Point;
+            LocationQuery = (await _mapModel.FindLocationAtAsync().ConfigureAwait(true))?
+                .Take(new[] { 0 })
+                .Select(location => new ReadableLocationName(location))
+                .First()
+                .ToString();
             ZoomLevel = 12;
-            Messenger.Default.Send(ActualLocation, Tokens.SetMapView);
             PushpinVisible = true;
+            await OnCurrentLocationLoadedAsync(ActualLocation).ConfigureAwait(true);
         }
     }
 }

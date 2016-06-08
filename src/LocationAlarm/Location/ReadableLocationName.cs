@@ -13,7 +13,7 @@ namespace LocationAlarm.Location
 
         public string MainLocationName { get; }
 
-        public ReadableLocationName(MapLocation location, string userProvidedName)
+        public ReadableLocationName(MapLocation location, string userProvidedName = "")
         {
             var address = location.Address;
             MainLocationName = $"{address.Town}, {address.Street}, {address.StreetNumber}".Trim(',', ' ');
