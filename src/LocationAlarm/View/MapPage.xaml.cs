@@ -76,12 +76,12 @@ namespace LocationAlarm.View
 
         private void MapControlOnZoomLevelChanged(MapControl sender, object args)
         {
-            _mapCircleDrawer.Draw(_viewModel?.ActualLocation?.Position, _viewModel.GeocircleRadius);
+            _mapCircleDrawer.Draw(_viewModel?.ActualLocation, _viewModel.GeocircleRadius);
         }
 
         private void RangeBase_OnValueChanged(object sender, RangeBaseValueChangedEventArgs e)
         {
-            _mapCircleDrawer.Draw(_viewModel?.ActualLocation?.Position, _viewModel.GeocircleRadius);
+            _mapCircleDrawer.Draw(_viewModel?.ActualLocation, _viewModel.GeocircleRadius);
         }
 
         private void SetFocusOnMap(MapMessage mapMessage)

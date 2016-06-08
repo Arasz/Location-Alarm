@@ -16,15 +16,15 @@ namespace LocationAlarm.View.Map
             Map = map;
         }
 
-        public void Draw(BasicGeoposition? position, double circleRadius)
+        public void Draw(Geopoint geopoint, double circleRadius)
         {
-            if (!position.HasValue) return;
+            if (geopoint?.Position == null) return;
 
             var mapElements = Map.Children;
 
             mapElements.Where(element => element is Ellipse).Cast<Ellipse>().ForEach(ellipse =>
             {
-                double metersPerPixel = (Math.Cos(ToRadian(position.Value.Latitude)) * (2 * Math.PI * _earthRadiusInMeters)) / (256 * Math.Pow(2, Map.ZoomLevel));
+                double metersPerPixel = (Math.Cos(ToRadian(geopoint.Position.Latitude)) * (2 * Math.PI * _earthRadiusInMeters)) / (256 * Math.Pow(2, Map.ZoomLevel));
                 ellipse.Height = circleRadius / metersPerPixel * 2;
                 ellipse.Width = circleRadius / metersPerPixel * 2;
             });
