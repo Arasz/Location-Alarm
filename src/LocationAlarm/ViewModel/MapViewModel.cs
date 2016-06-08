@@ -35,7 +35,7 @@ namespace LocationAlarm.ViewModel
         /// <summary>
         /// Radius of geocircle 
         /// </summary>
-        public int GeocircleRadius { get; set; } = 20;
+        public double GeocircleRadius { get; set; } = 500;
 
         /// <summary>
         /// State of map loading 

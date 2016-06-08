@@ -84,6 +84,7 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Converters\SliderValueConverter.cs" />
     <Compile Include="Interceptors\AsyncErrorHandler.cs" />
     <Compile Include="Location\IReverseGeolocationQuery.cs" />
     <Compile Include="Location\LocationAutosuggestion\LocationAutosuggestion.cs" />
@@ -126,6 +127,7 @@
     <Compile Include="View\MapPage.xaml.cs">
       <DependentUpon>MapPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="View\Map\MapCircleDrawer.cs" />
   </ItemGroup>
   <ItemGroup>
     <AppxManifest Include="Package.appxmanifest">
@@ -207,6 +209,10 @@
     <Reference Include="Visualize, Version=0.4.5.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Visualize.Fody.0.4.5.0\lib\dotnet\Visualize.dll</HintPath>
       <Private>False</Private>
+    </Reference>
+    <Reference Include="WinRTXamlToolkit, Version=1.8.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\WinRTXamlToolkit.WindowsPhone.1.8.1.0\lib\wpa\WinRTXamlToolkit.dll</HintPath>
+      <Private>True</Private>
     </Reference>
   </ItemGroup>
   <ItemGroup>

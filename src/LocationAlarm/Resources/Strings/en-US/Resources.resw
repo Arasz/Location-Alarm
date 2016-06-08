@@ -144,6 +144,9 @@
   <data name="Friday" xml:space="preserve">
     <value>Friday</value>
   </data>
+  <data name="GeocircleRadius.Text" xml:space="preserve">
+    <value>Radius: </value>
+  </data>
   <data name="MainPageName.Text" xml:space="preserve">
     <value>List of alarms</value>
   </data>

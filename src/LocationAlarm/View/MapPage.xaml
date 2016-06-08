@@ -15,9 +15,10 @@
 
     <view:BindablePage.Resources>
         <ResourceDictionary>
-            <converters:VisibilityConverter x:Key="visibilityConverter" />
+            <converters:VisibilityConverter x:Key="VisibilityConverter" />
             <converters:AutoSuggestionBoxTextChangeToBoolConverter x:Key="AutoSuggestionBoxTextChangeToBoolConverter" />
             <converters:AutoSuggestBoxSuggestionChosenEventArgsToSelectedItemConverter x:Key="ArgsToSelectedItemConverter" />
+            <converters:SliderValueConverter x:Key="SliderValueConverter" />
         </ResourceDictionary>
     </view:BindablePage.Resources>
 
@@ -59,24 +60,29 @@
             </AutoSuggestBox>
         </StackPanel>
 
-        <map:MapControl  Grid.Row="1" x:Name="mapControl" Margin="5,5"
-                         VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
-            <Canvas map:MapControl.Location="{Binding  ActualLocation}"
-                    map:MapControl.NormalizedAnchorPoint="0.5, 1">
-                <Image Source="ms-appx:///Assets/pushpin-google-green-hi.png" Stretch="Fill" Width="40" Canvas.Left="-7"
-                       Canvas.Top="-32" Visibility="{Binding PushpinVisible, Converter={StaticResource visibilityConverter}}"
-                       RenderTransformOrigin="0.5,0.5" />
-                <Ellipse StrokeThickness="2" Width="10" Height="10" Fill="#7F2A32E0"
-                         RenderTransformOrigin="0.5,0.5">
-                    <Ellipse.RenderTransform>
-                        <ScaleTransform CenterX="0.5" CenterY="0.5" ScaleX="{Binding GeocircleRadius}" ScaleY="{Binding GeocircleRadius}" />
-                    </Ellipse.RenderTransform>
-                </Ellipse>
-            </Canvas>
-            <Grid>
-            </Grid>
+        <map:MapControl  Grid.Row="1" x:Name="mapControl" Margin="5,5" ZoomLevelChanged="MapControl_OnZoomLevelChanged"
+                         VerticalAlignment="Stretch" HorizontalAlignment="Stretch" DesiredPitch="0" Tapped="MapControl_OnTapped"
+                         PitchChanged="MapControl_OnPitchChanged">
+            <Border Background="#7FFFFFFF">
+                <TextBlock Visibility="{Binding PushpinVisible, Converter={StaticResource VisibilityConverter}}"
+                      Foreground="Black" FontSize="15" SelectionHighlightColor="Transparent">
+                <Run x:Uid="GeocircleRadius" Text="Radius" />
+                <Run Text="{Binding GeocircleRadius}" />
+                <Run Text=" m" />
+                </TextBlock>
+            </Border>
+            <Ellipse Width="{Binding GeocircleRadius}" Height="{Binding GeocircleRadius}" Fill="#7F2A32E0"
+                     map:MapControl.Location="{Binding ActualLocation}" map:MapControl.NormalizedAnchorPoint="0.5, 0.5"
+                     Visibility="{Binding PushpinVisible, Converter={StaticResource VisibilityConverter}}" />
+            <Image Source="ms-appx:///Assets/pushpin-google-green-hi.png" Stretch="Fill" Width="40" Height="40"
+                   map:MapControl.Location="{Binding ActualLocation}" map:MapControl.NormalizedAnchorPoint="0.3, 1"
+                   Visibility="{Binding PushpinVisible, Converter={StaticResource VisibilityConverter}}" />
         </map:MapControl>
-        <Slider Grid.Row="2" Margin="5,0" Value="{Binding GeocircleRadius, Mode=TwoWay}" Minimum="1" />
+
+        <Slider Grid.Row="2" Margin="5,0" Value="{Binding GeocircleRadius, Mode=TwoWay, Converter={StaticResource SliderValueConverter}}"
+                Minimum="100"  Maximum="5000" LargeChange="100" SmallChange="10" StepFrequency="10"
+                ValueChanged="RangeBase_OnValueChanged" IsThumbToolTipEnabled="True">
+        </Slider>
     </Grid>
 
     <view:BindablePage.BottomAppBar>
