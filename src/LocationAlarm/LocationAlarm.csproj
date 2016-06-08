@@ -120,7 +120,7 @@
     </Compile>
     <Compile Include="Converters\AutoSuggestBoxSuggestionChosenEventArgsToSelectedItemConverter.cs" />
     <Compile Include="Converters\AutoSuggestionBoxTextChangeToBoolConverter.cs" />
-    <Compile Include="Converters\LongDayStringToShortConverter.cs" />
+    <Compile Include="Converters\DayNameConverter.cs" />
     <Compile Include="View\MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>

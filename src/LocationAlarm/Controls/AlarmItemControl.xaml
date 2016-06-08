@@ -14,7 +14,7 @@
 
     <UserControl.Resources>
         <ResourceDictionary>
-            <converters:LongDayStringToShortConverter x:Name="LongDayStringToShortConverter" />
+            <converters:DayNameConverter x:Name="DayNameConverter" />
         </ResourceDictionary>
     </UserControl.Resources>
 
@@ -62,20 +62,15 @@
 
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
-                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch" />
+                        <StackPanel Orientation="Horizontal"  HorizontalAlignment="Stretch" />
                     </ItemsPanelTemplate>
                 </ItemsControl.ItemsPanel>
 
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock Style="{StaticResource BaseTextBlockStyle}">
-                                <Span>
-                                    <Span />
-                                    <Run Text="{Binding Converter={StaticResource LongDayStringToShortConverter}}" />
-                                </Span>
-                            </TextBlock>
-                        </StackPanel>
+                        <TextBlock Text="{Binding Converter={StaticResource DayNameConverter}}"
+                                   Style="{StaticResource BaseTextBlockStyle}"
+                                   Margin="4,0" />
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
             </ItemsControl>

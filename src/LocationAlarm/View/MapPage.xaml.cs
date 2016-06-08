@@ -22,9 +22,6 @@ using Windows.UI.Xaml.Shapes;
 
 namespace LocationAlarm.View
 {
-    /// <summary>
-    /// An empty page that can be used on its own or navigated to within a Frame. 
-    /// </summary>
     public sealed partial class MapPage
     {
         private readonly MapCircleDrawer _mapCircleDrawer;
@@ -82,6 +79,7 @@ namespace LocationAlarm.View
 
         private void MapControl_OnZoomLevelChanged(MapControl sender, object args)
         {
+            //TODO: This is slow code !
             if (_viewModel?.ActualLocation != null)
                 _mapCircleDrawer.Draw(_viewModel.ActualLocation.Position, _viewModel.GeocircleRadius);
         }
