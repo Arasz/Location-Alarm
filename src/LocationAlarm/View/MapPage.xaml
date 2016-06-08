@@ -81,7 +81,7 @@
         </map:MapControl>
 
         <Border Grid.Row="1" Background="#3F000000"  VerticalAlignment="Bottom">
-            <Slider Margin="5,0" Value="{Binding GeocircleRadius, Mode=TwoWay}"
+            <Slider Margin="40,0" Value="{Binding GeocircleRadius, Mode=TwoWay}"
                     Minimum="{Binding MinGeocircleRadius}"  Maximum="{Binding MaxGeocircleRadius}"
                     LargeChange="100" SmallChange="10" StepFrequency="10" Foreground="#E5FFFFFF" Background="Black" BorderBrush="{x:Null}"
                     ValueChanged="RangeBase_OnValueChanged" IsThumbToolTipEnabled="True" />
