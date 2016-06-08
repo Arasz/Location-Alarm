@@ -161,10 +161,16 @@ namespace LocationAlarm.ViewModel
             }).ConfigureAwait(true);
         }
 
+        [OnCommand("FindMeCommand")]
+        private async void UpdatePosition()
+        {
+            await UpdateUserLocationAsync().ConfigureAwait(true);
+        }
+
         /// <summary>
         /// Updates actual user location 
         /// </summary>
-        [OnCommand("FindMeCommand")]
+
         private async Task UpdateUserLocationAsync(Geopoint lastKnownPosition = null)
         {
             if (lastKnownPosition == null)
