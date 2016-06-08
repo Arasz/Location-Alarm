@@ -56,6 +56,10 @@ namespace LocationAlarm.ViewModel
         /// </summary>
         public BitmapImage MapScreenshot { get; set; }
 
+        public double MaxGeocircleRadius { get; } = 5000;
+
+        public double MinGeocircleRadius { get; } = 100;
+
         public bool PushpinVisible { get; private set; }
 
         public ObservableCollection<ReadableLocationName> SuggestedLocations => _autoSuggestion.SuggestedLocations;
