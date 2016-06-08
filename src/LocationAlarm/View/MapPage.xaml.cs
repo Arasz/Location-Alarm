@@ -44,50 +44,52 @@ namespace LocationAlarm.View
             Messenger.Default.Register<Geopoint>(this, Tokens.SetMapView, SetMapViewAsync);
             Messenger.Default.Register<MapMessage>(this, Tokens.TakeScreenshot, TakeMapScreenshotAsync);
             Messenger.Default.Register<MapMessage>(this, Tokens.FocusOnMap, SetFocusOnMap);
+
+            mapControl.Tapped += MapControlOnTapped;
+            mapControl.LoadingStatusChanged += MapControlOnLoadingStatusChanged;
+            mapControl.PitchChanged += MapControlOnPitchChanged;
+            mapControl.ZoomLevelChanged += MapControlOnZoomLevelChanged;
         }
 
-        private void MapControl_OnLoadingStatusChanged(MapControl sender, object args)
+        private void MapControlOnLoadingStatusChanged(MapControl sender, object args)
         {
-            if (mapControl.LoadingStatus == MapLoadingStatus.Loading)
-                LoadingProgressBar.Opacity = 100;
-            else
+            if (mapControl.LoadingStatus == MapLoadingStatus.Loaded)
                 LoadingProgressBar.Opacity = 0;
+            else if (LoadingProgressBar.Opacity <= 1 && mapControl.LoadingStatus == MapLoadingStatus.Loaded)
+                LoadingProgressBar.Opacity = 100;
         }
 
-        private void MapControl_OnPitchChanged(MapControl sender, object args)
+        private void MapControlOnPitchChanged(MapControl sender, object args)
         {
             mapControl.Children
                 .Where(o => o is Ellipse)
                 .Cast<Ellipse>()
                 .ForEach(ellipse =>
+            {
+                //ellipse.RenderTransformOrigin = new Point(0, .5);
+                ellipse.Projection = new PlaneProjection()
                 {
-                    //ellipse.RenderTransformOrigin = new Point(0, .5);
-                    ellipse.Projection = new PlaneProjection()
-                    {
-                        CenterOfRotationX = 0,
-                        CenterOfRotationY = .5,
-                        CenterOfRotationZ = 0,
-                        RotationX = mapControl.Pitch,
-                    };
-                });
+                    CenterOfRotationX = 0,
+                    CenterOfRotationY = .5,
+                    CenterOfRotationZ = 0,
+                    RotationX = mapControl.Pitch,
+                };
+            });
         }
 
-        private void MapControl_OnTapped(object sender, TappedRoutedEventArgs e)
+        private void MapControlOnTapped(object sender, TappedRoutedEventArgs tappedRoutedEventArgs)
         {
             mapControl.Focus(FocusState.Pointer);
         }
 
-        private void MapControl_OnZoomLevelChanged(MapControl sender, object args)
+        private void MapControlOnZoomLevelChanged(MapControl sender, object args)
         {
-            //TODO: This is slow code !
-            if (_viewModel?.ActualLocation != null)
-                _mapCircleDrawer.Draw(_viewModel.ActualLocation.Position, _viewModel.GeocircleRadius);
+            _mapCircleDrawer.Draw(_viewModel?.ActualLocation?.Position, _viewModel.GeocircleRadius);
         }
 
         private void RangeBase_OnValueChanged(object sender, RangeBaseValueChangedEventArgs e)
         {
-            if (_viewModel?.ActualLocation != null)
-                _mapCircleDrawer.Draw(_viewModel.ActualLocation.Position, _viewModel.GeocircleRadius);
+            _mapCircleDrawer.Draw(_viewModel?.ActualLocation?.Position, _viewModel.GeocircleRadius);
         }
 
         private void SetFocusOnMap(MapMessage mapMessage)
@@ -100,7 +102,7 @@ namespace LocationAlarm.View
         /// <param name="location"></param>
         private async void SetMapViewAsync(Geopoint location)
         {
-            await mapControl.TrySetViewAsync(location, _viewModel.ZoomLevel, 0, 0, MapAnimationKind.Bow);
+            await mapControl.TrySetViewAsync(location, _viewModel.ZoomLevel, 0, 0, MapAnimationKind.Linear);
         }
 
         /// <summary>

@@ -63,10 +63,7 @@
         </StackPanel>
 
         <map:MapControl  Grid.Row="1" x:Name="mapControl" Margin="5,5"
-                         VerticalAlignment="Stretch" HorizontalAlignment="Stretch" DesiredPitch="0"
-                         PitchChanged="MapControl_OnPitchChanged"
-                         LoadingStatusChanged="MapControl_OnLoadingStatusChanged"
-                         Tapped="MapControl_OnTapped">
+                         VerticalAlignment="Stretch" HorizontalAlignment="Stretch" DesiredPitch="0">
             <Border Background="#7FFFFFFF">
                 <TextBlock Visibility="{Binding PushpinVisible, Converter={StaticResource VisibilityConverter}}"
                       Foreground="Black" FontSize="20" SelectionHighlightColor="Transparent">
