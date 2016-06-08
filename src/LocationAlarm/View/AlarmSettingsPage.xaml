@@ -16,6 +16,7 @@
         <Style TargetType="Button">
             <Setter Property="BorderThickness" Value="1" />
             <Setter Property="IsTextScaleFactorEnabled" Value="True" />
+            <Setter Property="VerticalAlignment" Value="Top" />
             <Setter Property="ContentTemplate">
                 <Setter.Value>
                     <DataTemplate>
@@ -24,15 +25,14 @@
                 </Setter.Value>
             </Setter>
         </Style>
+        <Style TargetType="TextBlock" x:Name="ItemNameTextBlockStyle" BasedOn="{StaticResource BaseTextBlockStyle}">
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="HorizontalAlignment" Value="Stretch" />
+            <Setter Property="Margin" Value="10,0" />
+        </Style>
     </local:BindablePage.Resources>
 
     <Grid x:Name="LayoutRoot">
-
-        <Grid.ChildrenTransitions>
-            <TransitionCollection>
-                <EntranceThemeTransition />
-            </TransitionCollection>
-        </Grid.ChildrenTransitions>
 
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
@@ -47,27 +47,39 @@
         <Grid Grid.Row="1" x:Name="ContentRoot" Margin="19,9.5,19,0">
             <Grid.RowDefinitions>
                 <RowDefinition  Height="4*" />
-                <RowDefinition Height="1*" />
-                <RowDefinition Height="1*" />
-                <RowDefinition Height="1*" />
+                <RowDefinition Height="2" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition />
                 <ColumnDefinition />
             </Grid.ColumnDefinitions>
-            <Image Grid.Row="0" Grid.ColumnSpan="2" Source="{Binding MapScreen}" Stretch="Fill" ></Image>
 
-            <TextBlock x:Uid="AlarmSettingsAlarmType" Text="Placeholder" Grid.Row="1" Grid.Column="0" Style="{StaticResource GroupHeaderTextBlockStyle}"
-                       VerticalAlignment="Center" HorizontalAlignment="Stretch" />
-            <Button Grid.Row="1" Grid.Column="1" Content="{Binding SelectedAlarmType}" HorizontalAlignment="Stretch">
+            <Image Grid.Row="0" Grid.ColumnSpan="2" Source="{Binding MapScreen}" Stretch="UniformToFill" />
+            <Border Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Background="#26000000" VerticalAlignment="Bottom">
+                <TextBlock VerticalAlignment="Bottom" Foreground="Black"
+                       Text="Placeholder" FontSize="30" HorizontalAlignment="Stretch" Margin="5,0" />
+            </Border>
+
+            <Line Grid.Row="1" Grid.ColumnSpan="2" VerticalAlignment="Stretch" Fill="White"
+                  HorizontalAlignment="Stretch" Stroke="White" StrokeThickness="100" X2="1000" />
+
+            <TextBlock Grid.Row="2" Grid.Column="0" x:Uid="AlarmSettingsAlarmType" Text="Placeholder"
+                       Style="{StaticResource ItemNameTextBlockStyle}" />
+
+            <Button Grid.Row="2" Grid.Column="1" Content="{Binding SelectedAlarmType}" HorizontalAlignment="Stretch">
                 <Button.Flyout>
                     <ListPickerFlyout ItemsSource="{Binding AlarmTypes}" Placement="Bottom"
                                       SelectedItem="{Binding SelectedAlarmType, Mode=TwoWay}" />
                 </Button.Flyout>
             </Button>
-            <TextBlock x:Uid="AlarmSettingsAlarmTone" Text="Placeholder" Grid.Row="2" Grid.Column="0" Style="{StaticResource GroupHeaderTextBlockStyle}"
-                       VerticalAlignment="Center" HorizontalAlignment="Stretch" />
-            <Button Grid.Row="2" Grid.Column="1" Content="{Binding SelectedNotificationSound}" HorizontalAlignment="Stretch">
+
+            <TextBlock Grid.Row="3" Grid.Column="0" x:Uid="AlarmSettingsAlarmTone" Text="Placeholder"
+                       Style="{StaticResource ItemNameTextBlockStyle}" />
+
+            <Button Grid.Row="3" Grid.Column="1" Content="{Binding SelectedNotificationSound}" HorizontalAlignment="Stretch">
                 <Button.Flyout>
                     <ListPickerFlyout ItemsSource="{Binding NotificationSounds}" Placement="Full"
                                       SelectedItem="{Binding SelectedNotificationSound, Mode=TwoWay}">
@@ -85,9 +97,10 @@
                 </Button.Flyout>
             </Button>
 
-            <TextBlock x:Uid="AlarmSettingsRepeat" Text="Placeholder" Grid.Row="3" Grid.Column="0" Style="{StaticResource GroupHeaderTextBlockStyle}"
-                       VerticalAlignment="Center" HorizontalAlignment="Stretch" />
-            <Button x:Name="RepeatSettingsButton" Grid.Row="3" Grid.Column="1" Content="{Binding SelectedDaysConcated}" HorizontalAlignment="Stretch">
+            <TextBlock Grid.Row="4" Grid.Column="0" x:Uid="AlarmSettingsRepeat" Text="Placeholder"
+                       Style="{StaticResource ItemNameTextBlockStyle}" />
+            <Button  Grid.Row="4" Grid.Column="1" Content="{Binding SelectedDaysConcated}"
+                     HorizontalAlignment="Stretch" x:Name="RepeatSettingsButton">
                 <Button.Flyout>
                     <ListPickerFlyout ItemsSource="{Binding DaysOfWeek}" Placement="Full"
                                       SelectionMode="Multiple"
