@@ -29,6 +29,7 @@
         </Grid.RowDefinitions>
 
         <StackPanel Grid.Row="0" Orientation="Vertical">
+            <ProgressBar HorizontalAlignment="Stretch" IsIndeterminate="True" x:Name="LoadingProgressBar" />
             <TextBlock x:Uid="MapPageSelectLocation" Text="Placeholder" Margin="5,15,5,5"
                        Style="{StaticResource  GroupHeaderTextBlockStyle}" />
             <AutoSuggestBox ItemsSource="{Binding SuggestedLocations, Mode=OneWay}" Margin="5,5" AllowDrop="True"
@@ -61,7 +62,7 @@
 
         <map:MapControl  Grid.Row="1" x:Name="mapControl" Margin="5,5" ZoomLevelChanged="MapControl_OnZoomLevelChanged"
                          VerticalAlignment="Stretch" HorizontalAlignment="Stretch" DesiredPitch="0" Tapped="MapControl_OnTapped"
-                         PitchChanged="MapControl_OnPitchChanged">
+                         PitchChanged="MapControl_OnPitchChanged" LoadingStatusChanged="MapControl_OnLoadingStatusChanged">
             <Border Background="#7FFFFFFF">
                 <TextBlock Visibility="{Binding PushpinVisible, Converter={StaticResource VisibilityConverter}}"
                       Foreground="Black" FontSize="20" SelectionHighlightColor="Transparent">

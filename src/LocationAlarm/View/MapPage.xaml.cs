@@ -11,7 +11,6 @@ using Windows.Graphics.Display;
 using Windows.Graphics.Imaging;
 using Windows.Storage.Streams;
 using Windows.UI.Xaml;
-using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Maps;
 using Windows.UI.Xaml.Controls.Primitives;
 using Windows.UI.Xaml.Input;
@@ -50,6 +49,14 @@ namespace LocationAlarm.View
             Messenger.Default.Register<MapMessage>(this, Tokens.FocusOnMap, SetFocusOnMap);
         }
 
+        private void MapControl_OnLoadingStatusChanged(MapControl sender, object args)
+        {
+            if (mapControl.LoadingStatus == MapLoadingStatus.Loading)
+                LoadingProgressBar.Opacity = 100;
+            else
+                LoadingProgressBar.Opacity = 0;
+        }
+
         private void MapControl_OnPitchChanged(MapControl sender, object args)
         {
             mapControl.Children
@@ -66,10 +73,6 @@ namespace LocationAlarm.View
                         RotationX = mapControl.Pitch,
                     };
                 });
-            mapControl.Children
-                .Where(o => o is Image)
-                .Cast<Image>()
-                .ForEach(image => image.UpdateLayout());
         }
 
         private void MapControl_OnTapped(object sender, TappedRoutedEventArgs e)
