@@ -10,7 +10,6 @@ using LocationAlarm.Model;
 using LocationAlarm.Navigation;
 using Microsoft.Practices.ServiceLocation;
 using PropertyChanged;
-using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
@@ -111,11 +110,11 @@ namespace LocationAlarm.ViewModel
             MapScreenshot = null;
         }
 
-        public void OnNavigatedTo(object parameter)
+        public async void OnNavigatedTo(object parameter)
         {
             IsMapLoaded = false;
             MapScreenshot = null;
-            UpdateUserLocation();
+            await UpdateUserLocationAsync(ActualLocation).ConfigureAwait(true);
         }
 
         protected virtual async Task OnCurrentLocationLoadedAsync(Geopoint actualLocation)
@@ -124,7 +123,7 @@ namespace LocationAlarm.ViewModel
 
             if (handler == null) return;
 
-            var invocationList = handler.GetInvocationList().Cast<Func<object, Geopoint, Task>>();
+            var invocationList = handler.GetInvocationList().Cast<AsyncEventHandler<Geopoint>>();
 
             var handlerTasks = invocationList.Select(invocation => invocation.Invoke(this, actualLocation));
 
@@ -134,7 +133,8 @@ namespace LocationAlarm.ViewModel
         private async void OnSuggestionSelected(object sender, MapLocation selectedLocation)
         {
             Messenger.Default.Send(new MapMessage(), Tokens.FocusOnMap);
-            await SetProvidedLocation(selectedLocation).ConfigureAwait(true);
+            ActualLocation = selectedLocation.Point;
+            await OnCurrentLocationLoadedAsync(selectedLocation?.Point).ConfigureAwait(true);
         }
 
         [OnCommand("SaveLocationCommand")]
@@ -144,17 +144,6 @@ namespace LocationAlarm.ViewModel
             object locationData = MapScreenshot;
 
             _navigationService.NavigateTo(nameof(View.AlarmSettingsPage), locationData);
-        }
-
-        private async Task SetProvidedLocation(MapLocation location)
-        {
-            if (location == null)
-                return;
-
-            ActualLocation = location.Point;
-            ZoomLevel = 12;
-            await OnCurrentLocationLoadedAsync(ActualLocation).ConfigureAwait(true);
-            PushpinVisible = true;
         }
 
         /// <summary>
@@ -176,11 +165,12 @@ namespace LocationAlarm.ViewModel
         /// Updates actual user location 
         /// </summary>
         [OnCommand("FindMeCommand")]
-        private async void UpdateUserLocation()
+        private async Task UpdateUserLocationAsync(Geopoint lastKnownPosition = null)
         {
-            var actualLocation = await _mapModel.GetActualLocationAsync().ConfigureAwait(true);
-            ActualLocation = actualLocation.Coordinate.Point;
-            LocationQuery = (await _mapModel.FindLocationAtAsync().ConfigureAwait(true))?
+            if (lastKnownPosition == null)
+                ActualLocation = (await _mapModel.GetActualLocationAsync().ConfigureAwait(true))?.Coordinate?.Point;
+
+            LocationQuery = (await _mapModel.FindLocationAtAsync(ActualLocation).ConfigureAwait(true))?
                 .Take(new[] { 0 })
                 .Select(location => new ReadableLocationName(location))
                 .First()
