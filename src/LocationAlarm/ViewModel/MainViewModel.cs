@@ -44,7 +44,7 @@ namespace LocationAlarm.ViewModel
         [OnCommand("AddNewAlarmCommand")]
         public void AddNewAlarm()
         {
-            _navigationService.NavigateTo(nameof(MapPage), _alarmsRepository.Create());
+            _navigationService.NavigateTo(nameof(MapPage), _alarmsRepository.CreateTransitive());
         }
 
         public void GoBack()
@@ -58,6 +58,9 @@ namespace LocationAlarm.ViewModel
 
         public void OnNavigatedTo(object parameter)
         {
+            var alarm = parameter as AlarmModel;
+            if (alarm == null) return;
+            _alarmsRepository.Add(alarm);
         }
 
         private void EditAlarmExecute(ItemClickEventArgs itemClickEventArgs)

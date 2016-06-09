@@ -2,9 +2,8 @@
 using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
-using Windows.Devices.Geolocation;
-using Windows.Devices.Geolocation.Geofencing;
 using Windows.Foundation.Metadata;
+using Windows.UI.Xaml.Media.Imaging;
 
 namespace LocationAlarm.Model
 {
@@ -26,17 +25,20 @@ namespace LocationAlarm.Model
         [DataMember]
         public bool IsActive { get; set; }
 
-        /// <summary>
-        /// Alarm cyclic 
-        /// </summary>
+        /// <summary> Alarm cyclic </summary.
         [DataMember]
         public bool IsCyclic { get; set; }
 
         /// <summary>
         /// Alarm label 
         /// </summary>
-        [DataMember]
+        [DataMember, Deprecated("Label is deprecated", DeprecationType.Deprecate, 0)]
         public string Label { get; set; } = "DefaultLabel";
+
+        /// <summary>
+        /// Selected location screen shot 
+        /// </summary>
+        public BitmapImage MapScreen { get; set; }
 
         /// <summary>
         /// Area on enter to which alarm will be activated 
@@ -61,24 +63,9 @@ namespace LocationAlarm.Model
         [DataMember]
         public TimeSpan SnoozeTime { get; set; }
 
-        /// <summary>
-        /// </summary>
-        /// <param name="alarmLocation"> Location in which alarm will be triggered </param>
-        public AlarmModel(MonitoredArea monitoredArea)
-        {
-            MonitoredArea = monitoredArea;
-        }
-
         public AlarmModel()
         {
-            Label = "Poznań";
-            var builder = new GeofenceBuilder();
-            builder.SetRequiredId(Label)
-                .ThenSetGeocircle(new BasicGeoposition(), 4d)
-                .ConfigureMonitoredStates(MonitoredGeofenceStates.Entered)
-                .SetDwellTime(TimeSpan.FromMinutes(2));
-
-            MonitoredArea = new MonitoredArea(Label, builder);
+            MonitoredArea = new MonitoredArea();
         }
 
         /// <summary>

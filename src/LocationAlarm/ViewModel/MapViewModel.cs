@@ -1,4 +1,5 @@
 ﻿using ArrivalAlarm.Messages;
+using ArrivalAlarm.Model;
 using AsyncEventHandler;
 using Commander;
 using GalaSoft.MvvmLight;
@@ -30,16 +31,26 @@ namespace LocationAlarm.ViewModel
         /// </summary>
         private readonly INavigationService _navigationService;
 
+        private AlarmModel _alarmModel;
         private LocationAutoSuggestion _autoSuggestion;
+        private MonitoredArea _monitoredArea;
 
         public event AsyncEventHandler<Geopoint> CurrentLocationLoaded;
 
-        public Geopoint ActualLocation { get; private set; }
+        public Geopoint ActualLocation
+        {
+            get { return _monitoredArea.Geopoint; }
+            private set { _monitoredArea.Geopoint = value; }
+        }
 
         /// <summary>
         /// Radius of geocircle 
         /// </summary>
-        public double GeocircleRadius { get; set; } = 500;
+        public double GeocircleRadius
+        {
+            get { return _monitoredArea.Radius; }
+            set { _monitoredArea.Radius = value; }
+        }
 
         /// <summary>
         /// State of map loading 
@@ -51,14 +62,25 @@ namespace LocationAlarm.ViewModel
         /// </summary>
         public string LocationQuery
         {
-            get { return _autoSuggestion.ProvidedLocationQuery; }
-            set { _autoSuggestion.ProvidedLocationQuery = value; }
+            get
+            {
+                return _autoSuggestion.ProvidedLocationQuery;
+            }
+            set
+            {
+                _monitoredArea.Name = value;
+                _autoSuggestion.ProvidedLocationQuery = value;
+            }
         }
 
         /// <summary>
         /// Map control screen shoot 
         /// </summary>
-        public BitmapImage MapScreenshot { get; set; }
+        public BitmapImage MapScreenshot
+        {
+            get { return _alarmModel.MapScreen; }
+            set { _alarmModel.MapScreen = value; }
+        }
 
         public double MaxGeocircleRadius { get; } = 5000;
 
@@ -108,10 +130,17 @@ namespace LocationAlarm.ViewModel
         {
             IsMapLoaded = false;
             MapScreenshot = null;
+            //TODO: Check if is called after go back
         }
 
         public async void OnNavigatedTo(object parameter)
         {
+            var model = parameter as AlarmModel;
+            if (model == null) return;
+
+            _alarmModel = model;
+            _monitoredArea = model.MonitoredArea;
+
             IsMapLoaded = false;
             MapScreenshot = null;
             await UpdateUserLocationAsync(ActualLocation).ConfigureAwait(true);
@@ -141,9 +170,7 @@ namespace LocationAlarm.ViewModel
         private async void SaveLocationExecute()
         {
             await TakeMapScreenshotAsync().ConfigureAwait(true);
-            object locationData = MapScreenshot;
-
-            _navigationService.NavigateTo(nameof(View.AlarmSettingsPage), locationData);
+            _navigationService.NavigateTo(nameof(View.AlarmSettingsPage), _alarmModel);
         }
 
         /// <summary>

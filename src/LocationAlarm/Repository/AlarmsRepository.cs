@@ -1,11 +1,6 @@
-﻿using ArrivalAlarm.Model;
-using LocationAlarm.Model;
-using System;
-using System.Collections.Generic;
+﻿using LocationAlarm.Model;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
-using System.Linq;
-using Windows.Devices.Geolocation;
 
 namespace LocationAlarm.Repository
 {
@@ -17,13 +12,6 @@ namespace LocationAlarm.Repository
 
         public AlarmsRepository()
         {
-            _alarms.Add(new AlarmModel(new MonitoredArea("Poznan", new GeofenceBuilder().SetRequiredId("P1").ThenSetGeocircle(new BasicGeoposition(), 4d)))
-            {
-                Label = "Alarm praca",
-                ActiveDays = new HashSet<DayOfWeek>() { DayOfWeek.Monday, DayOfWeek.Tuesday },
-                IsActive = true,
-                IsCyclic = true,
-            });
         }
 
         public void Add(AlarmModel alarm)
@@ -31,10 +19,9 @@ namespace LocationAlarm.Repository
             _alarms.Add(alarm);
         }
 
-        public AlarmModel Create()
+        public AlarmModel CreateTransitive()
         {
             var alarm = new AlarmModel();
-            Add(alarm);
             return alarm;
         }
 
@@ -42,8 +29,6 @@ namespace LocationAlarm.Repository
         {
             _alarms.Remove(alarm);
         }
-
-        public AlarmModel Retrieve(int index) => _alarms.ElementAt(index);
 
         public void Update(AlarmModel alarm)
         {
