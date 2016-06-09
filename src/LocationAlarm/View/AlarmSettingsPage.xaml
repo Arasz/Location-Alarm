@@ -57,10 +57,16 @@
                 <ColumnDefinition />
             </Grid.ColumnDefinitions>
 
-            <Image Grid.Row="0" Grid.ColumnSpan="2" Source="{Binding MapScreen}" Stretch="UniformToFill" />
+            <Image Grid.Row="0" Grid.ColumnSpan="2" Source="{Binding MapScreen}" Stretch="UniformToFill">
+                <interactivity:Interaction.Behaviors>
+                    <core:EventTriggerBehavior EventName="Tapped">
+                        <core:InvokeCommandAction Command="{Binding EditLocationCommand}" />
+                    </core:EventTriggerBehavior>
+                </interactivity:Interaction.Behaviors>
+            </Image>
             <Border Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Background="#26000000" VerticalAlignment="Bottom">
                 <TextBlock VerticalAlignment="Bottom" Foreground="Black"
-                       Text="{Binding AlarmName}" FontSize="30" HorizontalAlignment="Stretch" Margin="5,0" />
+                       Text="{Binding AlarmName}" FontSize="20" HorizontalAlignment="Stretch" Margin="5,0" />
             </Border>
 
             <Line Grid.Row="1" Grid.ColumnSpan="2" VerticalAlignment="Stretch" Fill="White"
@@ -119,7 +125,7 @@
         </Grid>
     </Grid>
     <local:BindablePage.BottomAppBar>
-        <CommandBar>
+        <CommandBar ClosedDisplayMode="Minimal">
             <AppBarButton x:Uid="AlarmSettingsSave" Icon="Save" Command="{Binding SaveSettingsCommand}" />
         </CommandBar>
     </local:BindablePage.BottomAppBar>

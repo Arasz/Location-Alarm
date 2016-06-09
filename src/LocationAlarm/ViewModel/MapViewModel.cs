@@ -5,6 +5,7 @@ using LocationAlarm.Common;
 using LocationAlarm.Location;
 using LocationAlarm.Location.LocationAutosuggestion;
 using LocationAlarm.Navigation;
+using LocationAlarm.View;
 using PropertyChanged;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -22,6 +23,7 @@ namespace LocationAlarm.ViewModel
         private readonly LocationAutoSuggestion _autoSuggestion;
         private readonly GeolocationModel _geolocationModel;
         private MonitoredArea _monitoredArea;
+        private MonitoredArea _monitoredAreaCopy;
 
         public Geopoint ActualLocation
         {
@@ -82,15 +84,24 @@ namespace LocationAlarm.ViewModel
             SuggestionChosenCommand = _autoSuggestion.SuggestionChosenCommand;
         }
 
+        public override void GoBack()
+        {
+            if (_navigationService.LastPageKey == nameof(AlarmSettingsPage))
+                _selectedAlarm.MonitoredArea = _monitoredAreaCopy;
+            base.GoBack();
+        }
+
         public override void OnNavigatedFrom(NavigationMessage parameter)
         {
             IsMapLoaded = false;
+
             MessengerInstance.Unregister<MapLocation>(this, OnSuggestionSelected);
         }
 
         public override async void OnNavigatedTo(NavigationMessage parameter)
         {
             _monitoredArea = _selectedAlarm.MonitoredArea;
+            _monitoredAreaCopy = new MonitoredArea(_selectedAlarm.MonitoredArea);
 
             MessengerInstance.Register<MapLocation>(this, OnSuggestionSelected);
 
