@@ -126,15 +126,15 @@ namespace LocationAlarm.ViewModel
             _navigationService.GoBack();
         }
 
-        public void OnNavigatedFrom(object parameter)
+        public void OnNavigatedFrom(NavigationMessage parameter)
         {
             IsMapLoaded = false;
             //TODO: Check if is called after go back
         }
 
-        public async void OnNavigatedTo(object parameter)
+        public async void OnNavigatedTo(NavigationMessage parameter)
         {
-            var model = parameter as AlarmModel;
+            var model = parameter.Data as AlarmModel;
             if (model == null) return;
 
             _alarmModel = model;

@@ -25,7 +25,7 @@ namespace LocationAlarm.View
 
             var navigableViewModel = DataContext as INavigable;
 
-            navigableViewModel?.OnNavigatedFrom(e.Parameter);
+            navigableViewModel?.OnNavigatedFrom((NavigationMessage)e.Parameter);
         }
 
         /// <summary>
@@ -43,7 +43,7 @@ namespace LocationAlarm.View
 
             var navigableViewModel = DataContext as INavigable;
 
-            navigableViewModel?.OnNavigatedTo(e.Parameter);
+            navigableViewModel?.OnNavigatedTo((NavigationMessage)e.Parameter);
         }
 
         private void HardwareButtons_BackPressed(object sender, BackPressedEventArgs e)

@@ -103,13 +103,14 @@ namespace LocationAlarm.ViewModel
             _navigationService.GoBack();
         }
 
-        public void OnNavigatedFrom(object parameter)
+        public void OnNavigatedFrom(NavigationMessage message)
         {
+            throw new NotImplementedException();
         }
 
-        public void OnNavigatedTo(object parameter)
+        public void OnNavigatedTo(NavigationMessage message)
         {
-            _alarmModel = parameter as AlarmModel;
+            _alarmModel = message.Data as AlarmModel;
         }
 
         [OnCommand("PlaySoundCommand")]
