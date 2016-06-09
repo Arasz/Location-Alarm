@@ -1,8 +1,8 @@
 ﻿using ArrivalAlarm.Model;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.Serialization;
-using Windows.Foundation.Metadata;
 using Windows.UI.Xaml.Media.Imaging;
 
 namespace LocationAlarm.Model
@@ -20,6 +20,11 @@ namespace LocationAlarm.Model
         public ISet<DayOfWeek> ActiveDays { get; set; } = new HashSet<DayOfWeek>() { DayOfWeek.Monday, DayOfWeek.Friday, DayOfWeek.Saturday };
 
         /// <summary>
+        /// Type of alarm 
+        /// </summary>
+        public AlarmType AlarmType { get; set; } = AlarmType.Notification;
+
+        /// <summary>
         /// Alarm state 
         /// </summary>
         [DataMember]
@@ -27,13 +32,7 @@ namespace LocationAlarm.Model
 
         /// <summary> Alarm cyclic </summary.
         [DataMember]
-        public bool IsCyclic { get; set; }
-
-        /// <summary>
-        /// Alarm label 
-        /// </summary>
-        [DataMember, Deprecated("Label is deprecated", DeprecationType.Deprecate, 0)]
-        public string Label { get; set; } = "DefaultLabel";
+        public bool IsCyclic => !ActiveDays.Any();
 
         /// <summary>
         /// Selected location screen shot 
@@ -46,16 +45,15 @@ namespace LocationAlarm.Model
         public MonitoredArea MonitoredArea { get; set; }
 
         /// <summary>
+        /// Ringtone 
+        /// </summary>
+        public string NotificationSound { get; set; }
+
+        /// <summary>
         /// User is informed only with notification 
         /// </summary>
         [DataMember]
         public bool OnlyNotifications { get; set; }
-
-        /// <summary>
-        /// Ringtone 
-        /// </summary>
-        [DataMember, Deprecated("Will change in the future", DeprecationType.Deprecate, 1)]
-        public string Ringtone { get; set; } = "defaultRingtone";
 
         /// <summary>
         /// Snooze time after alarm sleep 
@@ -85,5 +83,11 @@ namespace LocationAlarm.Model
         {
             throw new NotImplementedException();
         }
+    }
+
+    public enum AlarmType
+    {
+        Notification,
+        Sound,
     }
 }

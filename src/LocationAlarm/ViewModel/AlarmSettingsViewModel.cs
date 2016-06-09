@@ -5,6 +5,7 @@ using GalaSoft.MvvmLight.Views;
 using LocationAlarm.Model;
 using LocationAlarm.Navigation;
 using LocationAlarm.Utils;
+using LocationAlarm.View;
 using Microsoft.Practices.ServiceLocation;
 using PropertyChanged;
 using System;
@@ -25,9 +26,15 @@ namespace LocationAlarm.ViewModel
         /// </summary>
         private readonly ResourceLoader _resourceLoader;
 
-        private AlarmModel _alarmModel;
+        //BUG: HAck
+        private AlarmModel _alarmModel = new AlarmModel();
+
+        private Dictionary<string, AlarmType> _alarmTypeMap = new Dictionary<string, AlarmType>();
+        private Dictionary<string, DayOfWeek> _dayOfWeekMap = new Dictionary<string, DayOfWeek>();
 
         private MediaPlayer _mediaPlayer = BackgroundMediaPlayer.Current;
+
+        private IEnumerable<string> _selectedDays;
 
         /// <summary>
         /// </summary>
@@ -39,7 +46,7 @@ namespace LocationAlarm.ViewModel
 
         /// <summary>
         /// </summary>
-        public BitmapImage MapScreen { get; private set; }
+        public BitmapImage MapScreen => _alarmModel.MapScreen;
 
         /// <summary>
         /// </summary>
@@ -47,17 +54,34 @@ namespace LocationAlarm.ViewModel
 
         /// <summary>
         /// </summary>
-        public string SelectedAlarmType { get; set; }
+        public string SelectedAlarmType
+        {
+            get { return _resourceLoader.GetString(_alarmModel.AlarmType.ToString()); }
+            set { _alarmModel.AlarmType = _alarmTypeMap[value]; }
+        }
 
         /// <summary>
         /// </summary>
-        public IEnumerable<string> SelectedDays { get; set; }
+        public IEnumerable<string> SelectedDays
+        {
+            get { return _selectedDays; }
+            set
+            {
+                _selectedDays = value;
+                _alarmModel.ActiveDays.Clear();
+                value.ForEach(day => _alarmModel.ActiveDays.Add(_dayOfWeekMap[day]));
+            }
+        }
 
         public string SelectedDaysConcated { get; set; }
 
         /// <summary>
         /// </summary>
-        public string SelectedNotificationSound { get; set; }
+        public string SelectedNotificationSound
+        {
+            get { return _alarmModel.NotificationSound; }
+            set { _alarmModel.NotificationSound = value; }
+        }
 
         /// <summary>
         /// </summary>
@@ -85,7 +109,7 @@ namespace LocationAlarm.ViewModel
 
         public void OnNavigatedTo(object parameter)
         {
-            MapScreen = parameter as BitmapImage;
+            _alarmModel = parameter as AlarmModel;
         }
 
         [OnCommand("PlaySoundCommand")]
@@ -106,11 +130,19 @@ namespace LocationAlarm.ViewModel
         [OnCommand("SaveSettingsCommand")]
         public void OnSaveAlarmSettings()
         {
+            _navigationService.NavigateTo(nameof(MainPage), _alarmModel);
         }
 
         private void InitializeAlarmTypes()
         {
-            AlarmTypes = _resourceLoader.GetString("AlarmSettingsAlarmTypeCollection").Split(',').Select(s => s.Trim());
+            AlarmTypes = Enum.GetNames(typeof(AlarmType))
+                .Select(enumName =>
+                {
+                    var alarmTypeName = _resourceLoader.GetString(enumName);
+                    _alarmTypeMap[alarmTypeName] = (AlarmType)Enum.Parse(typeof(AlarmType), enumName);
+                    return alarmTypeName;
+                })
+                .ToList();
             SelectedAlarmType = AlarmTypes.First();
         }
 
@@ -118,7 +150,14 @@ namespace LocationAlarm.ViewModel
         /// </summary>
         private void InitializeDaysOfWeek()
         {
-            DaysOfWeek = Enum.GetNames(typeof(DayOfWeek)).Select(s => "  " + _resourceLoader.GetString(s)).ToList();
+            DaysOfWeek = Enum.GetNames(typeof(DayOfWeek))
+                .Select(enumName =>
+                {
+                    var dayOfWeekName = "  " + _resourceLoader.GetString(enumName);
+                    _dayOfWeekMap[dayOfWeekName] = (DayOfWeek)Enum.Parse(typeof(DayOfWeek), enumName);
+                    return dayOfWeekName;
+                })
+                .ToList();
         }
 
         private async void InitializeSoundFileNames()

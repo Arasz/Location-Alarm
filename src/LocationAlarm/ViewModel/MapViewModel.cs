@@ -129,7 +129,6 @@ namespace LocationAlarm.ViewModel
         public void OnNavigatedFrom(object parameter)
         {
             IsMapLoaded = false;
-            MapScreenshot = null;
             //TODO: Check if is called after go back
         }
 
