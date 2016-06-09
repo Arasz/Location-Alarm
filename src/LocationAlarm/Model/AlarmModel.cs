@@ -1,10 +1,9 @@
 ﻿using ArrivalAlarm.Model;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.Serialization;
-using Windows.Devices.Geolocation;
-using Windows.Devices.Geolocation.Geofencing;
-using Windows.Foundation.Metadata;
+using Windows.UI.Xaml.Media.Imaging;
 
 namespace LocationAlarm.Model
 {
@@ -18,7 +17,12 @@ namespace LocationAlarm.Model
         /// Days in which alarm is active 
         /// </summary>
         [DataMember]
-        public ISet<DayOfWeek> ActiveDays { get; set; } = new HashSet<DayOfWeek>() { DayOfWeek.Monday, DayOfWeek.Friday, DayOfWeek.Saturday };
+        public ISet<DayOfWeek> ActiveDays { get; set; } = new HashSet<DayOfWeek>();
+
+        /// <summary>
+        /// Type of alarm 
+        /// </summary>
+        public AlarmType AlarmType { get; set; } = AlarmType.Notification;
 
         /// <summary>
         /// Alarm state 
@@ -26,22 +30,24 @@ namespace LocationAlarm.Model
         [DataMember]
         public bool IsActive { get; set; }
 
-        /// <summary>
-        /// Alarm cyclic 
-        /// </summary>
+        /// <summary> Alarm cyclic </summary.
         [DataMember]
-        public bool IsCyclic { get; set; }
+        public bool IsCyclic => !ActiveDays.Any();
 
         /// <summary>
-        /// Alarm label 
+        /// Selected location screen shot 
         /// </summary>
-        [DataMember]
-        public string Label { get; set; } = "DefaultLabel";
+        public BitmapImage MapScreen { get; set; }
 
         /// <summary>
         /// Area on enter to which alarm will be activated 
         /// </summary>
         public MonitoredArea MonitoredArea { get; set; }
+
+        /// <summary>
+        /// Ringtone 
+        /// </summary>
+        public string NotificationSound { get; set; }
 
         /// <summary>
         /// User is informed only with notification 
@@ -50,35 +56,14 @@ namespace LocationAlarm.Model
         public bool OnlyNotifications { get; set; }
 
         /// <summary>
-        /// Ringtone 
-        /// </summary>
-        [DataMember, Deprecated("Will change in the future", DeprecationType.Deprecate, 1)]
-        public string Ringtone { get; set; } = "defaultRingtone";
-
-        /// <summary>
         /// Snooze time after alarm sleep 
         /// </summary>
         [DataMember]
         public TimeSpan SnoozeTime { get; set; }
 
-        /// <summary>
-        /// </summary>
-        /// <param name="alarmLocation"> Location in which alarm will be triggered </param>
-        public AlarmModel(MonitoredArea monitoredArea)
-        {
-            MonitoredArea = monitoredArea;
-        }
-
         public AlarmModel()
         {
-            Label = "Poznań";
-            var builder = new GeofenceBuilder();
-            builder.SetRequiredId(Label)
-                .ThenSetGeocircle(new BasicGeoposition(), 4d)
-                .ConfigureMonitoredStates(MonitoredGeofenceStates.Entered)
-                .SetDwellTime(TimeSpan.FromMinutes(2));
-
-            MonitoredArea = new MonitoredArea(Label, builder);
+            MonitoredArea = new MonitoredArea();
         }
 
         /// <summary>
@@ -98,5 +83,11 @@ namespace LocationAlarm.Model
         {
             throw new NotImplementedException();
         }
+    }
+
+    public enum AlarmType
+    {
+        Notification,
+        Sound,
     }
 }

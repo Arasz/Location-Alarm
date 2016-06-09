@@ -1,16 +1,17 @@
 ﻿using ArrivalAlarm.Messages;
+using ArrivalAlarm.Model;
 using AsyncEventHandler;
 using Commander;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Messaging;
 using GalaSoft.MvvmLight.Views;
+using LocationAlarm.Common;
 using LocationAlarm.Location;
 using LocationAlarm.Location.LocationAutosuggestion;
 using LocationAlarm.Model;
 using LocationAlarm.Navigation;
 using Microsoft.Practices.ServiceLocation;
 using PropertyChanged;
-using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
@@ -31,16 +32,27 @@ namespace LocationAlarm.ViewModel
         /// </summary>
         private readonly INavigationService _navigationService;
 
+        private AlarmModel _alarmModel;
         private LocationAutoSuggestion _autoSuggestion;
+        private MonitoredArea _monitoredArea;
+        private Token _navigatioToken;
 
         public event AsyncEventHandler<Geopoint> CurrentLocationLoaded;
 
-        public Geopoint ActualLocation { get; private set; }
+        public Geopoint ActualLocation
+        {
+            get { return _monitoredArea.Geopoint; }
+            private set { _monitoredArea.Geopoint = value; }
+        }
 
         /// <summary>
         /// Radius of geocircle 
         /// </summary>
-        public double GeocircleRadius { get; set; } = 500;
+        public double GeocircleRadius
+        {
+            get { return _monitoredArea.Radius; }
+            set { _monitoredArea.Radius = value; }
+        }
 
         /// <summary>
         /// State of map loading 
@@ -52,14 +64,25 @@ namespace LocationAlarm.ViewModel
         /// </summary>
         public string LocationQuery
         {
-            get { return _autoSuggestion.ProvidedLocationQuery; }
-            set { _autoSuggestion.ProvidedLocationQuery = value; }
+            get
+            {
+                return _autoSuggestion.ProvidedLocationQuery;
+            }
+            set
+            {
+                _monitoredArea.Name = value;
+                _autoSuggestion.ProvidedLocationQuery = value;
+            }
         }
 
         /// <summary>
         /// Map control screen shoot 
         /// </summary>
-        public BitmapImage MapScreenshot { get; set; }
+        public BitmapImage MapScreenshot
+        {
+            get { return _alarmModel.MapScreen; }
+            set { _alarmModel.MapScreen = value; }
+        }
 
         public double MaxGeocircleRadius { get; } = 5000;
 
@@ -97,7 +120,7 @@ namespace LocationAlarm.ViewModel
             TextChangeCommand = _autoSuggestion.TextChangedCommand;
             SuggestionChosenCommand = _autoSuggestion.SuggestionChosenCommand;
 
-            Messenger.Default.Register<bool>(this, Tokens.MapLoaded, (isMapLoaded) => IsMapLoaded = isMapLoaded);
+            Messenger.Default.Register<bool>(this, Token.MapLoaded, (isMapLoaded) => IsMapLoaded = isMapLoaded);
         }
 
         public void GoBack()
@@ -105,17 +128,27 @@ namespace LocationAlarm.ViewModel
             _navigationService.GoBack();
         }
 
-        public void OnNavigatedFrom(object parameter)
+        public void OnNavigatedFrom(NavigationMessage parameter)
         {
             IsMapLoaded = false;
-            MapScreenshot = null;
+            _alarmModel = null;
+            //TODO: Check if is called after go back
         }
 
-        public void OnNavigatedTo(object parameter)
+        public async void OnNavigatedTo(NavigationMessage parameter)
         {
+            var model = parameter.Data as AlarmModel;
+            if (model == null) return;
+
+            _navigatioToken = parameter.Token;
+
+            _alarmModel = model;
+            _monitoredArea = model.MonitoredArea;
+
+            //Refresh();
+
             IsMapLoaded = false;
-            MapScreenshot = null;
-            UpdateUserLocation();
+            await UpdateUserLocationAsync(ActualLocation).ConfigureAwait(true);
         }
 
         protected virtual async Task OnCurrentLocationLoadedAsync(Geopoint actualLocation)
@@ -124,7 +157,7 @@ namespace LocationAlarm.ViewModel
 
             if (handler == null) return;
 
-            var invocationList = handler.GetInvocationList().Cast<Func<object, Geopoint, Task>>();
+            var invocationList = handler.GetInvocationList().Cast<AsyncEventHandler<Geopoint>>();
 
             var handlerTasks = invocationList.Select(invocation => invocation.Invoke(this, actualLocation));
 
@@ -133,28 +166,16 @@ namespace LocationAlarm.ViewModel
 
         private async void OnSuggestionSelected(object sender, MapLocation selectedLocation)
         {
-            Messenger.Default.Send(new MapMessage(), Tokens.FocusOnMap);
-            await SetProvidedLocation(selectedLocation).ConfigureAwait(true);
+            Messenger.Default.Send(new MapMessage(), Token.FocusOnMap);
+            ActualLocation = selectedLocation.Point;
+            await OnCurrentLocationLoadedAsync(selectedLocation?.Point).ConfigureAwait(true);
         }
 
         [OnCommand("SaveLocationCommand")]
         private async void SaveLocationExecute()
         {
             await TakeMapScreenshotAsync().ConfigureAwait(true);
-            object locationData = MapScreenshot;
-
-            _navigationService.NavigateTo(nameof(View.AlarmSettingsPage), locationData);
-        }
-
-        private async Task SetProvidedLocation(MapLocation location)
-        {
-            if (location == null)
-                return;
-
-            ActualLocation = location.Point;
-            ZoomLevel = 12;
-            await OnCurrentLocationLoadedAsync(ActualLocation).ConfigureAwait(true);
-            PushpinVisible = true;
+            _navigationService.NavigateTo(nameof(View.AlarmSettingsPage), new NavigationMessage(_navigationService.CurrentPageKey, _alarmModel, _navigatioToken));
         }
 
         /// <summary>
@@ -162,7 +183,7 @@ namespace LocationAlarm.ViewModel
         /// <returns></returns>
         private async Task TakeMapScreenshotAsync()
         {
-            Messenger.Default.Send(new MapMessage(), Tokens.TakeScreenshot);
+            Messenger.Default.Send(new MapMessage(), Token.TakeScreenshot);
 
             await Task.Factory.StartNew(() =>
             {
@@ -172,15 +193,22 @@ namespace LocationAlarm.ViewModel
             }).ConfigureAwait(true);
         }
 
+        [OnCommand("FindMeCommand")]
+        private async void UpdatePosition()
+        {
+            await UpdateUserLocationAsync().ConfigureAwait(true);
+        }
+
         /// <summary>
         /// Updates actual user location 
         /// </summary>
-        [OnCommand("FindMeCommand")]
-        private async void UpdateUserLocation()
+
+        private async Task UpdateUserLocationAsync(Geopoint lastKnownPosition = null)
         {
-            var actualLocation = await _mapModel.GetActualLocationAsync().ConfigureAwait(true);
-            ActualLocation = actualLocation.Coordinate.Point;
-            LocationQuery = (await _mapModel.FindLocationAtAsync().ConfigureAwait(true))?
+            if (lastKnownPosition == null)
+                ActualLocation = (await _mapModel.GetActualLocationAsync().ConfigureAwait(true))?.Coordinate?.Point;
+
+            LocationQuery = (await _mapModel.FindLocationAtAsync(ActualLocation).ConfigureAwait(true))?
                 .Take(new[] { 0 })
                 .Select(location => new ReadableLocationName(location))
                 .First()

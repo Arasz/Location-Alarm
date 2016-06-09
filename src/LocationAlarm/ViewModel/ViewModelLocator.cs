@@ -16,6 +16,7 @@ using GalaSoft.MvvmLight.Ioc;
 using GalaSoft.MvvmLight.Views;
 using LocationAlarm.Location.LocationAutosuggestion;
 using LocationAlarm.Model;
+using LocationAlarm.Repository;
 using LocationAlarm.Utils;
 using LocationAlarm.View;
 using Microsoft.Practices.ServiceLocation;
@@ -43,6 +44,7 @@ namespace LocationAlarm.ViewModel
 
             RegisterServices();
 
+            SimpleIoc.Default.Register<AlarmsRepository>();
             SimpleIoc.Default.Register<LocationAutoSuggestion>();
             SimpleIoc.Default.Register<MapModel>();
             SimpleIoc.Default.Register<MapViewModel>();

@@ -91,6 +91,8 @@
     <Compile Include="Location\ReadableLocationName.cs" />
     <Compile Include="Model\GeofenceBuilder.cs" />
     <Compile Include="Model\MonitoredArea.cs" />
+    <Compile Include="Navigation\NavigationMessage.cs" />
+    <Compile Include="Repository\AlarmsRepository.cs" />
     <Compile Include="Utils\AssetsNamesReader.cs" />
     <Compile Include="Utils\IAssetsNamesReader.cs" />
     <Compile Include="ViewModel\AlarmSettingsViewModel.cs" />
@@ -107,7 +109,7 @@
     <Compile Include="Converters\VisibilityConverter.cs" />
     <Compile Include="GeofenceService.cs" />
     <Compile Include="Messages\MapMessage.cs" />
-    <Compile Include="Messages\Tokens.cs" />
+    <Compile Include="Common\Token.cs" />
     <Compile Include="Model\AlarmModel.cs" />
     <Compile Include="Model\AlarmsMonitor.cs" />
     <Compile Include="Model\MapModel.cs" />
@@ -139,7 +141,7 @@
     <Content Include="Assets\map-filler.jpg" />
     <Content Include="Assets\pushpin-google-green-hi.png" />
     <Content Include="Assets\SmallLogo.scale-240.png" />
-    <Content Include="Assets\Sounds\coins.mp3" />
+    <Content Include="Assets\Sounds\default.mp3" />
     <Content Include="Assets\Sounds\unique.mp3" />
     <Content Include="Assets\SplashScreen.scale-240.png" />
     <Content Include="Assets\Square71x71Logo.scale-240.png" />
