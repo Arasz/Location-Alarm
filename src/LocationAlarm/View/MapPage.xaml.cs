@@ -81,7 +81,7 @@ namespace LocationAlarm.View
 
         private void RangeBase_OnValueChanged(object sender, RangeBaseValueChangedEventArgs e) => _mapCircleDrawer.Draw(_viewModel?.ActualLocation, _viewModel.GeocircleRadius);
 
-        private async void SetFocusOnMap(MessageBase message) => mapControl.Focus(FocusState.Pointer);
+        private void SetFocusOnMap(MessageBase message) => mapControl.Focus(FocusState.Pointer);
 
         private async void TakeMapScreenshotAsync(MessageBase message)
         {

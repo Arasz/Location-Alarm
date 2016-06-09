@@ -78,11 +78,6 @@ namespace ArrivalAlarm.Model
         /// </summary>
         public DateTimeOffset StartTime { get; set; }
 
-        /// <summary>
-        /// </summary>
-        /// <param name="name"> Location <c> name </c> </param>
-        /// <param name="geoposition"> Position on map in geographic coordinates </param>
-        /// <param name="geocircleRadius"> Geocircle (geofence) radius in meters </param>
         public MonitoredArea()
         {
         }

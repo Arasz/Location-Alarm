@@ -39,7 +39,6 @@ namespace LocationAlarm.ViewModel
             }
             set
             {
-                _monitoredArea.Name = value;
                 _autoSuggestion.ProvidedLocationQuery = value;
             }
         }
@@ -106,21 +105,21 @@ namespace LocationAlarm.ViewModel
             MessengerInstance.Register<MapLocation>(this, OnSuggestionSelected);
 
             IsMapLoaded = false;
-            await UpdateUserLocationAsync(ActualLocation).ConfigureAwait(true);
+            await UpdateUserLocationAsync().ConfigureAwait(true);
         }
 
         private async void OnSuggestionSelected(MapLocation selectedLocation)
         {
             Messenger.Default.Send(new MessageBase(), Token.FocusOnMap);
             ActualLocation = selectedLocation.Point;
-            await UpdateUserLocationAsync(selectedLocation.Point).ConfigureAwait(true);
+            await UpdateUserLocationAsync().ConfigureAwait(true);
         }
 
         [OnCommand("SaveLocationCommand")]
         private async void SaveLocationExecute()
         {
             await TakeMapScreenshotAsync().ConfigureAwait(true);
-            _navigationService.NavigateTo(nameof(View.AlarmSettingsPage));
+            _navigationService.NavigateTo(nameof(AlarmSettingsPage));
         }
 
         private async Task TakeMapScreenshotAsync()
@@ -138,16 +137,17 @@ namespace LocationAlarm.ViewModel
         [OnCommand("FindMeCommand")]
         private async void UpdatePosition() => await UpdateUserLocationAsync().ConfigureAwait(true);
 
-        private async Task UpdateUserLocationAsync(Geopoint lastKnownPosition = null)
+        private async Task UpdateUserLocationAsync()
         {
-            if (lastKnownPosition == null)
+            if (ActualLocation == null)
                 ActualLocation = (await _geolocationModel.GetActualLocationAsync().ConfigureAwait(true))?.Coordinate?.Point;
-
-            AutoSuggestionLocationQuery = (await _geolocationModel.FindLocationAtAsync(ActualLocation).ConfigureAwait(true))?
+            var locations = await _geolocationModel.FindLocationAtAsync(ActualLocation).ConfigureAwait(true);
+            AutoSuggestionLocationQuery = locations?
                 .Take(new[] { 0 })
                 .Select(location => new ReadableLocationName(location))
                 .First()
                 .ToString();
+            _monitoredArea.Name = AutoSuggestionLocationQuery;
             ZoomLevel = 12;
             PushpinVisible = true;
             MessengerInstance.Send(ActualLocation);
