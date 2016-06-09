@@ -1,7 +1,6 @@
 ﻿using ArrivalAlarm.Model;
 using Commander;
 using GalaSoft.MvvmLight.Messaging;
-using GalaSoft.MvvmLight.Views;
 using LocationAlarm.Common;
 using LocationAlarm.Location;
 using LocationAlarm.Location.LocationAutosuggestion;
@@ -74,7 +73,7 @@ namespace LocationAlarm.ViewModel
             get; private set;
         }
 
-        public MapViewModel(INavigationService navigationService, GeolocationModel geolocationModel) : base(navigationService)
+        public MapViewModel(NavigationServiceWithToken navigationService, GeolocationModel geolocationModel) : base(navigationService)
         {
             _autoSuggestion = new LocationAutoSuggestion(geolocationModel);
             _geolocationModel = geolocationModel;
@@ -110,7 +109,7 @@ namespace LocationAlarm.ViewModel
         private async void SaveLocationExecute()
         {
             await TakeMapScreenshotAsync().ConfigureAwait(true);
-            _navigationService.NavigateTo(nameof(View.AlarmSettingsPage), new NavigationMessage(_navigationService.CurrentPageKey));
+            _navigationService.NavigateTo(nameof(View.AlarmSettingsPage));
         }
 
         private async Task TakeMapScreenshotAsync()

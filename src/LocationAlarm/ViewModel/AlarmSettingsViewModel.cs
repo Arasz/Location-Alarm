@@ -1,5 +1,4 @@
 ﻿using Commander;
-using GalaSoft.MvvmLight.Views;
 using LocationAlarm.Common;
 using LocationAlarm.Model;
 using LocationAlarm.Navigation;
@@ -73,7 +72,7 @@ namespace LocationAlarm.ViewModel
             set { _selectedAlarm.NotificationSound = value; }
         }
 
-        public AlarmSettingsViewModel(INavigationService navigationService) : base(navigationService)
+        public AlarmSettingsViewModel(NavigationServiceWithToken navigationService) : base(navigationService)
         {
             _resourceLoader = ResourceLoader.GetForCurrentView("Resources");
 
@@ -88,7 +87,7 @@ namespace LocationAlarm.ViewModel
         {
             if (NotificationSounds.Count() <= 1)
                 await InitializeSoundFileNamesAsync().ConfigureAwait(true);
-            if (ReadToken() == Token.AddNew)
+            if (_navigationService.Token == Token.AddNew)
                 InitializeAlaram();
         }
 
@@ -105,7 +104,7 @@ namespace LocationAlarm.ViewModel
         [OnCommand("SaveSettingsCommand")]
         public void OnSaveAlarmSettings()
         {
-            _navigationService.NavigateTo(nameof(MainPage), new NavigationMessage(_navigationService.CurrentPageKey));
+            _navigationService.NavigateTo(nameof(MainPage));
         }
 
         private void InitializeAlaram()

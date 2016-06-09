@@ -2,6 +2,7 @@ using GalaSoft.MvvmLight.Ioc;
 using GalaSoft.MvvmLight.Views;
 using LocationAlarm.Location;
 using LocationAlarm.Location.LocationAutosuggestion;
+using LocationAlarm.Navigation;
 using LocationAlarm.Repository;
 using LocationAlarm.Utils;
 using LocationAlarm.View;
@@ -34,15 +35,16 @@ namespace LocationAlarm.ViewModel
         private void NavigationServiceConfiguration()
         {
             // Create navigation service object
-            NavigationService navigationService = new NavigationService();
+            var navigationService = new NavigationService();
 
             // Add views to navigation service
             navigationService.Configure(nameof(MainPage), typeof(MainPage));
             navigationService.Configure(nameof(MapPage), typeof(MapPage));
             navigationService.Configure(nameof(AlarmSettingsPage), typeof(AlarmSettingsPage));
 
-            // Register navigation service (object)
-            SimpleIoc.Default.Register<INavigationService>(() => navigationService);
+            var nav = new NavigationServiceWithToken(navigationService);
+
+            SimpleIoc.Default.Register(() => nav);
         }
 
         private void RegisterServices()

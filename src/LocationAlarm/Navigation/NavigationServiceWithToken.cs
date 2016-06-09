@@ -3,11 +3,11 @@ using LocationAlarm.Common;
 
 namespace LocationAlarm.Navigation
 {
-    public class NavigationServiceWithToken : INavigationServiceWithToken
+    public class NavigationServiceWithToken
     {
         private readonly object _lock = new object();
         private readonly INavigationService _navigationService;
-        private Token _token;
+        private volatile Token _token;
         public string CurrentPageKey => _navigationService.CurrentPageKey;
 
         public string LastPageKey { get; set; }

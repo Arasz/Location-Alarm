@@ -1,6 +1,5 @@
 using Commander;
 using GalaSoft.MvvmLight.Command;
-using GalaSoft.MvvmLight.Views;
 using LocationAlarm.Common;
 using LocationAlarm.Model;
 using LocationAlarm.Navigation;
@@ -23,7 +22,7 @@ namespace LocationAlarm.ViewModel
 
         public int SelectedAlarm { get; set; }
 
-        public MainViewModel(AlarmsRepository alarmsRepository, INavigationService navigationService) : base(navigationService)
+        public MainViewModel(AlarmsRepository alarmsRepository, NavigationServiceWithToken navigationService) : base(navigationService)
         {
             _alarmsRepository = alarmsRepository;
 
@@ -33,7 +32,7 @@ namespace LocationAlarm.ViewModel
         [OnCommand("AddNewAlarmCommand")]
         public void AddNewAlarm()
         {
-            SetToken(Token.AddNew);
+            _navigationService.Token = Token.AddNew;
             _selectedAlarm = _alarmsRepository.CreateTransitive();
             _navigationService.NavigateTo(nameof(MapPage), new NavigationMessage(_navigationService.CurrentPageKey));
         }
@@ -44,14 +43,13 @@ namespace LocationAlarm.ViewModel
 
         public override void OnNavigatedTo(NavigationMessage message)
         {
-            if (message == null) return;
-            switch (message.From)
+            switch (_navigationService.LastPageKey)
             {
                 case nameof(MapPage):
                     break;
 
                 case nameof(AlarmSettingsPage):
-                    if (ReadToken() != Token.AddNew) break;
+                    if (_navigationService.Token != Token.AddNew) break;
                     _alarmsRepository.Add(_selectedAlarm);
                     break;
             }
@@ -60,7 +58,7 @@ namespace LocationAlarm.ViewModel
         private void EditAlarmExecute(ItemClickEventArgs itemClickEventArgs)
         {
             _selectedAlarm = itemClickEventArgs.ClickedItem as AlarmModel;
-            SetToken();
+            _navigationService.Token = Token.None;
             _navigationService.NavigateTo(nameof(AlarmSettingsPage));
         }
     }
