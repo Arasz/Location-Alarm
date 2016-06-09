@@ -5,6 +5,7 @@ using Commander;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Messaging;
 using GalaSoft.MvvmLight.Views;
+using LocationAlarm.Common;
 using LocationAlarm.Location;
 using LocationAlarm.Location.LocationAutosuggestion;
 using LocationAlarm.Model;
@@ -118,7 +119,7 @@ namespace LocationAlarm.ViewModel
             TextChangeCommand = _autoSuggestion.TextChangedCommand;
             SuggestionChosenCommand = _autoSuggestion.SuggestionChosenCommand;
 
-            Messenger.Default.Register<bool>(this, Tokens.MapLoaded, (isMapLoaded) => IsMapLoaded = isMapLoaded);
+            Messenger.Default.Register<bool>(this, Token.MapLoaded, (isMapLoaded) => IsMapLoaded = isMapLoaded);
         }
 
         public void GoBack()
@@ -160,7 +161,7 @@ namespace LocationAlarm.ViewModel
 
         private async void OnSuggestionSelected(object sender, MapLocation selectedLocation)
         {
-            Messenger.Default.Send(new MapMessage(), Tokens.FocusOnMap);
+            Messenger.Default.Send(new MapMessage(), Token.FocusOnMap);
             ActualLocation = selectedLocation.Point;
             await OnCurrentLocationLoadedAsync(selectedLocation?.Point).ConfigureAwait(true);
         }
@@ -177,7 +178,7 @@ namespace LocationAlarm.ViewModel
         /// <returns></returns>
         private async Task TakeMapScreenshotAsync()
         {
-            Messenger.Default.Send(new MapMessage(), Tokens.TakeScreenshot);
+            Messenger.Default.Send(new MapMessage(), Token.TakeScreenshot);
 
             await Task.Factory.StartNew(() =>
             {

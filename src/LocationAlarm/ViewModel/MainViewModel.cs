@@ -2,6 +2,7 @@ using Commander;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using GalaSoft.MvvmLight.Views;
+using LocationAlarm.Common;
 using LocationAlarm.Model;
 using LocationAlarm.Navigation;
 using LocationAlarm.Repository;
@@ -60,9 +61,18 @@ namespace LocationAlarm.ViewModel
 
         public void OnNavigatedTo(NavigationMessage parameter)
         {
-            var alarm = parameter.Data as AlarmModel;
-            if (alarm == null) return;
-            _alarmsRepository.Add(alarm);
+            switch (parameter.From)
+            {
+                case nameof(MapPage):
+                    break;
+
+                case nameof(AlarmSettingsPage):
+                    if (parameter.Token != Token.AddNew) break;
+                    var alarm = parameter.Data as AlarmModel;
+                    if (alarm == null) return;
+                    _alarmsRepository.Add(alarm);
+                    break;
+            }
         }
 
         private void EditAlarmExecute(ItemClickEventArgs itemClickEventArgs)

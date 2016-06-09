@@ -109,7 +109,7 @@
     <Compile Include="Converters\VisibilityConverter.cs" />
     <Compile Include="GeofenceService.cs" />
     <Compile Include="Messages\MapMessage.cs" />
-    <Compile Include="Messages\Tokens.cs" />
+    <Compile Include="Common\Token.cs" />
     <Compile Include="Model\AlarmModel.cs" />
     <Compile Include="Model\AlarmsMonitor.cs" />
     <Compile Include="Model\MapModel.cs" />

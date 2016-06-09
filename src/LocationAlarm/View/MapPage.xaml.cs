@@ -1,5 +1,6 @@
 ﻿using ArrivalAlarm.Messages;
 using GalaSoft.MvvmLight.Messaging;
+using LocationAlarm.Common;
 using LocationAlarm.View.Map;
 using LocationAlarm.ViewModel;
 using System;
@@ -39,12 +40,12 @@ namespace LocationAlarm.View
             {
                 if (sender.LoadingStatus == MapLoadingStatus.Loaded)
                 {
-                    Messenger.Default.Send(true, Tokens.MapLoaded);
+                    Messenger.Default.Send(true, Token.MapLoaded);
                 }
             };
             _viewModel.CurrentLocationLoaded += ViewModelOnCurrentLocationLoaded;
-            Messenger.Default.Register<MapMessage>(this, Tokens.TakeScreenshot, TakeMapScreenshotAsync);
-            Messenger.Default.Register<MapMessage>(this, Tokens.FocusOnMap, SetFocusOnMap);
+            Messenger.Default.Register<MapMessage>(this, Token.TakeScreenshot, TakeMapScreenshotAsync);
+            Messenger.Default.Register<MapMessage>(this, Token.FocusOnMap, SetFocusOnMap);
 
             mapControl.Tapped += MapControlOnTapped;
             mapControl.PitchChanged += MapControlOnPitchChanged;
