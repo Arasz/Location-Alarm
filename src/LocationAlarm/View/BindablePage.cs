@@ -25,7 +25,7 @@ namespace LocationAlarm.View
 
             var navigableViewModel = DataContext as INavigable;
 
-            navigableViewModel?.OnNavigatedTo(e.Parameter as NavigationMessage ?? new NavigationMessage(e.SourcePageType.Name, e.Parameter));
+            navigableViewModel?.OnNavigatedFrom(e.Parameter as NavigationMessage ?? new NavigationMessage(e.SourcePageType.Name, e.Parameter));
         }
 
         /// <summary>

@@ -24,5 +24,11 @@ namespace LocationAlarm.View
             _viewModel.SelectedDays = (RepeatSettingsButton.Flyout as ListPickerFlyout).SelectedItems.Cast<string>();
             _viewModel.OnRepeatWeeklyClosed();
         }
+
+        private void FlyoutBase_OnOpening(object sender, object e)
+        {
+            var flyout = RepeatSettingsButton.Flyout as ListPickerFlyout;
+            _viewModel.SelectedDays.ForEach(s => flyout.SelectedItems.Add(s));
+        }
     }
 }

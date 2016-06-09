@@ -131,6 +131,7 @@ namespace LocationAlarm.ViewModel
         public void OnNavigatedFrom(NavigationMessage parameter)
         {
             IsMapLoaded = false;
+            _alarmModel = null;
             //TODO: Check if is called after go back
         }
 
@@ -143,6 +144,8 @@ namespace LocationAlarm.ViewModel
 
             _alarmModel = model;
             _monitoredArea = model.MonitoredArea;
+
+            //Refresh();
 
             IsMapLoaded = false;
             await UpdateUserLocationAsync(ActualLocation).ConfigureAwait(true);
