@@ -141,7 +141,7 @@
     <Content Include="Assets\map-filler.jpg" />
     <Content Include="Assets\pushpin-google-green-hi.png" />
     <Content Include="Assets\SmallLogo.scale-240.png" />
-    <Content Include="Assets\Sounds\coins.mp3" />
+    <Content Include="Assets\Sounds\default.mp3" />
     <Content Include="Assets\Sounds\unique.mp3" />
     <Content Include="Assets\SplashScreen.scale-240.png" />
     <Content Include="Assets\Square71x71Logo.scale-240.png" />

@@ -12,6 +12,7 @@ using PropertyChanged;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Windows.ApplicationModel.Resources;
 using Windows.Media.Playback;
 using Windows.UI.Xaml.Media.Imaging;
@@ -21,6 +22,18 @@ namespace LocationAlarm.ViewModel
     [ImplementPropertyChanged]
     public class AlarmSettingsViewModel : ViewModelBase, INavigable
     {
+        /// <summary>
+        /// </summary>
+        private readonly Dictionary<string, AlarmType> _alarmTypeMap = new Dictionary<string, AlarmType>();
+
+        /// <summary>
+        /// </summary>
+        private readonly Dictionary<string, DayOfWeek> _dayOfWeekMap = new Dictionary<string, DayOfWeek>();
+
+        /// <summary>
+        /// </summary>
+        private readonly MediaPlayer _mediaPlayer = BackgroundMediaPlayer.Current;
+
         private readonly INavigationService _navigationService;
 
         /// <summary>
@@ -30,9 +43,6 @@ namespace LocationAlarm.ViewModel
         //BUG: HAck
         private AlarmModel _alarmModel = new AlarmModel();
 
-        private Dictionary<string, AlarmType> _alarmTypeMap = new Dictionary<string, AlarmType>();
-        private Dictionary<string, DayOfWeek> _dayOfWeekMap = new Dictionary<string, DayOfWeek>();
-        private MediaPlayer _mediaPlayer = BackgroundMediaPlayer.Current;
         private Token _navigationToken;
 
         private string _selectedDaysConcated;
@@ -52,7 +62,7 @@ namespace LocationAlarm.ViewModel
 
         /// <summary>
         /// </summary>
-        public IEnumerable<string> NotificationSounds { get; private set; }
+        public IEnumerable<string> NotificationSounds { get; private set; } = new List<string> { "default" };
 
         /// <summary>
         /// </summary>
@@ -104,7 +114,6 @@ namespace LocationAlarm.ViewModel
 
             InitializeAlarmTypes();
             InitializeDaysOfWeek();
-            InitializeSoundFileNames();
             InitializeAlaram();
 
             _navigationService = SimpleIoc.Default.GetInstance<INavigationService>();
@@ -120,12 +129,16 @@ namespace LocationAlarm.ViewModel
             _alarmModel = null;
         }
 
-        public void OnNavigatedTo(NavigationMessage message)
+        public async void OnNavigatedTo(NavigationMessage message)
         {
             _navigationToken = message.Token;
 
             _alarmModel = message.Data as AlarmModel;
-            InitializeAlaram();
+
+            if (NotificationSounds.Count() <= 1)
+                await InitializeSoundFileNames().ConfigureAwait(true);
+            if (_navigationToken == Token.AddNew)
+                InitializeAlaram();
         }
 
         [OnCommand("PlaySoundCommand")]
@@ -146,7 +159,6 @@ namespace LocationAlarm.ViewModel
 
         private void InitializeAlaram()
         {
-            if (NotificationSounds == null) return;
             SelectedAlarmType = AlarmTypes.First();
             SelectedNotificationSound = NotificationSounds.First();
         }
@@ -176,7 +188,7 @@ namespace LocationAlarm.ViewModel
                 .ToList();
         }
 
-        private async void InitializeSoundFileNames()
+        private async Task InitializeSoundFileNames()
         {
             var notificationSounds = await ServiceLocator.Current
                 .GetInstance<IAssetsNamesReader>()
