@@ -91,12 +91,15 @@
     <Compile Include="Location\ReadableLocationName.cs" />
     <Compile Include="Model\GeofenceBuilder.cs" />
     <Compile Include="Model\MonitoredArea.cs" />
+    <Compile Include="Navigation\INavigationServiceWithToken.cs" />
     <Compile Include="Navigation\NavigationMessage.cs" />
+    <Compile Include="Navigation\NavigationServiceWithToken.cs" />
     <Compile Include="Repository\AlarmsRepository.cs" />
     <Compile Include="Utils\AssetsNamesReader.cs" />
     <Compile Include="Utils\IAssetsNamesReader.cs" />
     <Compile Include="ViewModel\AlarmSettingsViewModel.cs" />
     <Compile Include="ViewModel\DataTemplates\DayOfWeekDataTemplate.cs" />
+    <Compile Include="ViewModel\ViewModelBaseEx.cs" />
     <Compile Include="View\AlarmSettingsPage.xaml.cs">
       <DependentUpon>AlarmSettingsPage.xaml</DependentUpon>
     </Compile>
@@ -108,11 +111,10 @@
     <Compile Include="Common\SuspensionManager.cs" />
     <Compile Include="Converters\VisibilityConverter.cs" />
     <Compile Include="GeofenceService.cs" />
-    <Compile Include="Messages\MapMessage.cs" />
     <Compile Include="Common\Token.cs" />
     <Compile Include="Model\AlarmModel.cs" />
     <Compile Include="Model\AlarmsMonitor.cs" />
-    <Compile Include="Model\MapModel.cs" />
+    <Compile Include="Location\GeolocationModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ViewModel\MainViewModel.cs" />
     <Compile Include="ViewModel\MapViewModel.cs" />

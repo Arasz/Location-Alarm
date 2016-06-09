@@ -1,14 +1,13 @@
-﻿using LocationAlarm.Location;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Windows.Devices.Geolocation;
 using Windows.Services.Maps;
 
-namespace LocationAlarm.Model
+namespace LocationAlarm.Location
 {
-    public class MapModel : IReverseGeolocationQuery
+    public class GeolocationModel : IReverseGeolocationQuery
     {
         /// <summary>
         /// Object which contains all logic responsible for localization 
@@ -44,7 +43,7 @@ namespace LocationAlarm.Model
         /// </summary>
         public uint ReportInterval { get; set; } = 1000;
 
-        public MapModel()
+        public GeolocationModel()
         {
             _geolocator = new Geolocator()
             {

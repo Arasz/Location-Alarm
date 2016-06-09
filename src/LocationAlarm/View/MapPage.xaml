@@ -35,7 +35,7 @@
             <TextBlock x:Uid="MapPageSelectLocation" Text="Placeholder" Margin="5,15,5,5"
                        Style="{StaticResource  GroupHeaderTextBlockStyle}" Foreground="White" />
             <AutoSuggestBox ItemsSource="{Binding SuggestedLocations, Mode=OneWay}" Margin="5,5" AllowDrop="True"
-                            Text="{Binding LocationQuery, Mode=TwoWay}">
+                            Text="{Binding AutoSuggestionLocationQuery, Mode=TwoWay}">
                 <AutoSuggestBox.ItemTemplate>
                     <DataTemplate>
                         <StackPanel Orientation="Vertical">
