@@ -60,7 +60,7 @@
             <Image Grid.Row="0" Grid.ColumnSpan="2" Source="{Binding MapScreen}" Stretch="UniformToFill" />
             <Border Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Background="#26000000" VerticalAlignment="Bottom">
                 <TextBlock VerticalAlignment="Bottom" Foreground="Black"
-                       Text="Placeholder" FontSize="30" HorizontalAlignment="Stretch" Margin="5,0" />
+                       Text="{Binding AlarmName}" FontSize="30" HorizontalAlignment="Stretch" Margin="5,0" />
             </Border>
 
             <Line Grid.Row="1" Grid.ColumnSpan="2" VerticalAlignment="Stretch" Fill="White"

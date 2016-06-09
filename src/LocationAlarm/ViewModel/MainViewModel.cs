@@ -16,9 +16,7 @@ namespace LocationAlarm.ViewModel
 {
     /// <summary>
     /// This class contains properties that the main View can data bind to. 
-    /// <para>
-    /// Use the <strong> mvvminpc </strong> snippet to add bindable properties to this ViewModel.
-    /// </para>
+    /// <para> Use the <strong> mvvminpc </strong> snippet to add bindable properties to this ViewModel. </para>
     /// <para> You can also use Blend to data bind with the tool's support. </para>
     /// <para> See http://www.galasoft.ch/mvvm </para>
     /// </summary>
@@ -27,6 +25,7 @@ namespace LocationAlarm.ViewModel
     {
         private readonly AlarmsRepository _alarmsRepository;
         private readonly INavigationService _navigationService;
+        private Token _navigationToken;
         public INotifyCollectionChanged AlarmsCollection => _alarmsRepository.Collection;
 
         public ICommand EditAlarmCommand { get; private set; }
@@ -47,12 +46,12 @@ namespace LocationAlarm.ViewModel
         [OnCommand("AddNewAlarmCommand")]
         public void AddNewAlarm()
         {
-            _navigationService.NavigateTo(nameof(MapPage), _alarmsRepository.CreateTransitive());
+            _navigationToken = Token.AddNew;
+            _navigationService.NavigateTo(nameof(MapPage), new NavigationMessage(_navigationService.CurrentPageKey, _alarmsRepository.CreateTransitive(), _navigationToken));
         }
 
         public void GoBack()
         {
-            _navigationService.GoBack();
         }
 
         public void OnNavigatedFrom(NavigationMessage parameter)
@@ -61,13 +60,14 @@ namespace LocationAlarm.ViewModel
 
         public void OnNavigatedTo(NavigationMessage parameter)
         {
+            _navigationToken = parameter.Token;
             switch (parameter.From)
             {
                 case nameof(MapPage):
                     break;
 
                 case nameof(AlarmSettingsPage):
-                    if (parameter.Token != Token.AddNew) break;
+                    if (_navigationToken != Token.AddNew) break;
                     var alarm = parameter.Data as AlarmModel;
                     if (alarm == null) return;
                     _alarmsRepository.Add(alarm);
@@ -78,7 +78,7 @@ namespace LocationAlarm.ViewModel
         private void EditAlarmExecute(ItemClickEventArgs itemClickEventArgs)
         {
             var clickedItem = itemClickEventArgs.ClickedItem as AlarmModel;
-            _navigationService.NavigateTo(nameof(AlarmSettingsPage), clickedItem);
+            _navigationService.NavigateTo(nameof(AlarmSettingsPage), new NavigationMessage(_navigationService.CurrentPageKey, clickedItem));
         }
     }
 }

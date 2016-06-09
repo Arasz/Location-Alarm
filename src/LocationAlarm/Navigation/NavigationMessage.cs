@@ -10,7 +10,7 @@ namespace LocationAlarm.Navigation
 
         public Token Token { get; set; }
 
-        public NavigationMessage(string from, object data, Token token)
+        public NavigationMessage(string from, object data, Token token = Token.None)
         {
             From = from;
             Data = data;

@@ -7,5 +7,6 @@
         MapLoaded,
         FocusOnMap,
         AddNew,
+        None
     }
 }

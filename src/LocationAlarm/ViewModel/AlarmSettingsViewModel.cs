@@ -2,6 +2,7 @@
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Ioc;
 using GalaSoft.MvvmLight.Views;
+using LocationAlarm.Common;
 using LocationAlarm.Model;
 using LocationAlarm.Navigation;
 using LocationAlarm.Utils;
@@ -31,10 +32,11 @@ namespace LocationAlarm.ViewModel
 
         private Dictionary<string, AlarmType> _alarmTypeMap = new Dictionary<string, AlarmType>();
         private Dictionary<string, DayOfWeek> _dayOfWeekMap = new Dictionary<string, DayOfWeek>();
-
         private MediaPlayer _mediaPlayer = BackgroundMediaPlayer.Current;
-
+        private Token _navigationToken;
         private IEnumerable<string> _selectedDays;
+
+        public string AlarmName => _alarmModel.MonitoredArea.Name;
 
         /// <summary>
         /// </summary>
@@ -110,6 +112,7 @@ namespace LocationAlarm.ViewModel
 
         public void OnNavigatedTo(NavigationMessage message)
         {
+            _navigationToken = message.Token;
             _alarmModel = message.Data as AlarmModel;
         }
 
@@ -131,7 +134,7 @@ namespace LocationAlarm.ViewModel
         [OnCommand("SaveSettingsCommand")]
         public void OnSaveAlarmSettings()
         {
-            _navigationService.NavigateTo(nameof(MainPage), _alarmModel);
+            _navigationService.NavigateTo(nameof(MainPage), new NavigationMessage(_navigationService.CurrentPageKey, _alarmModel, _navigationToken));
         }
 
         private void InitializeAlarmTypes()

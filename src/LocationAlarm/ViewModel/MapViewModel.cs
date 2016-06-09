@@ -35,6 +35,7 @@ namespace LocationAlarm.ViewModel
         private AlarmModel _alarmModel;
         private LocationAutoSuggestion _autoSuggestion;
         private MonitoredArea _monitoredArea;
+        private Token _navigatioToken;
 
         public event AsyncEventHandler<Geopoint> CurrentLocationLoaded;
 
@@ -138,11 +139,12 @@ namespace LocationAlarm.ViewModel
             var model = parameter.Data as AlarmModel;
             if (model == null) return;
 
+            _navigatioToken = parameter.Token;
+
             _alarmModel = model;
             _monitoredArea = model.MonitoredArea;
 
             IsMapLoaded = false;
-            MapScreenshot = null;
             await UpdateUserLocationAsync(ActualLocation).ConfigureAwait(true);
         }
 
@@ -170,7 +172,7 @@ namespace LocationAlarm.ViewModel
         private async void SaveLocationExecute()
         {
             await TakeMapScreenshotAsync().ConfigureAwait(true);
-            _navigationService.NavigateTo(nameof(View.AlarmSettingsPage), _alarmModel);
+            _navigationService.NavigateTo(nameof(View.AlarmSettingsPage), new NavigationMessage(_navigationService.CurrentPageKey, _alarmModel, _navigatioToken));
         }
 
         /// <summary>
