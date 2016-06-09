@@ -119,8 +119,6 @@ namespace LocationAlarm.ViewModel
 
             TextChangeCommand = _autoSuggestion.TextChangedCommand;
             SuggestionChosenCommand = _autoSuggestion.SuggestionChosenCommand;
-
-            Messenger.Default.Register<bool>(this, Token.MapLoaded, (isMapLoaded) => IsMapLoaded = isMapLoaded);
         }
 
         public void GoBack()
@@ -162,6 +160,7 @@ namespace LocationAlarm.ViewModel
             var handlerTasks = invocationList.Select(invocation => invocation.Invoke(this, actualLocation));
 
             await Task.WhenAll(handlerTasks).ConfigureAwait(true);
+            IsMapLoaded = true;
         }
 
         private async void OnSuggestionSelected(object sender, MapLocation selectedLocation)

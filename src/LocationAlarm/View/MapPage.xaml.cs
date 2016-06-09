@@ -36,13 +36,6 @@ namespace LocationAlarm.View
             _viewModel = DataContext as MapViewModel;
             _mapCircleDrawer = new MapCircleDrawer(mapControl);
 
-            mapControl.LoadingStatusChanged += (sender, args) =>
-            {
-                if (sender.LoadingStatus == MapLoadingStatus.Loaded)
-                {
-                    Messenger.Default.Send(true, Token.MapLoaded);
-                }
-            };
             _viewModel.CurrentLocationLoaded += ViewModelOnCurrentLocationLoaded;
             Messenger.Default.Register<MapMessage>(this, Token.TakeScreenshot, TakeMapScreenshotAsync);
             Messenger.Default.Register<MapMessage>(this, Token.FocusOnMap, SetFocusOnMap);
