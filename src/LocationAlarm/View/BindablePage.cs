@@ -17,7 +17,7 @@ namespace LocationAlarm.View
         /// Event data that describes how this page was reached. This parameter is typically used to
         /// configure the page.
         /// </param>
-        protected override void OnNavigatedFrom(NavigationEventArgs e)
+        protected override async void OnNavigatedFrom(NavigationEventArgs e)
         {
             base.OnNavigatedFrom(e);
 
@@ -25,7 +25,8 @@ namespace LocationAlarm.View
 
             var navigableViewModel = DataContext as INavigable;
 
-            navigableViewModel?.OnNavigatedFrom(e.Parameter as NavigationMessage ?? new NavigationMessage(e.SourcePageType.Name, e.Parameter));
+            navigableViewModel?.OnNavigatedFrom(e.Parameter as NavigationMessage);
+            e = null;
         }
 
         /// <summary>
@@ -35,7 +36,7 @@ namespace LocationAlarm.View
         /// Event data that describes how this page was reached. This parameter is typically used to
         /// configure the page.
         /// </param>
-        protected override void OnNavigatedTo(NavigationEventArgs e)
+        protected override async void OnNavigatedTo(NavigationEventArgs e)
         {
             base.OnNavigatedTo(e);
 
@@ -43,7 +44,8 @@ namespace LocationAlarm.View
 
             var navigableViewModel = DataContext as INavigable;
 
-            navigableViewModel?.OnNavigatedTo(e.Parameter as NavigationMessage ?? new NavigationMessage(e.SourcePageType.Name, e.Parameter));
+            navigableViewModel?.OnNavigatedTo(e.Parameter as NavigationMessage);
+            e = null;
         }
 
         private void HardwareButtons_BackPressed(object sender, BackPressedEventArgs e)
@@ -52,6 +54,7 @@ namespace LocationAlarm.View
 
             e.Handled = true;
             navigableViewModel?.GoBack();
+            e = null;
         }
     }
 }

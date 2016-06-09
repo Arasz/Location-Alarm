@@ -1,12 +1,10 @@
-﻿using ArrivalAlarm.Messages;
-using GalaSoft.MvvmLight.Messaging;
+﻿using GalaSoft.MvvmLight.Messaging;
 using LocationAlarm.Common;
 using LocationAlarm.View.Map;
 using LocationAlarm.ViewModel;
 using System;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
-using System.Threading.Tasks;
 using Windows.Devices.Geolocation;
 using Windows.Foundation;
 using Windows.Graphics.Display;
@@ -18,6 +16,7 @@ using Windows.UI.Xaml.Controls.Primitives;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
+using Windows.UI.Xaml.Navigation;
 using Windows.UI.Xaml.Shapes;
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkID=390556
@@ -36,13 +35,27 @@ namespace LocationAlarm.View
             _viewModel = DataContext as MapViewModel;
             _mapCircleDrawer = new MapCircleDrawer(mapControl);
 
-            _viewModel.CurrentLocationLoaded += ViewModelOnCurrentLocationLoaded;
-            Messenger.Default.Register<MapMessage>(this, Token.TakeScreenshot, TakeMapScreenshotAsync);
-            Messenger.Default.Register<MapMessage>(this, Token.FocusOnMap, SetFocusOnMap);
-
             mapControl.Tapped += MapControlOnTapped;
             mapControl.PitchChanged += MapControlOnPitchChanged;
             mapControl.ZoomLevelChanged += MapControlOnZoomLevelChanged;
+        }
+
+        protected override void OnNavigatedFrom(NavigationEventArgs e)
+        {
+            base.OnNavigatedFrom(e);
+
+            Messenger.Default.Unregister<Geopoint>(this, ViewModelOnCurrentLocationLoaded);
+            Messenger.Default.Unregister<MessageBase>(this, Token.TakeScreenshot, TakeMapScreenshotAsync);
+            Messenger.Default.Unregister<MessageBase>(this, Token.FocusOnMap, SetFocusOnMap);
+        }
+
+        protected override void OnNavigatedTo(NavigationEventArgs e)
+        {
+            base.OnNavigatedTo(e);
+
+            Messenger.Default.Register<Geopoint>(this, ViewModelOnCurrentLocationLoaded);
+            Messenger.Default.Register<MessageBase>(this, Token.TakeScreenshot, TakeMapScreenshotAsync);
+            Messenger.Default.Register<MessageBase>(this, Token.FocusOnMap, SetFocusOnMap);
         }
 
         private void MapControlOnPitchChanged(MapControl sender, object args)
@@ -52,7 +65,6 @@ namespace LocationAlarm.View
                 .Cast<Ellipse>()
                 .ForEach(ellipse =>
             {
-                //ellipse.RenderTransformOrigin = new Point(0, .5);
                 ellipse.Projection = new PlaneProjection()
                 {
                     CenterOfRotationX = 0,
@@ -63,29 +75,15 @@ namespace LocationAlarm.View
             });
         }
 
-        private void MapControlOnTapped(object sender, TappedRoutedEventArgs tappedRoutedEventArgs)
-        {
-            mapControl.Focus(FocusState.Pointer);
-        }
+        private void MapControlOnTapped(object sender, TappedRoutedEventArgs tappedRoutedEventArgs) => mapControl.Focus(FocusState.Pointer);
 
-        private void MapControlOnZoomLevelChanged(MapControl sender, object args)
-        {
-            _mapCircleDrawer.Draw(_viewModel?.ActualLocation, _viewModel.GeocircleRadius);
-        }
+        private void MapControlOnZoomLevelChanged(MapControl sender, object args) => _mapCircleDrawer.Draw(_viewModel?.ActualLocation, _viewModel.GeocircleRadius);
 
-        private void RangeBase_OnValueChanged(object sender, RangeBaseValueChangedEventArgs e)
-        {
-            _mapCircleDrawer.Draw(_viewModel?.ActualLocation, _viewModel.GeocircleRadius);
-        }
+        private void RangeBase_OnValueChanged(object sender, RangeBaseValueChangedEventArgs e) => _mapCircleDrawer.Draw(_viewModel?.ActualLocation, _viewModel.GeocircleRadius);
 
-        private void SetFocusOnMap(MapMessage mapMessage)
-        {
-            mapControl.Focus(FocusState.Pointer);
-        }
+        private async void SetFocusOnMap(MessageBase message) => mapControl.Focus(FocusState.Pointer);
 
-        /// <summary>
-        /// </summary>
-        private async void TakeMapScreenshotAsync(MapMessage mapMessage)
+        private async void TakeMapScreenshotAsync(MessageBase message)
         {
             if (mapControl.RenderSize == new Size(0, 0))
                 return;
@@ -114,7 +112,7 @@ namespace LocationAlarm.View
             _viewModel.MapScreenshot = bitmapImage;
         }
 
-        private async Task ViewModelOnCurrentLocationLoaded(object o, Geopoint geopoint)
+        private async void ViewModelOnCurrentLocationLoaded(Geopoint geopoint)
         {
             LoadingProgressBar.Opacity = 100;
             await mapControl.TrySetViewAsync(geopoint, _viewModel.ZoomLevel, 0, 0, MapAnimationKind.Linear);

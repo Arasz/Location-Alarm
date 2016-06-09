@@ -1,6 +1,4 @@
-﻿using LocationAlarm.Common;
-
-namespace LocationAlarm.Navigation
+﻿namespace LocationAlarm.Navigation
 {
     public class NavigationMessage
     {
@@ -8,13 +6,14 @@ namespace LocationAlarm.Navigation
 
         public string From { get; set; }
 
-        public Token Token { get; set; }
-
-        public NavigationMessage(string from, object data, Token token = Token.None)
+        public NavigationMessage(string from, object data = null)
         {
             From = from;
             Data = data;
-            Token = token;
+        }
+
+        public NavigationMessage()
+        {
         }
     }
 }
