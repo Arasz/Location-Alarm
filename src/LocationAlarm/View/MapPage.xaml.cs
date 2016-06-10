@@ -108,7 +108,6 @@ namespace LocationAlarm.View
 
             var bitmapImage = new BitmapImage();
             await bitmapImage.SetSourceAsync(randomAccessStream);
-
             _viewModel.MapScreenshot = bitmapImage;
         }
 

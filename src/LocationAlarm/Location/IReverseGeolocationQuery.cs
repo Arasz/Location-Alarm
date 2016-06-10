@@ -15,6 +15,6 @@ namespace LocationAlarm.Location
         /// <param name="locationQuery"> Location query </param>
         /// <param name="maxResultsCount"> Maximum number of returned results </param>
         /// <returns></returns>
-        Task<IReadOnlyList<MapLocation>> FindLocationsAsync(string locationQuery, uint maxResultsCount = 6);
+        Task<IReadOnlyList<MapLocation>> FindLocationAsync(string locationQuery, uint maxResultsCount = 6);
     }
 }
