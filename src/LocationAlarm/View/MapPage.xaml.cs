@@ -16,7 +16,6 @@ using Windows.UI.Xaml.Controls.Primitives;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
-using Windows.UI.Xaml.Navigation;
 using Windows.UI.Xaml.Shapes;
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkID=390556
@@ -38,20 +37,6 @@ namespace LocationAlarm.View
             mapControl.Tapped += MapControlOnTapped;
             mapControl.PitchChanged += MapControlOnPitchChanged;
             mapControl.ZoomLevelChanged += MapControlOnZoomLevelChanged;
-        }
-
-        protected override void OnNavigatedFrom(NavigationEventArgs e)
-        {
-            base.OnNavigatedFrom(e);
-
-            Messenger.Default.Unregister<Geopoint>(this, ViewModelOnCurrentLocationLoaded);
-            Messenger.Default.Unregister<MessageBase>(this, Token.TakeScreenshot, TakeMapScreenshotAsync);
-            Messenger.Default.Unregister<MessageBase>(this, Token.FocusOnMap, SetFocusOnMap);
-        }
-
-        protected override void OnNavigatedTo(NavigationEventArgs e)
-        {
-            base.OnNavigatedTo(e);
 
             Messenger.Default.Register<Geopoint>(this, ViewModelOnCurrentLocationLoaded);
             Messenger.Default.Register<MessageBase>(this, Token.TakeScreenshot, TakeMapScreenshotAsync);

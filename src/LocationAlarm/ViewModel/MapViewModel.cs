@@ -1,6 +1,7 @@
 ﻿using ArrivalAlarm.Model;
 using Commander;
 using GalaSoft.MvvmLight.Messaging;
+using GalaSoft.MvvmLight.Threading;
 using LocationAlarm.Common;
 using LocationAlarm.Location;
 using LocationAlarm.Location.LocationAutosuggestion;
@@ -93,11 +94,11 @@ namespace LocationAlarm.ViewModel
         public override void OnNavigatedFrom(NavigationMessage parameter)
         {
             IsMapLoaded = false;
-
+            PushpinVisible = false;
             MessengerInstance.Unregister<MapLocation>(this, OnSuggestionSelected);
         }
 
-        public override async void OnNavigatedTo(NavigationMessage parameter)
+        public override void OnNavigatedTo(NavigationMessage parameter)
         {
             _monitoredArea = _selectedAlarm.MonitoredArea;
             _monitoredAreaCopy = new MonitoredArea(_selectedAlarm.MonitoredArea);
@@ -105,44 +106,44 @@ namespace LocationAlarm.ViewModel
             MessengerInstance.Register<MapLocation>(this, OnSuggestionSelected);
 
             IsMapLoaded = false;
-            await UpdateUserLocationAsync().ConfigureAwait(true);
+            DispatcherHelper.CheckBeginInvokeOnUI(async () =>
+            {
+                await UpdateUserLocationAsync().ConfigureAwait(true);
+            });
         }
 
-        private async void OnSuggestionSelected(MapLocation selectedLocation)
+        private void OnSuggestionSelected(MapLocation selectedLocation)
         {
             Messenger.Default.Send(new MessageBase(), Token.FocusOnMap);
             ActualLocation = selectedLocation.Point;
-            await UpdateUserLocationAsync().ConfigureAwait(true);
+            DispatcherHelper.CheckBeginInvokeOnUI(async () =>
+            {
+                await UpdateUserLocationAsync().ConfigureAwait(true);
+            });
         }
 
         [OnCommand("SaveLocationCommand")]
         private async void SaveLocationExecute()
         {
-            await TakeMapScreenshotAsync().ConfigureAwait(true);
-            _navigationService.NavigateTo(nameof(AlarmSettingsPage));
-        }
-
-        private async Task TakeMapScreenshotAsync()
-        {
             Messenger.Default.Send(new MessageBase(), Token.TakeScreenshot);
-
+            MapScreenshot = null;
             await Task.Factory.StartNew(() =>
             {
                 while (MapScreenshot == null)
                 {
                 }
             }).ConfigureAwait(true);
+            _navigationService.NavigateTo(nameof(AlarmSettingsPage));
         }
 
         [OnCommand("FindMeCommand")]
-        private async void UpdatePosition() => await UpdateUserLocationAsync().ConfigureAwait(true);
+        private async void UpdatePosition() => await UpdateUserLocationAsync(true).ConfigureAwait(true);
 
-        private async Task UpdateUserLocationAsync()
+        private async Task UpdateUserLocationAsync(bool fetchActualLocation = false)
         {
-            if (ActualLocation == null)
+            if (fetchActualLocation || ActualLocation == null)
                 ActualLocation = (await _geolocationModel.GetActualLocationAsync().ConfigureAwait(true))?.Coordinate?.Point;
-            var locations = await _geolocationModel.FindLocationAtAsync(ActualLocation).ConfigureAwait(true);
-            AutoSuggestionLocationQuery = locations?
+            AutoSuggestionLocationQuery = _geolocationModel.LastKnownLocations?
                 .Take(new[] { 0 })
                 .Select(location => new ReadableLocationName(location))
                 .First()
