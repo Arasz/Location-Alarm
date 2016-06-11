@@ -97,7 +97,7 @@ namespace LocationAlarm.ViewModel
             MessengerInstance.Unregister<MapLocation>(this, OnSuggestionSelected);
         }
 
-        public override void OnNavigatedTo(NavigationMessage parameter)
+        public override async void OnNavigatedTo(NavigationMessage parameter)
         {
             _monitoredArea = _selectedAlarm.MonitoredArea;
             _monitoredAreaCopy = new MonitoredArea(_selectedAlarm.MonitoredArea);
@@ -105,20 +105,16 @@ namespace LocationAlarm.ViewModel
             MessengerInstance.Register<MapLocation>(this, OnSuggestionSelected);
 
             IsMapLoaded = false;
-            DispatcherHelper.CheckBeginInvokeOnUI(async () =>
-            {
-                await UpdateUserLocationAsync().ConfigureAwait(false);
-            });
+
+            await UpdateUserLocationAsync().ConfigureAwait(false);
         }
 
-        private void OnSuggestionSelected(MapLocation selectedLocation)
+        private async void OnSuggestionSelected(MapLocation selectedLocation)
         {
             Messenger.Default.Send(new MessageBase(), Token.FocusOnMap);
             ActualLocation = selectedLocation.Point;
-            DispatcherHelper.CheckBeginInvokeOnUI(async () =>
-            {
-                await UpdateUserLocationAsync().ConfigureAwait(false);
-            });
+
+            await UpdateUserLocationAsync().ConfigureAwait(false);
         }
 
         [OnCommand("SaveLocationCommand")]
