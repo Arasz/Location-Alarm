@@ -7,6 +7,10 @@
     <Application.Resources>
         <ResourceDictionary>
             <viewModel:ViewModelLocator x:Key="Locator" d:IsDataSource="True" />
+            <Style TargetType="CommandBar" x:Name="CommandBarStyle">
+                <Setter Property="IsSticky" Value="True" />
+                <Setter Property="ClosedDisplayMode" Value="Compact" />
+            </Style>
         </ResourceDictionary>
     </Application.Resources>
 </Application>

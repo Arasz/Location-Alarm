@@ -83,6 +83,12 @@ namespace LocationAlarm.ViewModel
             InitializeAlaram();
         }
 
+        [OnCommand("EditLocationCommand")]
+        public void EditLocation()
+        {
+            _navigationService.NavigateTo(nameof(MapPage));
+        }
+
         public override async void OnNavigatedTo(NavigationMessage message)
         {
             if (NotificationSounds.Count() <= 1)

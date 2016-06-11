@@ -16,12 +16,11 @@ namespace LocationAlarm.Location
 
         /// <summary>
         /// </summary>
-        public TimeSpan GetPositionTimeout { get; set; } = TimeSpan.FromSeconds(10);
+        public TimeSpan GetPositionTimeout { get; set; } = TimeSpan.FromSeconds(6);
 
-        /// <summary>
-        /// Last known location 
-        /// </summary>
-        public Geoposition LastKnownLocation { get; private set; }
+        public IReadOnlyList<MapLocation> LastFetchedLocations { get; private set; }
+
+        public Geoposition LastFetchedPosition { get; private set; }
 
         /// <summary>
         /// Time when location data was retrieved 
@@ -53,37 +52,48 @@ namespace LocationAlarm.Location
             };
 
             _geolocator.PositionChanged += PositionChangedHandler;
-            _geolocator.StatusChanged += StatusChangedHandler;
         }
 
-        public async Task<IReadOnlyList<MapLocation>> FindLocationAtAsync(Geopoint queryPoint = null)
+        /// <summary>
+        /// Find location witch best matched to given criteria. If no criteria is given get firs element. 
+        /// </summary>
+        /// <returns> Location name </returns>
+        /// <exception cref="ArgumentNullException"> <paramref name=""/> is <see langword="null"/>. </exception>
+        public async Task<ReadableLocationName> FindBestMatchedLocationAtAsync(Geopoint queryPoint, Func<MapLocation, bool> matchCriteria = null)
         {
-            if (queryPoint == null && LastKnownLocation != null)
-                queryPoint = LastKnownLocation.Coordinate.Point;
+            if (queryPoint == null) throw new ArgumentNullException();
 
-            var result = await MapLocationFinder.FindLocationsAtAsync(queryPoint);
-            if (result.Status == MapLocationFinderStatus.Success)
-                return result.Locations;
-            return null;
+            var locations = await FindLocationAtAsync(queryPoint).ConfigureAwait(false);
+
+            if (locations == null) return null;
+
+            return matchCriteria == null ?
+                new ReadableLocationName(locations.First()) :
+                new ReadableLocationName(locations.First(matchCriteria));
         }
 
-        public async Task<IReadOnlyList<MapLocation>> FindLocationsAsync(string locationQuery, uint maxResultsCount = 6)
+        /// <summary>
+        /// </summary>
+        /// <param name="locationQuery"></param>
+        /// <param name="maxResultsCount"></param>
+        /// <returns></returns>
+        public async Task<IReadOnlyList<MapLocation>> FindLocationAsync(string locationQuery, uint maxResultsCount = 6)
         {
             // Give as a hint actual user location because we don't have any informations about
             // searched location
-            if (LastKnownLocation == null || (LastLocationFetchTime - DateTime.Now) >= LocationFetchInterval)
-                LastKnownLocation = await GetActualLocationAsync().ConfigureAwait(false);
+            if (LastFetchedPosition == null)
+                await GetActualLocationAsync().ConfigureAwait(false);
+
+            var geopoint = LastFetchedPosition.Coordinate.Point;
 
             // Find given location
-            var mapLocationFinderResult =
-                await MapLocationFinder.FindLocationsAsync(locationQuery, LastKnownLocation.Coordinate.Point,
-                        maxResultsCount);
+            var asyncOperation = MapLocationFinder.FindLocationsAsync(locationQuery, geopoint, maxResultsCount);
+            var result = await asyncOperation;
 
-            if (mapLocationFinderResult.Status == MapLocationFinderStatus.Success &&
-                mapLocationFinderResult.Locations.Any())
-                return mapLocationFinderResult.Locations;
+            if (result.Status == MapLocationFinderStatus.Success && result.Locations.Any())
+                LastFetchedLocations = result.Locations;
 
-            return null;
+            return LastFetchedLocations;
         }
 
         /// <summary>
@@ -94,19 +104,28 @@ namespace LocationAlarm.Location
         {
             LastLocationFetchTime = DateTime.Now;
 
-            LastKnownLocation = await _geolocator.GetGeopositionAsync(LocationFetchInterval, GetPositionTimeout);
+            var asyncOperation = _geolocator.GetGeopositionAsync(LocationFetchInterval, GetPositionTimeout);
 
-            return LastKnownLocation;
+            LastFetchedPosition = await asyncOperation;
+
+            return LastFetchedPosition;
+        }
+
+        private async Task<IReadOnlyList<MapLocation>> FindLocationAtAsync(Geopoint queryPoint)
+        {
+            var asyncOperation = MapLocationFinder.FindLocationsAtAsync(queryPoint);
+
+            var result = await asyncOperation;
+
+            if (result.Status != MapLocationFinderStatus.Success) return null;
+            LastFetchedLocations = result.Locations.ToList();
+            return LastFetchedLocations;
         }
 
         private void PositionChangedHandler(Geolocator sender, PositionChangedEventArgs args)
         {
             LastLocationFetchTime = DateTime.Now;
-            LastKnownLocation = args.Position;
-        }
-
-        private void StatusChangedHandler(Geolocator sender, StatusChangedEventArgs args)
-        {
+            LastFetchedPosition = args.Position;
         }
     }
 }

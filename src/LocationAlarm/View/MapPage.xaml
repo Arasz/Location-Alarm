@@ -90,7 +90,7 @@
     </Grid>
 
     <view:BindablePage.BottomAppBar>
-        <CommandBar>
+        <CommandBar Style="{StaticResource CommandBarStyle}">
             <AppBarButton x:Uid="MapPageFindMe" Label="Find me" Icon="Target"
                           Command="{Binding FindMeCommand}" />
             <AppBarButton x:Name="saveLocationButton" x:Uid="MapPageSaveLocation" Label="Save location" Icon="Save"
