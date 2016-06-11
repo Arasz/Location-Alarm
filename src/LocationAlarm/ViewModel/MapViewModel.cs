@@ -127,7 +127,7 @@ namespace LocationAlarm.ViewModel
                 while (MapScreenshot == null)
                 {
                 }
-            }).ConfigureAwait(false);
+            }).ConfigureAwait(true);
             _navigationService.NavigateTo(nameof(AlarmSettingsPage));
         }
 
