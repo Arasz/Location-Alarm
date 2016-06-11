@@ -60,7 +60,7 @@ namespace ArrivalAlarm.Model
         /// Monitored area name 
         /// </summary>
         [DataMember]
-        public string Name { get; set; }
+        public string Name { get; set; } = "Name";
 
         /// <summary>
         /// Monitored area radius 

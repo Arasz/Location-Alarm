@@ -84,6 +84,7 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\AlarmItem\MetersToKilometersConverter.cs" />
     <Compile Include="Converters\SliderValueConverter.cs" />
     <Compile Include="Interceptors\AsyncErrorHandler.cs" />
     <Compile Include="Location\IReverseGeolocationQuery.cs" />
@@ -119,12 +120,12 @@
     <Compile Include="ViewModel\MainViewModel.cs" />
     <Compile Include="ViewModel\MapViewModel.cs" />
     <Compile Include="ViewModel\ViewModelLocator.cs" />
-    <Compile Include="Controls\AlarmItemControl.xaml.cs">
+    <Compile Include="Controls\AlarmItem\AlarmItemControl.xaml.cs">
       <DependentUpon>AlarmItemControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Converters\AutoSuggestBoxSuggestionChosenEventArgsToSelectedItemConverter.cs" />
     <Compile Include="Converters\AutoSuggestionBoxTextChangeToBoolConverter.cs" />
-    <Compile Include="Converters\DayNameConverter.cs" />
+    <Compile Include="Controls\AlarmItem\DayNameConverter.cs" />
     <Compile Include="View\MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>
@@ -156,9 +157,14 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Page Include="Controls\AlarmItemControl.xaml">
+    <Page Include="Controls\AlarmItem\AlarmItemControl.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Controls\AlarmItem\AlarmItemResources.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Page>
     <Page Include="View\AlarmSettingsPage.xaml">
       <SubType>Designer</SubType>

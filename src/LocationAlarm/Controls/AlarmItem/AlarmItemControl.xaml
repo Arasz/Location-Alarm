@@ -1,0 +1,84 @@
+﻿<UserControl
+    x:Class="LocationAlarm.Controls.AlarmItem.AlarmItemControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:model="using:LocationAlarm.Model"
+    xmlns:alarmItem="using:LocationAlarm.Controls.AlarmItem"
+    mc:Ignorable="d"
+    d:DesignHeight="100"
+    d:DesignWidth="400"
+    Width="400"
+    Height="100"
+    MaxHeight="200"
+    x:Name="Control"
+    d:DataContext="{d:DesignInstance model:AlarmModel, IsDesignTimeCreatable=True}">
+
+    <UserControl.Resources>
+        <ResourceDictionary Source="AlarmItemResources.xaml" />
+    </UserControl.Resources>
+
+    <Grid x:Name="rootLayout">
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition MinWidth="200" Width="5*" />
+            <ColumnDefinition Width="70" />
+            <ColumnDefinition Width="40" />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="2*" />
+            <RowDefinition Height="2*" />
+        </Grid.RowDefinitions>
+
+        <StackPanel Orientation="Horizontal" Grid.Row="0" Grid.Column="0">
+            <SymbolIcon Symbol="Map" Margin="0,0,10,0" />
+            <TextBlock Text="{Binding Path=Label}" TextWrapping="WrapWholeWords"
+                       FontSize="15"
+                       HorizontalAlignment="Left" VerticalAlignment="Center" />
+        </StackPanel>
+
+        <TextBlock FontSize="15"
+                   Grid.Row="0" Grid.Column="1" Margin="5, 0"
+                   HorizontalAlignment="Right" VerticalAlignment="Center">
+            <Run Text="+ " />
+            <Run Text="{Binding Path=MonitoredArea.Radius,  Converter={StaticResource MetersToKilometersConverter}}" />
+            <Run Text="km" />
+        </TextBlock>
+
+        <AppBarButton Grid.Row="0" Grid.Column="0" Margin="0,-5,-50,0"  x:Name="DeleteButton" VerticalAlignment="Top"
+                      HorizontalAlignment="Right" RenderTransformOrigin="1,0.3" Icon="Cancel" Grid.ColumnSpan="2"
+
+                      Height="56" Grid.RowSpan="2">
+            <AppBarButton.RenderTransform>
+                <CompositeTransform ScaleX="0.7" ScaleY="0.7" />
+            </AppBarButton.RenderTransform>
+        </AppBarButton>
+
+        <Grid Grid.Row="1" Grid.Column="0" ColumnSpan="3"  HorizontalAlignment="Left">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="35" />
+                <ColumnDefinition Width="65" />
+                <ColumnDefinition Width="50" />
+                <ColumnDefinition Width="160" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <SymbolIcon Grid.Column="0"  Symbol="Audio" />
+
+            <TextBlock  Grid.Column="1" Text="{Binding AlarmType}" HorizontalAlignment="Left" VerticalAlignment="Center"
+                        Style="{StaticResource AlarmControlTextBlockStyle}" />
+
+            <SymbolIcon Grid.Column="2" Symbol="Calendar" />
+
+            <TextBlock Grid.Column="3" Text="{Binding Path=ActiveDays, Converter={StaticResource DayNameConverter}}" VerticalAlignment="Center"
+                          HorizontalAlignment="Stretch" />
+
+            <ToggleSwitch  OffContent="" OnContent=""  Grid.Column="4" Style="{StaticResource ToggleSwitchStyle}"
+                           HorizontalAlignment="Left" VerticalAlignment="Bottom" IsOn="{Binding IsActive}" />
+        </Grid>
+
+        <Line Stretch="Uniform" Stroke="White" StrokeThickness="1" Height="10" HorizontalAlignment="Stretch"
+              VerticalAlignment="Bottom" X1="0" Y1="0" X2="1000" Y2="0"
+              Visibility="Visible" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" />
+    </Grid>
+</UserControl>
