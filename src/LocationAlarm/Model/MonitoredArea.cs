@@ -2,6 +2,7 @@
 using System.Runtime.Serialization;
 using Windows.Devices.Geolocation;
 using Windows.Devices.Geolocation.Geofencing;
+using Windows.Foundation.Metadata;
 
 namespace ArrivalAlarm.Model
 {
@@ -37,7 +38,7 @@ namespace ArrivalAlarm.Model
         /// <summary>
         /// Alarm position on map 
         /// </summary>
-        [DataMember]
+        [DataMember, Deprecated("In future only geopint will be used", DeprecationType.Deprecate, 1)]
         public BasicGeoposition Geoposition { get; set; }
 
         /// <summary>
@@ -77,13 +78,20 @@ namespace ArrivalAlarm.Model
         /// </summary>
         public DateTimeOffset StartTime { get; set; }
 
-        /// <summary>
-        /// </summary>
-        /// <param name="name"> Location <c> name </c> </param>
-        /// <param name="geoposition"> Position on map in geographic coordinates </param>
-        /// <param name="geocircleRadius"> Geocircle (geofence) radius in meters </param>
         public MonitoredArea()
         {
+        }
+
+        public MonitoredArea(MonitoredArea prototype)
+        {
+            Name = prototype.Name;
+            Radius = prototype.Radius;
+            SingleUse = prototype.SingleUse;
+            StartTime = prototype.StartTime;
+            Geoposition = prototype.Geoposition;
+            Geopoint = prototype.Geopoint;
+            DwellTime = prototype.DwellTime;
+            Duration = prototype.Duration;
         }
 
         public static explicit operator Geofence(MonitoredArea monitoredArea)

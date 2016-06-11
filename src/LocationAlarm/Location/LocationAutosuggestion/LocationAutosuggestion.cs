@@ -48,7 +48,7 @@ namespace LocationAlarm.Location.LocationAutosuggestion
 
             UserSelectedSuggestion = (ReadableLocationName)selectedItem;
             LocationQueryResults = await _reverseGeolocationQueryService
-                .FindLocationsAsync(UserSelectedSuggestion.FullLocationName)
+                .FindLocationAsync(UserSelectedSuggestion.FullLocationName)
                 .ConfigureAwait(true);
             Messenger.Default.Send(LocationQueryResults.FirstOrDefault());
         }
@@ -60,7 +60,7 @@ namespace LocationAlarm.Location.LocationAutosuggestion
 
             var userInput = ProvidedLocationQuery;
             LocationQueryResults = await _reverseGeolocationQueryService
-                .FindLocationsAsync(userInput)
+                .FindLocationAsync(userInput)
                 .ConfigureAwait(true);
 
             LocationQueryResults?
