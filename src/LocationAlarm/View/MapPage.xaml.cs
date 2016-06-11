@@ -25,6 +25,7 @@ namespace LocationAlarm.View
 {
     public sealed partial class MapPage
     {
+        public event EventHandler MapScreenshootTaken;
         private readonly MapCircleDrawer _mapCircleDrawer;
         private readonly MapViewModel _viewModel;
 

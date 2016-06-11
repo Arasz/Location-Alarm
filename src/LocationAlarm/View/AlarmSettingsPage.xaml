@@ -125,7 +125,7 @@
         </Grid>
     </Grid>
     <local:BindablePage.BottomAppBar>
-        <CommandBar ClosedDisplayMode="Minimal">
+        <CommandBar Style="{StaticResource CommandBarStyle}">
             <AppBarButton x:Uid="AlarmSettingsSave" Icon="Save" Command="{Binding SaveSettingsCommand}" />
         </CommandBar>
     </local:BindablePage.BottomAppBar>

@@ -56,7 +56,7 @@
     </Grid>
 
     <view:BindablePage.BottomAppBar>
-        <CommandBar ClosedDisplayMode="Minimal">
+        <CommandBar Style="{StaticResource CommandBarStyle}">
             <AppBarButton Label="Add alarm" Icon="Add" Command="{Binding AddNewAlarmCommand}" />
         </CommandBar>
     </view:BindablePage.BottomAppBar>
