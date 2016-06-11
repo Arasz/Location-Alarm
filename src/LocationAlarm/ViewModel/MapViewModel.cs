@@ -9,7 +9,6 @@ using LocationAlarm.Navigation;
 using LocationAlarm.View;
 using PropertyChanged;
 using System.Collections.ObjectModel;
-using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Windows.Devices.Geolocation;
@@ -108,7 +107,7 @@ namespace LocationAlarm.ViewModel
             IsMapLoaded = false;
             DispatcherHelper.CheckBeginInvokeOnUI(async () =>
             {
-                await UpdateUserLocationAsync().ConfigureAwait(true);
+                await UpdateUserLocationAsync().ConfigureAwait(false);
             });
         }
 
@@ -118,7 +117,7 @@ namespace LocationAlarm.ViewModel
             ActualLocation = selectedLocation.Point;
             DispatcherHelper.CheckBeginInvokeOnUI(async () =>
             {
-                await UpdateUserLocationAsync().ConfigureAwait(true);
+                await UpdateUserLocationAsync().ConfigureAwait(false);
             });
         }
 
@@ -132,7 +131,7 @@ namespace LocationAlarm.ViewModel
                 while (MapScreenshot == null)
                 {
                 }
-            }).ConfigureAwait(true);
+            }).ConfigureAwait(false);
             _navigationService.NavigateTo(nameof(AlarmSettingsPage));
         }
 
@@ -141,18 +140,25 @@ namespace LocationAlarm.ViewModel
 
         private async Task UpdateUserLocationAsync(bool fetchActualLocation = false)
         {
-            if (fetchActualLocation || ActualLocation == null)
-                ActualLocation = (await _geolocationModel.GetActualLocationAsync().ConfigureAwait(true))?.Coordinate?.Point;
-            AutoSuggestionLocationQuery = _geolocationModel.LastKnownLocations?
-                .Take(new[] { 0 })
-                .Select(location => new ReadableLocationName(location))
-                .First()
-                .ToString();
-            _monitoredArea.Name = AutoSuggestionLocationQuery;
-            ZoomLevel = 12;
-            PushpinVisible = true;
-            MessengerInstance.Send(ActualLocation);
-            IsMapLoaded = true;
+            Geopoint updatedLocation = ActualLocation;
+
+            if (fetchActualLocation || updatedLocation == null)
+            {
+                var geoposition = await _geolocationModel.GetActualLocationAsync().ConfigureAwait(false);
+                updatedLocation = geoposition.Coordinate.Point;
+            }
+            var readableLocationName = await _geolocationModel.FindBestMatchedLocationAtAsync(updatedLocation).ConfigureAwait(false);
+            _monitoredArea.Name = readableLocationName.ToString();
+
+            DispatcherHelper.CheckBeginInvokeOnUI(() =>
+            {
+                ActualLocation = updatedLocation; // UI
+                AutoSuggestionLocationQuery = _monitoredArea.Name; // UI
+                ZoomLevel = 12; // UI
+                PushpinVisible = true; // UI
+                IsMapLoaded = true; //UI
+            });
+            MessengerInstance.Send(updatedLocation);
         }
     }
 }

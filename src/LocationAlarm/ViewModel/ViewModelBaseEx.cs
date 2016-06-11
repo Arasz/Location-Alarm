@@ -6,7 +6,9 @@ namespace LocationAlarm.ViewModel
 {
     public class ViewModelBaseEx : ViewModelBase, INavigable
     {
-        protected static AlarmModel _selectedAlarm;
+        //TODO: Shouldn't be static
+        protected static volatile AlarmModel _selectedAlarm;
+
         protected readonly NavigationServiceWithToken _navigationService;
 
         public ViewModelBaseEx(NavigationServiceWithToken navigationService)

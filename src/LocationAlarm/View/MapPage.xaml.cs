@@ -1,4 +1,5 @@
 ﻿using GalaSoft.MvvmLight.Messaging;
+using GalaSoft.MvvmLight.Threading;
 using LocationAlarm.Common;
 using LocationAlarm.View.Map;
 using LocationAlarm.ViewModel;
@@ -68,39 +69,47 @@ namespace LocationAlarm.View
 
         private void SetFocusOnMap(MessageBase message) => mapControl.Focus(FocusState.Pointer);
 
-        private async void TakeMapScreenshotAsync(MessageBase message)
+        private void TakeMapScreenshotAsync(MessageBase message)
         {
-            if (mapControl.RenderSize == new Size(0, 0))
-                return;
-            var dpi = DisplayInformation.GetForCurrentView().LogicalDpi;
+            DispatcherHelper.CheckBeginInvokeOnUI(async () =>
+            {
+                if (mapControl.RenderSize == new Size(0, 0))
+                    return;
+                var dpi = DisplayInformation.GetForCurrentView().LogicalDpi;
 
-            var renderTargetBitmap = new RenderTargetBitmap();
-            await renderTargetBitmap.RenderAsync(mapControl);
-            var pixelBuffer = await renderTargetBitmap.GetPixelsAsync();
-            var randomAccessStream = new InMemoryRandomAccessStream();
+                var renderTargetBitmap = new RenderTargetBitmap();
+                await renderTargetBitmap.RenderAsync(mapControl);
+                var pixelBuffer = await renderTargetBitmap.GetPixelsAsync();
+                var randomAccessStream = new InMemoryRandomAccessStream();
 
-            var encoder = await BitmapEncoder.CreateAsync(BitmapEncoder.PngEncoderId, randomAccessStream);
-            encoder.SetPixelData(
-                BitmapPixelFormat.Bgra8,
-                BitmapAlphaMode.Ignore,
-                (uint)renderTargetBitmap.PixelWidth,
-                (uint)renderTargetBitmap.PixelHeight,
-                dpi,
-                dpi,
-                pixelBuffer.ToArray());
+                var encoder = await BitmapEncoder.CreateAsync(BitmapEncoder.PngEncoderId, randomAccessStream);
+                encoder.SetPixelData(
+                    BitmapPixelFormat.Bgra8,
+                    BitmapAlphaMode.Ignore,
+                    (uint)renderTargetBitmap.PixelWidth,
+                    (uint)renderTargetBitmap.PixelHeight,
+                    dpi,
+                    dpi,
+                    pixelBuffer.ToArray());
 
-            await encoder.FlushAsync();
+                await encoder.FlushAsync();
 
-            var bitmapImage = new BitmapImage();
-            await bitmapImage.SetSourceAsync(randomAccessStream);
-            _viewModel.MapScreenshot = bitmapImage;
+                var bitmapImage = new BitmapImage();
+                await bitmapImage.SetSourceAsync(randomAccessStream);
+                _viewModel.MapScreenshot = bitmapImage;
+            });
         }
 
-        private async void ViewModelOnCurrentLocationLoaded(Geopoint geopoint)
+        private void ViewModelOnCurrentLocationLoaded(Geopoint geopoint)
         {
-            LoadingProgressBar.Opacity = 100;
-            await mapControl.TrySetViewAsync(geopoint, _viewModel.ZoomLevel, 0, 0, MapAnimationKind.Linear);
-            LoadingProgressBar.Opacity = 0;
+            DispatcherHelper.CheckBeginInvokeOnUI(
+                async () =>
+                {
+                    LoadingProgressBar.Opacity = 100;
+                    await mapControl.TrySetViewAsync(geopoint, _viewModel.ZoomLevel, 0, 0, MapAnimationKind.Linear);
+                    LoadingProgressBar.Opacity = 0;
+                }
+                );
         }
     }
 }
