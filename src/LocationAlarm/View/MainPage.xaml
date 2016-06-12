@@ -17,7 +17,13 @@
         <ResourceDictionary>
             <DataTemplate x:Key="alarmModelTemplate">
                 <alarmItem:AlarmItemControl DataContext="{Binding}" Width="{Binding
-                    RelativeSource={RelativeSource TemplatedParent} ,Path=Width}" />
+                    RelativeSource={RelativeSource TemplatedParent} ,Path=Width}">
+                    <interactivity:Interaction.Behaviors>
+                        <core:EventTriggerBehavior EventName="SwypeToDeleteCompleted">
+                            <core:InvokeCommandAction Command="{Binding ElementName=LayoutRoot, Path=DataContext.DeleteAlarmCommand}" />
+                        </core:EventTriggerBehavior>
+                    </interactivity:Interaction.Behaviors>
+                </alarmItem:AlarmItemControl>
             </DataTemplate>
         </ResourceDictionary>
     </view:BindablePage.Resources>

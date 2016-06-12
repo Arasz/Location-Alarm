@@ -15,7 +15,6 @@
     x:Name="Control"
     d:DataContext="{d:DesignInstance model:AlarmModel, IsDesignTimeCreatable=True}"
     ManipulationStarted="AlarmItemControl_OnManipulationStarted"
-    ManipulationDelta="AlarmItemControl_OnManipulationDelta"
     ManipulationCompleted="AlarmItemControl_OnManipulationCompleted"
     ManipulationMode="TranslateX">
 

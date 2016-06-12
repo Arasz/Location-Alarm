@@ -84,6 +84,7 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\AlarmItem\AlarmItemEventArgs.cs" />
     <Compile Include="Controls\AlarmItem\MetersToKilometersConverter.cs" />
     <Compile Include="Converters\SliderValueConverter.cs" />
     <Compile Include="Interceptors\AsyncErrorHandler.cs" />
@@ -95,7 +96,7 @@
     <Compile Include="Navigation\INavigationServiceWithToken.cs" />
     <Compile Include="Navigation\NavigationMessage.cs" />
     <Compile Include="Navigation\NavigationServiceWithToken.cs" />
-    <Compile Include="Repository\AlarmsRepository.cs" />
+    <Compile Include="Model\LocationAlarmModel.cs" />
     <Compile Include="Utils\AssetsNamesReader.cs" />
     <Compile Include="Utils\IAssetsNamesReader.cs" />
     <Compile Include="ViewModel\AlarmSettingsViewModel.cs" />
@@ -235,6 +236,7 @@
     </SDKReference>
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Repository\" />
     <Folder Include="Resources\Strings\pl-PL\" />
   </ItemGroup>
   <ItemGroup>

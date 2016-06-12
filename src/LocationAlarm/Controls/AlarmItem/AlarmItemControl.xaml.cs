@@ -1,4 +1,6 @@
-﻿using System;
+﻿using LocationAlarm.Model;
+using System;
+using System.Diagnostics;
 using Windows.Foundation;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
@@ -11,16 +13,18 @@ namespace LocationAlarm.Controls.AlarmItem
     {
         private Point _endPosition;
 
-        private double _manipulationDeltaXThreshold = 340d;
+        private double _manipulationDeltaXThreshold;
 
         private bool _manipulationStarted;
         private Point _startPosition;
 
-        public event EventHandler SwypeToDeleteCompleted;
+        public event EventHandler<AlarmItemEventArgs> SwypeToDeleteCompleted;
 
         public AlarmItemControl()
         {
             InitializeComponent();
+            _manipulationDeltaXThreshold = Width - 80;
+            Debug.WriteLine(nameof(_manipulationDeltaXThreshold) + $": {_manipulationDeltaXThreshold}");
         }
 
         private void AlarmItemControl_OnManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs e)
@@ -29,13 +33,8 @@ namespace LocationAlarm.Controls.AlarmItem
 
             _manipulationStarted = false;
             _endPosition = e.Position;
-        }
 
-        private void AlarmItemControl_OnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
-        {
-            if (!_manipulationStarted) return;
-            var delta = e.Delta;
-            if (delta.Translation.X >= _manipulationDeltaXThreshold)
+            if ((_endPosition.X - _startPosition.X) >= _manipulationDeltaXThreshold)
                 OnSwypeToDeleteCompleted();
         }
 
@@ -49,7 +48,7 @@ namespace LocationAlarm.Controls.AlarmItem
 
         private void OnSwypeToDeleteCompleted()
         {
-            SwypeToDeleteCompleted?.Invoke(this, EventArgs.Empty);
+            SwypeToDeleteCompleted?.Invoke(this, new AlarmItemEventArgs(DataContext as AlarmModel));
         }
     }
 }
