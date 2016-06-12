@@ -17,7 +17,8 @@ namespace LocationAlarm.Model
         /// Days in which alarm is active 
         /// </summary>
         [DataMember]
-        public ISet<DayOfWeek> ActiveDays { get; set; } = new HashSet<DayOfWeek>()
+        public ISet<DayOfWeek> ActiveDays { get; set; } = new SortedSet<DayOfWeek>();/* = new SortedSet<DayOfWeek>
+
         {
             DayOfWeek.Monday,
             DayOfWeek.Tuesday,
@@ -25,7 +26,7 @@ namespace LocationAlarm.Model
             DayOfWeek.Thursday,
             DayOfWeek.Friday,
             DayOfWeek.Saturday
-        };
+        }; */
 
         /// <summary>
         /// Ringtone 

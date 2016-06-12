@@ -4,7 +4,7 @@ using System.Linq;
 using Windows.ApplicationModel.Resources;
 using Windows.UI.Xaml.Data;
 
-namespace LocationAlarm.Controls.AlarmItem
+namespace LocationAlarm.Converters
 {
     public class DayNameConverter : IValueConverter
     {
@@ -13,7 +13,7 @@ namespace LocationAlarm.Controls.AlarmItem
 
         public object Convert(object value, Type targetType, object parameter, string language)
         {
-            var activeDays = (HashSet<DayOfWeek>)value;
+            var activeDays = (ISet<DayOfWeek>)value;
             if (!activeDays.Any())
                 return _repeatOnceString;
 

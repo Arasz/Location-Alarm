@@ -8,6 +8,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:core="using:Microsoft.Xaml.Interactions.Core"
     xmlns:interactivity="using:Microsoft.Xaml.Interactivity"
+    xmlns:converters="using:LocationAlarm.Converters"
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
     DataContext="{Binding Source={StaticResource Locator}, Path=AlarmSettings}">
@@ -30,6 +31,8 @@
             <Setter Property="HorizontalAlignment" Value="Stretch" />
             <Setter Property="Margin" Value="10,0" />
         </Style>
+        <converters:DayNameConverter x:Key="DayNameConverter" />
+        <converters:DayOfWeekToStringConverter x:Key="DayOfWeekToStringConverter" />
     </local:BindablePage.Resources>
 
     <Grid x:Name="LayoutRoot">
@@ -105,7 +108,7 @@
 
             <TextBlock Grid.Row="4" Grid.Column="0" x:Uid="AlarmSettingsRepeat" Text="Placeholder"
                        Style="{StaticResource ItemNameTextBlockStyle}" />
-            <Button  Grid.Row="4" Grid.Column="1" Content="{Binding SelectedDaysConcated}"
+            <Button  Grid.Row="4" Grid.Column="1" Content="{Binding SelectedDays, Converter={StaticResource DayNameConverter}}"
                      HorizontalAlignment="Stretch" x:Name="RepeatSettingsButton">
                 <Button.Flyout>
                     <ListPickerFlyout ItemsSource="{Binding DaysOfWeek}" Placement="Full"
@@ -115,7 +118,7 @@
                             <DataTemplate>
                                 <StackPanel Orientation="Horizontal">
                                     <TextBlock Text=" " Margin="5" />
-                                    <TextBlock Text="{Binding}" />
+                                    <TextBlock Text="{Binding Converter={StaticResource DayOfWeekToStringConverter}}" />
                                 </StackPanel>
                             </DataTemplate>
                         </ListPickerFlyout.ItemTemplate>
