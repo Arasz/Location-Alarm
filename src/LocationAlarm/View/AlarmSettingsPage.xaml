@@ -33,6 +33,7 @@
         </Style>
         <converters:DayNameConverter x:Key="DayNameConverter" />
         <converters:DayOfWeekToStringConverter x:Key="DayOfWeekToStringConverter" />
+        <converters:AlarmTypeConverter x:Key="AlarmTypeConverter" />
     </local:BindablePage.Resources>
 
     <Grid x:Name="LayoutRoot">
@@ -81,7 +82,16 @@
             <Button Grid.Row="2" Grid.Column="1" Content="{Binding SelectedAlarmType}" HorizontalAlignment="Stretch">
                 <Button.Flyout>
                     <ListPickerFlyout ItemsSource="{Binding AlarmTypes}" Placement="Bottom"
-                                      SelectedItem="{Binding SelectedAlarmType, Mode=TwoWay}" />
+                                      SelectedItem="{Binding SelectedAlarmType, Mode=TwoWay, Converter={StaticResource AlarmTypeConverter}}">
+                        <ListPickerFlyout.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text=" " Margin="5" />
+                                    <TextBlock Text="{Binding Converter={StaticResource AlarmTypeConverter}}" />
+                                </StackPanel>
+                            </DataTemplate>
+                        </ListPickerFlyout.ItemTemplate>
+                    </ListPickerFlyout>
                 </Button.Flyout>
             </Button>
 

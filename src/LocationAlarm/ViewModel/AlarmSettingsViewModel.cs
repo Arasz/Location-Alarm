@@ -19,24 +19,24 @@ namespace LocationAlarm.ViewModel
     [ImplementPropertyChanged]
     public class AlarmSettingsViewModel : ViewModelBaseEx
     {
-        private readonly Dictionary<string, AlarmType> _alarmTypeMap = new Dictionary<string, AlarmType>();
         private readonly MediaPlayer _mediaPlayer = BackgroundMediaPlayer.Current;
         private readonly ResourceLoader _resourceLoader;
-        private string _selectedDaysConcated;
         public string AlarmName => _selectedAlarm.MonitoredArea.Name;
 
-        public IEnumerable<AlarmType> AlarmTypes { get; private set; } = Enum.GetValues(typeof(AlarmType)).Cast<AlarmType>();
+        public IEnumerable<AlarmType> AlarmTypes { get; private set; } = Enum.GetValues(typeof(AlarmType))
+            .Cast<AlarmType>();
 
-        public IEnumerable<DayOfWeek> DaysOfWeek { get; private set; } = Enum.GetValues(typeof(DayOfWeek)).Cast<DayOfWeek>();
+        public IEnumerable<DayOfWeek> DaysOfWeek { get; private set; } = Enum.GetValues(typeof(DayOfWeek))
+            .Cast<DayOfWeek>();
 
         public BitmapImage MapScreen => _selectedAlarm.MapScreen;
 
         public IEnumerable<string> NotificationSounds { get; private set; } = new List<string> { "default" };
 
-        public string SelectedAlarmType
+        public AlarmType SelectedAlarmType
         {
-            get { return _resourceLoader.GetString(_selectedAlarm.AlarmType.ToString()); }
-            set { _selectedAlarm.AlarmType = _alarmTypeMap[value]; }
+            get { return _selectedAlarm.AlarmType; }
+            set { _selectedAlarm.AlarmType = value; }
         }
 
         public ISet<DayOfWeek> SelectedDays
@@ -90,7 +90,6 @@ namespace LocationAlarm.ViewModel
 
         private void InitializeAlaram()
         {
-            SelectedAlarmType = _resourceLoader.GetString(AlarmTypes.First().ToString());
             SelectedNotificationSound = NotificationSounds.First();
         }
 
