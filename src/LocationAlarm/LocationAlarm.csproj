@@ -97,6 +97,7 @@
     <Compile Include="Navigation\NavigationMessage.cs" />
     <Compile Include="Navigation\NavigationServiceWithToken.cs" />
     <Compile Include="Model\LocationAlarmModel.cs" />
+    <Compile Include="Properties\Annotations.cs" />
     <Compile Include="Utils\AssetsNamesReader.cs" />
     <Compile Include="Utils\IAssetsNamesReader.cs" />
     <Compile Include="ViewModel\AlarmSettingsViewModel.cs" />
@@ -236,7 +237,6 @@
     </SDKReference>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Repository\" />
     <Folder Include="Resources\Strings\pl-PL\" />
   </ItemGroup>
   <ItemGroup>
