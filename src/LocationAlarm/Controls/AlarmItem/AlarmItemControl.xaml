@@ -22,9 +22,6 @@
         <ResourceDictionary Source="AlarmItemResources.xaml" />
     </UserControl.Resources>
 
-    <ToolTip>
-    </ToolTip>
-
     <Grid x:Name="rootLayout">
 
         <Grid.ColumnDefinitions>
