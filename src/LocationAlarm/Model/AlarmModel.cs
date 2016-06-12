@@ -35,7 +35,7 @@ namespace LocationAlarm.Model
         /// <summary>
         /// Type of alarm 
         /// </summary>
-        public AlarmType AlarmType { get; set; } = AlarmType.Sound;
+        public AlarmType AlarmType { get; set; } = AlarmType.Notification;
 
         /// <summary>
         /// Alarm state 
