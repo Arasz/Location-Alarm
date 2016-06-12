@@ -22,6 +22,9 @@
         <ResourceDictionary Source="AlarmItemResources.xaml" />
     </UserControl.Resources>
 
+    <ToolTip>
+    </ToolTip>
+
     <Grid x:Name="rootLayout">
 
         <Grid.ColumnDefinitions>
@@ -47,7 +50,7 @@
 
         <TextBlock Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2" Margin="5, 5" FontSize="18"
                    HorizontalAlignment="Right" VerticalAlignment="Center">
-            <Run Text="+ " />
+            <Run Text="+" />
             <Run Text="{Binding Path=MonitoredArea.Radius,  Converter={StaticResource MetersToKilometersConverter}}" />
             <Run Text="km" />
         </TextBlock>
