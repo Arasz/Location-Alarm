@@ -123,9 +123,6 @@
   <data name="AlarmSettingsAlarmType.Text" xml:space="preserve">
     <value>Alarm type</value>
   </data>
-  <data name="AlarmSettingsAlarmTypeCollection" xml:space="preserve">
-    <value>Sound, Notification</value>
-  </data>
   <data name="AlarmSettingsComboBox.PlaceholderText" xml:space="preserve">
     <value>choose an item</value>
   </data>
@@ -141,8 +138,14 @@
   <data name="AppName.Text" xml:space="preserve">
     <value>LocationAlarm</value>
   </data>
+  <data name="Everyday" xml:space="preserve">
+    <value>Everyday</value>
+  </data>
   <data name="Friday" xml:space="preserve">
     <value>Friday</value>
+  </data>
+  <data name="GeocircleRadius.Text" xml:space="preserve">
+    <value>Radius: </value>
   </data>
   <data name="MainPageName.Text" xml:space="preserve">
     <value>List of alarms</value>
@@ -159,11 +162,17 @@
   <data name="Monday" xml:space="preserve">
     <value>Monday</value>
   </data>
+  <data name="Notification" xml:space="preserve">
+    <value>Notification</value>
+  </data>
   <data name="RepeatOnce" xml:space="preserve">
     <value>Once</value>
   </data>
   <data name="Saturday" xml:space="preserve">
     <value>Saturday</value>
+  </data>
+  <data name="Sound" xml:space="preserve">
+    <value>Sound</value>
   </data>
   <data name="SoundFileAppendix" xml:space="preserve">
     <value>ms-appx:///Assets/Sounds/</value>

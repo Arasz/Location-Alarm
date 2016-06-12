@@ -1,5 +1,5 @@
 ﻿using GalaSoft.MvvmLight.Command;
-using System;
+using GalaSoft.MvvmLight.Messaging;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -10,15 +10,11 @@ namespace LocationAlarm.Location.LocationAutosuggestion
 {
     public class LocationAutoSuggestion
     {
-        public ObservableCollection<string> SuggestedLocations = new ObservableCollection<string>();
-
-        private readonly ILocationNameExtractor _locationNameExtractor;
-        private readonly IReverseGeolocationQuery _reverseGeolocationQueryService;
+        public ObservableCollection<ReadableLocationName> SuggestedLocations = new ObservableCollection<ReadableLocationName>();
 
         /// <summary>
-        /// Triggered when suggestion from suggested locations is selected 
         /// </summary>
-        public event EventHandler<MapLocation> SuggestionSelected;
+        private readonly IReverseGeolocationQuery _reverseGeolocationQueryService;
 
         public IReadOnlyCollection<MapLocation> LocationQueryResults { get; set; }
 
@@ -34,11 +30,10 @@ namespace LocationAlarm.Location.LocationAutosuggestion
         /// <summary>
         /// Location name selected in auto suggestion box 
         /// </summary>
-        public string UserSelectedSuggestion { get; set; }
+        public ReadableLocationName UserSelectedSuggestion { get; set; }
 
-        public LocationAutoSuggestion(IReverseGeolocationQuery reverseGeolocationQueryService, ILocationNameExtractor extractor)
+        public LocationAutoSuggestion(IReverseGeolocationQuery reverseGeolocationQueryService)
         {
-            _locationNameExtractor = extractor;
             _reverseGeolocationQueryService = reverseGeolocationQueryService;
 
             TextChangedCommand = new RelayCommand<bool>(TextChanged);
@@ -46,19 +41,16 @@ namespace LocationAlarm.Location.LocationAutosuggestion
             SuggestionChosenCommand = new RelayCommand<object>(SuggestionChosen);
         }
 
-        protected virtual void OnSuggestionSelected(MapLocation selectedLocation)
-        {
-            SuggestionSelected?.Invoke(this, selectedLocation);
-        }
-
         private async void SuggestionChosen(object selectedItem)
         {
             if (selectedItem == null)
                 return;
 
-            UserSelectedSuggestion = (string)selectedItem;
-            LocationQueryResults = await _reverseGeolocationQueryService.FindLocationsAsync(UserSelectedSuggestion).ConfigureAwait(true);
-            OnSuggestionSelected(LocationQueryResults.FirstOrDefault());
+            UserSelectedSuggestion = (ReadableLocationName)selectedItem;
+            LocationQueryResults = await _reverseGeolocationQueryService
+                .FindLocationAsync(UserSelectedSuggestion.FullLocationName)
+                .ConfigureAwait(true);
+            Messenger.Default.Send(LocationQueryResults.FirstOrDefault());
         }
 
         private async void TextChanged(bool isUserInputReason)
@@ -67,16 +59,14 @@ namespace LocationAlarm.Location.LocationAutosuggestion
             if (!isUserInputReason || string.IsNullOrEmpty(ProvidedLocationQuery)) return;
 
             var userInput = ProvidedLocationQuery;
-            LocationQueryResults = await _reverseGeolocationQueryService.FindLocationsAsync(userInput).ConfigureAwait(true);
+            LocationQueryResults = await _reverseGeolocationQueryService
+                .FindLocationAsync(userInput)
+                .ConfigureAwait(true);
 
-            if (LocationQueryResults == null) return;
-
-            foreach (var location in LocationQueryResults.OrderByDescending(location => (location.Address.Town + location.Address.Street + location.Address.StreetNumber).Length))
-            {
-                var readableName = _locationNameExtractor.Extract(location, userInput);
-                if (!string.IsNullOrEmpty(readableName))
-                    SuggestedLocations.Add(readableName);
-            }
+            LocationQueryResults?
+                .Select(location => new ReadableLocationName(location, userInput))
+                .Where(locationName => !string.IsNullOrEmpty(locationName.MainLocationName))
+                .ForEach(locationName => SuggestedLocations.Add(locationName));
         }
     }
 }

@@ -84,17 +84,25 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\AlarmItem\AlarmItemEventArgs.cs" />
+    <Compile Include="Controls\AlarmItem\MetersToKilometersConverter.cs" />
+    <Compile Include="Converters\SliderValueConverter.cs" />
     <Compile Include="Interceptors\AsyncErrorHandler.cs" />
-    <Compile Include="Location\ILocationNameExtractor.cs" />
     <Compile Include="Location\IReverseGeolocationQuery.cs" />
     <Compile Include="Location\LocationAutosuggestion\LocationAutosuggestion.cs" />
-    <Compile Include="Location\LocationNameExtractor.cs" />
+    <Compile Include="Location\ReadableLocationName.cs" />
     <Compile Include="Model\GeofenceBuilder.cs" />
     <Compile Include="Model\MonitoredArea.cs" />
+    <Compile Include="Navigation\INavigationServiceWithToken.cs" />
+    <Compile Include="Navigation\NavigationMessage.cs" />
+    <Compile Include="Navigation\NavigationServiceWithToken.cs" />
+    <Compile Include="Model\LocationAlarmModel.cs" />
+    <Compile Include="Properties\Annotations.cs" />
     <Compile Include="Utils\AssetsNamesReader.cs" />
     <Compile Include="Utils\IAssetsNamesReader.cs" />
     <Compile Include="ViewModel\AlarmSettingsViewModel.cs" />
     <Compile Include="ViewModel\DataTemplates\DayOfWeekDataTemplate.cs" />
+    <Compile Include="ViewModel\ViewModelBaseEx.cs" />
     <Compile Include="View\AlarmSettingsPage.xaml.cs">
       <DependentUpon>AlarmSettingsPage.xaml</DependentUpon>
     </Compile>
@@ -106,27 +114,27 @@
     <Compile Include="Common\SuspensionManager.cs" />
     <Compile Include="Converters\VisibilityConverter.cs" />
     <Compile Include="GeofenceService.cs" />
-    <Compile Include="Messages\MapMessage.cs" />
-    <Compile Include="Messages\Tokens.cs" />
+    <Compile Include="Common\Token.cs" />
     <Compile Include="Model\AlarmModel.cs" />
     <Compile Include="Model\AlarmsMonitor.cs" />
-    <Compile Include="Model\MapModel.cs" />
+    <Compile Include="Location\GeolocationModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ViewModel\MainViewModel.cs" />
     <Compile Include="ViewModel\MapViewModel.cs" />
     <Compile Include="ViewModel\ViewModelLocator.cs" />
-    <Compile Include="Controls\AlarmItemControl.xaml.cs">
+    <Compile Include="Controls\AlarmItem\AlarmItemControl.xaml.cs">
       <DependentUpon>AlarmItemControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Converters\AutoSuggestBoxSuggestionChosenEventArgsToSelectedItemConverter.cs" />
     <Compile Include="Converters\AutoSuggestionBoxTextChangeToBoolConverter.cs" />
-    <Compile Include="Converters\LongDayStringToShortConverter.cs" />
+    <Compile Include="Controls\AlarmItem\DayNameConverter.cs" />
     <Compile Include="View\MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\MapPage.xaml.cs">
       <DependentUpon>MapPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="View\Map\MapCircleDrawer.cs" />
   </ItemGroup>
   <ItemGroup>
     <AppxManifest Include="Package.appxmanifest">
@@ -138,7 +146,7 @@
     <Content Include="Assets\map-filler.jpg" />
     <Content Include="Assets\pushpin-google-green-hi.png" />
     <Content Include="Assets\SmallLogo.scale-240.png" />
-    <Content Include="Assets\Sounds\coins.mp3" />
+    <Content Include="Assets\Sounds\default.mp3" />
     <Content Include="Assets\Sounds\unique.mp3" />
     <Content Include="Assets\SplashScreen.scale-240.png" />
     <Content Include="Assets\Square71x71Logo.scale-240.png" />
@@ -151,9 +159,14 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Page Include="Controls\AlarmItemControl.xaml">
+    <Page Include="Controls\AlarmItem\AlarmItemControl.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Controls\AlarmItem\AlarmItemResources.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Page>
     <Page Include="View\AlarmSettingsPage.xaml">
       <SubType>Designer</SubType>
@@ -189,6 +202,10 @@
       <HintPath>..\..\packages\MvvmLightLibs.5.3.0.0\lib\wpa81\GalaSoft.MvvmLight.Platform.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="LinqEx, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\LinqEx.1.0.3\lib\LinqEx.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Microsoft.Practices.ServiceLocation, Version=1.3.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\..\packages\CommonServiceLocator.1.3\lib\portable-net4+sl5+netcore45+wpa81+wp8\Microsoft.Practices.ServiceLocation.dll</HintPath>
       <Private>True</Private>
@@ -205,6 +222,10 @@
       <HintPath>..\..\packages\Visualize.Fody.0.4.5.0\lib\dotnet\Visualize.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="WinRTXamlToolkit, Version=1.8.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\WinRTXamlToolkit.WindowsPhone.1.8.1.0\lib\wpa\WinRTXamlToolkit.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -217,6 +238,12 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Resources\Strings\pl-PL\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\AsyncEventHandler\AsyncEventHandler.csproj">
+      <Project>{70326a21-cd63-474a-a762-0e4437e1ceea}</Project>
+      <Name>AsyncEventHandler</Name>
+    </ProjectReference>
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '12.0' ">
     <VisualStudioVersion>12.0</VisualStudioVersion>

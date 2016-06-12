@@ -1,88 +1,71 @@
-using ArrivalAlarm.Model;
-using GalaSoft.MvvmLight;
+using Commander;
 using GalaSoft.MvvmLight.Command;
-using GalaSoft.MvvmLight.Views;
+using LocationAlarm.Common;
+using LocationAlarm.Controls.AlarmItem;
 using LocationAlarm.Model;
 using LocationAlarm.Navigation;
 using LocationAlarm.View;
-using Microsoft.Practices.ServiceLocation;
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
+using PropertyChanged;
 using System.Collections.Specialized;
 using System.Windows.Input;
-using Windows.Devices.Geolocation;
+using Windows.UI.Xaml.Controls;
 
 namespace LocationAlarm.ViewModel
 {
-    /// <summary>
-    /// This class contains properties that the main View can data bind to. 
-    /// <para> Use the <strong> mvvminpc </strong> snippet to add bindable properties to this ViewModel. </para>
-    /// <para> You can also use Blend to data bind with the tool's support. </para>
-    /// <para> See http://www.galasoft.ch/mvvm </para>
-    /// </summary>
-    public class MainViewModel : ViewModelBase, INavigable
+    [ImplementPropertyChanged]
+    public class MainViewModel : ViewModelBaseEx
     {
-        private readonly ObservableCollection<AlarmModel> _alarmsCollection = new ObservableCollection<AlarmModel>()
+        private readonly LocationAlarmModel _locationAlarmModel;
+        public INotifyCollectionChanged AlarmsCollection => _locationAlarmModel.Collection;
+
+        public ICommand EditAlarmCommand { get; private set; }
+
+        public int SelectedAlarm { get; set; }
+
+        public MainViewModel(LocationAlarmModel locationAlarmModel, NavigationServiceWithToken navigationService) : base(navigationService)
         {
-            new AlarmModel(new MonitoredArea("Poznan", new GeofenceBuilder().SetRequiredId("P1").ThenSetGeocircle(new BasicGeoposition(),4d)))
+            _locationAlarmModel = locationAlarmModel;
+
+            EditAlarmCommand = new RelayCommand<ItemClickEventArgs>(EditAlarmExecute);
+        }
+
+        [OnCommand("AddNewAlarmCommand")]
+        public void AddNewAlarm()
+        {
+            _navigationService.Token = Token.AddNew;
+            _selectedAlarm = _locationAlarmModel.CreateTransitive();
+            _navigationService.NavigateTo(nameof(MapPage), new NavigationMessage(_navigationService.CurrentPageKey));
+        }
+
+        public override void GoBack()
+        {
+        }
+
+        public override void OnNavigatedTo(NavigationMessage message)
+        {
+            switch (_navigationService.LastPageKey)
             {
-                Label = "Alarm praca",
-                ActiveDays = new HashSet<DayOfWeek>() {DayOfWeek.Monday, DayOfWeek.Tuesday},
-                IsActive = true,
-                IsCyclic = true,
-            },
+                case nameof(MapPage):
+                    break;
 
-            new AlarmModel(new MonitoredArea("Wroc³aw", new GeofenceBuilder().SetRequiredId("W1").ThenSetGeocircle(new BasicGeoposition(),6d)))
-            {
-                Label = "Uczelnia",
-                ActiveDays = new HashSet<DayOfWeek>() {DayOfWeek.Friday, DayOfWeek.Wednesday},
-                IsActive = true,
-                IsCyclic = true,
-            },
-        };
-
-        private RelayCommand _navigateToSelectLocationPage;
-        private INavigationService _navigationService;
-        public INotifyCollectionChanged AlarmsCollection => _alarmsCollection;
-
-        /// <summary>
-        /// Returns command which navigates to selection page 
-        /// </summary>
-        public ICommand NavigateToSelectLocationPage => _navigateToSelectLocationPage;
-
-        /// <summary>
-        /// Initializes a new instance of the MainViewModel class. 
-        /// </summary>
-        public MainViewModel()
-        {
-            _navigationService = ServiceLocator.Current.GetInstance<INavigationService>();
-
-            CreateNavigateToSelectLocationPageCommand();
+                case nameof(AlarmSettingsPage):
+                    if (_navigationService.Token != Token.AddNew) break;
+                    _locationAlarmModel.Add(_selectedAlarm);
+                    break;
+            }
         }
 
-        public void GoBack()
+        [OnCommand("DeleteAlarmCommand")]
+        private void DeleteAlarmExecute(AlarmItemEventArgs eventArgs)
         {
-            _navigationService.GoBack();
+            _locationAlarmModel.Remove(eventArgs.Source);
         }
 
-        public void OnNavigatedFrom(object parameter)
+        private void EditAlarmExecute(ItemClickEventArgs itemClickEventArgs)
         {
-        }
-
-        public void OnNavigatedTo(object parameter)
-        {
-            //Common.Logger.CreateLoggerAsync();
-        }
-
-        private void CreateNavigateToSelectLocationPageCommand()
-        {
-            _navigateToSelectLocationPage = new RelayCommand(ExecuteNavigateToLocationPage);
-        }
-
-        private void ExecuteNavigateToLocationPage()
-        {
-            _navigationService.NavigateTo(nameof(MapPage), "Graf acykliczny - mo¿e byæ reprezentowany jako drzewo.");
+            _selectedAlarm = itemClickEventArgs.ClickedItem as AlarmModel;
+            _navigationService.Token = Token.None;
+            _navigationService.NavigateTo(nameof(AlarmSettingsPage));
         }
     }
 }

@@ -1,10 +1,12 @@
-﻿namespace ArrivalAlarm.Messages
+﻿namespace LocationAlarm.Common
 {
-    internal enum Tokens
+    public enum Token
     {
         SetMapView,
         TakeScreenshot,
         MapLoaded,
         FocusOnMap,
+        AddNew,
+        None
     }
 }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using GalaSoft.MvvmLight.Threading;
+using System;
 using System.Diagnostics;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
@@ -94,6 +95,7 @@ namespace ArrivalAlarm
 
             // Ensure the current window is active
             Window.Current.Activate();
+            DispatcherHelper.Initialize();
         }
 
         /// <summary>

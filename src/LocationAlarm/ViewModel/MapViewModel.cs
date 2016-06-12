@@ -1,15 +1,14 @@
-﻿using ArrivalAlarm.Messages;
+﻿using ArrivalAlarm.Model;
 using Commander;
-using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Messaging;
-using GalaSoft.MvvmLight.Views;
+using LocationAlarm.Common;
 using LocationAlarm.Location;
 using LocationAlarm.Location.LocationAutosuggestion;
-using LocationAlarm.Model;
 using LocationAlarm.Navigation;
-using Microsoft.Practices.ServiceLocation;
+using LocationAlarm.View;
 using PropertyChanged;
-using System.Collections.Specialized;
+using System;
+using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Windows.Devices.Geolocation;
@@ -19,143 +18,155 @@ using Windows.UI.Xaml.Media.Imaging;
 namespace LocationAlarm.ViewModel
 {
     [ImplementPropertyChanged]
-    public class MapViewModel : ViewModelBase, INavigable
+    public class MapViewModel : ViewModelBaseEx
     {
-        private readonly MapModel _mapModel;
+        private readonly LocationAutoSuggestion _autoSuggestion;
+        private readonly GeolocationModel _geolocationModel;
+        private MonitoredArea _monitoredArea;
+        private MonitoredArea _monitoredAreaCopy;
 
-        /// <summary>
-        /// Navigation service used for navigation between pages 
-        /// </summary>
-        private readonly INavigationService _navigationService;
-
-        private LocationAutoSuggestion _autoSuggestion;
-
-        public Geopoint ActualLocation { get; private set; }
-
-        /// <summary>
-        /// State of map loading 
-        /// </summary>
-        public bool IsMapLoaded { get; private set; }
-
-        /// <summary>
-        /// Text from auto suggest box 
-        /// </summary>
-        public string LocationQuery
+        public Geopoint ActualLocation
         {
-            get { return _autoSuggestion.ProvidedLocationQuery; }
-            set { _autoSuggestion.ProvidedLocationQuery = value; }
+            get { return _monitoredArea.Geopoint; }
+            private set { _monitoredArea.Geopoint = value; }
         }
 
-        /// <summary>
-        /// Map control screen shoot 
-        /// </summary>
-        public BitmapImage MapScreenshot { get; set; }
+        public string AutoSuggestionLocationQuery
+        {
+            get
+            {
+                return _autoSuggestion.ProvidedLocationQuery;
+            }
+            set
+            {
+                _autoSuggestion.ProvidedLocationQuery = value;
+            }
+        }
+
+        public double GeocircleRadius
+        {
+            get { return _monitoredArea.Radius; }
+            set { _monitoredArea.Radius = value; }
+        }
+
+        public bool IsMapLoaded { get; private set; }
+
+        public BitmapImage MapScreenshot
+        {
+            get { return _selectedAlarm.MapScreen; }
+            set { _selectedAlarm.MapScreen = value; }
+        }
+
+        public double MaxGeocircleRadius { get; } = 5000;
+
+        public double MinGeocircleRadius { get; } = 100;
 
         public bool PushpinVisible { get; private set; }
 
-        public INotifyCollectionChanged SuggestedLocations => _autoSuggestion.SuggestedLocations;
+        public ObservableCollection<ReadableLocationName> SuggestedLocations => _autoSuggestion.SuggestedLocations;
 
-        /// <summary>
-        /// </summary>
         public ICommand SuggestionChosenCommand { get; private set; }
 
-        /// <summary>
-        /// Command launched when user clicked combo box 
-        /// </summary>
         public ICommand TextChangeCommand { get; private set; }
 
-        /// <summary>
-        /// Map zoom level (from 1 to 20 ) 
-        /// </summary>
         public double ZoomLevel
         {
             get; private set;
         }
 
-        public MapViewModel(MapModel mapModel, ILocationNameExtractor extractor)
+        public MapViewModel(NavigationServiceWithToken navigationService, GeolocationModel geolocationModel) : base(navigationService)
         {
-            _autoSuggestion = new LocationAutoSuggestion(mapModel, extractor);
-            _mapModel = mapModel;
-            _navigationService = ServiceLocator.Current.GetInstance<INavigationService>();
-
-            _autoSuggestion.SuggestionSelected += AutoSuggestionOnSuggestionSelected;
+            _autoSuggestion = new LocationAutoSuggestion(geolocationModel);
+            _geolocationModel = geolocationModel;
 
             TextChangeCommand = _autoSuggestion.TextChangedCommand;
             SuggestionChosenCommand = _autoSuggestion.SuggestionChosenCommand;
-
-            Messenger.Default.Register<bool>(this, Tokens.MapLoaded, (isMapLoaded) => IsMapLoaded = isMapLoaded);
         }
 
-        public void GoBack()
+        public override void GoBack()
         {
-            _navigationService.GoBack();
+            if (_navigationService.LastPageKey == nameof(AlarmSettingsPage))
+                _selectedAlarm.MonitoredArea = _monitoredAreaCopy;
+            base.GoBack();
         }
 
-        public void OnNavigatedFrom(object parameter)
-        {
-            IsMapLoaded = false;
-            MapScreenshot = null;
-        }
-
-        public void OnNavigatedTo(object parameter)
+        public override void OnNavigatedFrom(NavigationMessage parameter)
         {
             IsMapLoaded = false;
-            MapScreenshot = null;
-            UpdateUserLocation();
+            PushpinVisible = false;
+            MessengerInstance.Unregister<MapLocation>(this, OnSuggestionSelected);
         }
 
-        private void AutoSuggestionOnSuggestionSelected(object sender, MapLocation selectedLocation)
+        public override async void OnNavigatedTo(NavigationMessage parameter)
         {
-            Messenger.Default.Send(new MapMessage(), Tokens.FocusOnMap);
-            SetProvidedLocation(selectedLocation);
+            _monitoredArea = _selectedAlarm.MonitoredArea;
+            _monitoredAreaCopy = new MonitoredArea(_selectedAlarm.MonitoredArea);
+
+            MessengerInstance.Register<MapLocation>(this, OnSuggestionSelected);
+
+            IsMapLoaded = false;
+
+            await UpdateUserLocationAsync().ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Fetches location name and geographic position if needed 
+        /// </summary>
+        private async Task<Tuple<Geopoint, ReadableLocationName>> FetchGeolocationDataFromServiceAsync(bool fetchActualLocation = false)
+        {
+            Geopoint updatedLocation = ActualLocation;
+
+            if (fetchActualLocation || updatedLocation == null)
+            {
+                var geoposition = await _geolocationModel.GetActualLocationAsync().ConfigureAwait(false);
+                updatedLocation = geoposition.Coordinate.Point;
+            }
+            var readableLocationName = await _geolocationModel.FindBestMatchedLocationAtAsync(updatedLocation).ConfigureAwait(false);
+
+            return new Tuple<Geopoint, ReadableLocationName>(updatedLocation, readableLocationName);
+        }
+
+        private async void OnSuggestionSelected(MapLocation selectedLocation)
+        {
+            Messenger.Default.Send(new MessageBase(), Token.FocusOnMap);
+            ActualLocation = selectedLocation.Point;
+
+            await UpdateUserLocationAsync().ConfigureAwait(false);
         }
 
         [OnCommand("SaveLocationCommand")]
         private async void SaveLocationExecute()
         {
-            await TakeMapScreenshotAsync().ConfigureAwait(true);
-            object locationData = MapScreenshot;
-
-            _navigationService.NavigateTo(nameof(View.AlarmSettingsPage), locationData);
-        }
-
-        private void SetProvidedLocation(MapLocation location)
-        {
-            if (location == null)
-                return;
-
-            ActualLocation = location.Point;
-            ZoomLevel = 12;
-            Messenger.Default.Send(ActualLocation, Tokens.SetMapView);
-            PushpinVisible = true;
-        }
-
-        /// <summary>
-        /// </summary>
-        /// <returns></returns>
-        private async Task TakeMapScreenshotAsync()
-        {
-            Messenger.Default.Send(new MapMessage(), Tokens.TakeScreenshot);
-
+            Messenger.Default.Send(new MessageBase(), Token.TakeScreenshot);
+            MapScreenshot = null;
             await Task.Factory.StartNew(() =>
             {
                 while (MapScreenshot == null)
                 {
                 }
             }).ConfigureAwait(true);
+            _navigationService.NavigateTo(nameof(AlarmSettingsPage));
         }
 
-        /// <summary>
-        /// Updates actual user location 
-        /// </summary>
         [OnCommand("FindMeCommand")]
-        private async void UpdateUserLocation()
+        private async void UpdatePosition() => await UpdateUserLocationAsync(true)
+            .ConfigureAwait(false);
+
+        private async Task UpdateUserLocationAsync(bool fetchActualLocation = false)
         {
-            var actualLocation = await _mapModel.GetActualLocationAsync().ConfigureAwait(true);
-            ActualLocation = actualLocation.Coordinate.Point;
-            ZoomLevel = 12;
-            Messenger.Default.Send(ActualLocation, Tokens.SetMapView);
-            PushpinVisible = true;
+            // Catch UI thread context
+            var locationData = await FetchGeolocationDataFromServiceAsync(fetchActualLocation)
+                .ConfigureAwait(true);
+
+            _monitoredArea.Name = locationData.Item2.ToString();
+
+            ActualLocation = locationData.Item1; // UI
+            AutoSuggestionLocationQuery = _monitoredArea.Name; // UI
+            ZoomLevel = 12; // UI
+            PushpinVisible = true; // UI
+            IsMapLoaded = true; //UI
+
+            MessengerInstance.Send(ActualLocation);
         }
     }
 }

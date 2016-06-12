@@ -1,8 +1,8 @@
-﻿using LocationAlarm.Model;
-using System;
+﻿using System;
 using System.Runtime.Serialization;
 using Windows.Devices.Geolocation;
 using Windows.Devices.Geolocation.Geofencing;
+using Windows.Foundation.Metadata;
 
 namespace ArrivalAlarm.Model
 {
@@ -21,18 +21,24 @@ namespace ArrivalAlarm.Model
         /// <summary>
         /// Gets the time window, beginning after the StartTime, during which the Geofence is monitored 
         /// </summary>
-        public TimeSpan Duration => _geofence.Duration;
+        public TimeSpan Duration { get; set; }
 
         /// <summary>
         /// The minimum time that a position has to be inside or outside of the Geofence in order for
         /// the notification to be triggered.
         /// </summary>
-        public TimeSpan DwellTime => _geofence.DwellTime;
+        public TimeSpan DwellTime { get; set; }
 
         /// <summary>
         /// Alarm position on map 
         /// </summary>
         [DataMember]
+        public Geopoint Geopoint { get; set; }
+
+        /// <summary>
+        /// Alarm position on map 
+        /// </summary>
+        [DataMember, Deprecated("In future only geopint will be used", DeprecationType.Deprecate, 1)]
         public BasicGeoposition Geoposition { get; set; }
 
         /// <summary>
@@ -43,7 +49,7 @@ namespace ArrivalAlarm.Model
         /// <summary>
         /// The id of the Geofence 
         /// </summary>
-        public string Id => _geofence.Id;
+        public string Id => Name;
 
         /// <summary>
         /// Indicates the states that the geofence is being monitored for 
@@ -54,38 +60,38 @@ namespace ArrivalAlarm.Model
         /// Monitored area name 
         /// </summary>
         [DataMember]
-        public string Name { get; }
+        public string Name { get; set; } = "Name";
 
         /// <summary>
         /// Monitored area radius 
         /// </summary>
         [DataMember]
-        public double Radius { get; set; }
+        public double Radius { get; set; } = 500;
 
         /// <summary>
         /// Indicates whether the Geofence should be triggered once or multiple times. 
         /// </summary>
-        public bool SingleUse => _geofence.SingleUse;
+        public bool SingleUse { get; set; }
 
         /// <summary>
         /// The time to start monitoring the Geofence. 
         /// </summary>
-        public DateTimeOffset StartTime => _geofence.StartTime;
+        public DateTimeOffset StartTime { get; set; }
 
-        /// <summary>
-        /// </summary>
-        /// <param name="name"> Location <c> name </c> </param>
-        /// <param name="geoposition"> Position on map in geographic coordinates </param>
-        /// <param name="geocircleRadius"> Geocircle (geofence) radius in meters </param>
-        public MonitoredArea(string name, GeofenceBuilder builder)
+        public MonitoredArea()
         {
-            Name = name;
-            _geofence = builder.Build();
+        }
 
-            var geoshape = Geoshape as Geocircle;
-
-            Geoposition = geoshape.Center;
-            Radius = geoshape.Radius;
+        public MonitoredArea(MonitoredArea prototype)
+        {
+            Name = prototype.Name;
+            Radius = prototype.Radius;
+            SingleUse = prototype.SingleUse;
+            StartTime = prototype.StartTime;
+            Geoposition = prototype.Geoposition;
+            Geopoint = prototype.Geopoint;
+            DwellTime = prototype.DwellTime;
+            Duration = prototype.Duration;
         }
 
         public static explicit operator Geofence(MonitoredArea monitoredArea)
@@ -95,7 +101,8 @@ namespace ArrivalAlarm.Model
 
         public static implicit operator MonitoredArea(Geofence geofence)
         {
-            return new MonitoredArea("", new GeofenceBuilder(geofence));
+            //return new MonitoredArea("", new GeofenceBuilder(geofence));
+            return new MonitoredArea();
         }
     }
 }
