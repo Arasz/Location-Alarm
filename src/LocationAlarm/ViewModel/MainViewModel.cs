@@ -7,6 +7,7 @@ using LocationAlarm.Navigation;
 using LocationAlarm.View;
 using PropertyChanged;
 using System.Collections.Specialized;
+using System.Linq;
 using System.Windows.Input;
 using Windows.UI.Xaml.Controls;
 
@@ -26,7 +27,7 @@ namespace LocationAlarm.ViewModel
         {
             _locationAlarmModel = locationAlarmModel;
 
-            EditAlarmCommand = new RelayCommand<ItemClickEventArgs>(EditAlarmExecute);
+            EditAlarmCommand = new RelayCommand<SelectionChangedEventArgs>(EditAlarmExecute);
         }
 
         [OnCommand("AddNewAlarmCommand")]
@@ -61,9 +62,9 @@ namespace LocationAlarm.ViewModel
             _locationAlarmModel.Remove(eventArgs.Source);
         }
 
-        private void EditAlarmExecute(ItemClickEventArgs itemClickEventArgs)
+        private void EditAlarmExecute(SelectionChangedEventArgs itemClickEventArgs)
         {
-            _selectedAlarm = itemClickEventArgs.ClickedItem as AlarmModel;
+            _selectedAlarm = itemClickEventArgs.AddedItems.First() as AlarmModel;
             _navigationService.Token = Token.None;
             _navigationService.NavigateTo(nameof(AlarmSettingsPage));
         }

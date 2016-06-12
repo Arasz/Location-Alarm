@@ -1,7 +1,6 @@
 ﻿// The Basic Page item template is documented at http://go.microsoft.com/fwlink/?LinkID=390556
 
 using LocationAlarm.ViewModel;
-using Windows.UI.Xaml;
 
 namespace LocationAlarm.View
 {
@@ -16,10 +15,6 @@ namespace LocationAlarm.View
         {
             InitializeComponent();
             _viewModel = DataContext as MainViewModel;
-        }
-
-        private void AlarmItemControlDeleteButtonClicked(object sender, RoutedEventArgs e)
-        {
         }
     }
 }

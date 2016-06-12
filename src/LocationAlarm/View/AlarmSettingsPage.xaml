@@ -57,8 +57,8 @@
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
-                <ColumnDefinition />
-                <ColumnDefinition />
+                <ColumnDefinition Width="2*" />
+                <ColumnDefinition  Width="3*" />
             </Grid.ColumnDefinitions>
 
             <Image Grid.Row="0" Grid.ColumnSpan="2" Source="{Binding MapScreen}" Stretch="UniformToFill">
@@ -81,13 +81,13 @@
 
             <Button Grid.Row="2" Grid.Column="1" Content="{Binding SelectedAlarmType}" HorizontalAlignment="Stretch">
                 <Button.Flyout>
-                    <ListPickerFlyout ItemsSource="{Binding AlarmTypes}" Placement="Bottom"
+                    <ListPickerFlyout ItemsSource="{Binding AlarmTypes}" Placement="Top"
                                       SelectedItem="{Binding SelectedAlarmType, Mode=TwoWay, Converter={StaticResource AlarmTypeConverter}}">
                         <ListPickerFlyout.ItemTemplate>
                             <DataTemplate>
                                 <StackPanel Orientation="Horizontal">
-                                    <TextBlock Text=" " Margin="5" />
-                                    <TextBlock Text="{Binding Converter={StaticResource AlarmTypeConverter}}" />
+                                    <TextBlock Text="{Binding Converter={StaticResource AlarmTypeConverter}}"
+                                               HorizontalAlignment="Stretch" VerticalAlignment="Center" />
                                 </StackPanel>
                             </DataTemplate>
                         </ListPickerFlyout.ItemTemplate>
