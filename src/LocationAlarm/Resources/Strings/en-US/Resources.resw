@@ -138,6 +138,9 @@
   <data name="AppName.Text" xml:space="preserve">
     <value>LocationAlarm</value>
   </data>
+  <data name="Everyday" xml:space="preserve">
+    <value>Everyday</value>
+  </data>
   <data name="Friday" xml:space="preserve">
     <value>Friday</value>
   </data>

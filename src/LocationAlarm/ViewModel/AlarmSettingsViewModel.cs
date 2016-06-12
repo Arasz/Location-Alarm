@@ -68,8 +68,8 @@ namespace LocationAlarm.ViewModel
 
         public string SelectedNotificationSound
         {
-            get { return _selectedAlarm.NotificationSound; }
-            set { _selectedAlarm.NotificationSound = value; }
+            get { return _selectedAlarm.AlarmSound; }
+            set { _selectedAlarm.AlarmSound = value; }
         }
 
         public AlarmSettingsViewModel(NavigationServiceWithToken navigationService) : base(navigationService)

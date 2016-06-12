@@ -17,7 +17,20 @@ namespace LocationAlarm.Model
         /// Days in which alarm is active 
         /// </summary>
         [DataMember]
-        public ISet<DayOfWeek> ActiveDays { get; set; } = new HashSet<DayOfWeek>();
+        public ISet<DayOfWeek> ActiveDays { get; set; } = new HashSet<DayOfWeek>()
+        {
+            DayOfWeek.Monday,
+            DayOfWeek.Tuesday,
+            DayOfWeek.Wednesday,
+            DayOfWeek.Thursday,
+            DayOfWeek.Friday,
+            DayOfWeek.Saturday
+        };
+
+        /// <summary>
+        /// Ringtone 
+        /// </summary>
+        public string AlarmSound { get; set; } = "default";
 
         /// <summary>
         /// Type of alarm 
@@ -34,6 +47,8 @@ namespace LocationAlarm.Model
         [DataMember]
         public bool IsCyclic => !ActiveDays.Any();
 
+        public string Label => MonitoredArea.Name;
+
         /// <summary>
         /// Selected location screen shot 
         /// </summary>
@@ -43,11 +58,6 @@ namespace LocationAlarm.Model
         /// Area on enter to which alarm will be activated 
         /// </summary>
         public MonitoredArea MonitoredArea { get; set; }
-
-        /// <summary>
-        /// Ringtone 
-        /// </summary>
-        public string NotificationSound { get; set; }
 
         /// <summary>
         /// User is informed only with notification 

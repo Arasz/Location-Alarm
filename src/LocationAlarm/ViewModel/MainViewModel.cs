@@ -1,9 +1,9 @@
 using Commander;
 using GalaSoft.MvvmLight.Command;
 using LocationAlarm.Common;
+using LocationAlarm.Controls.AlarmItem;
 using LocationAlarm.Model;
 using LocationAlarm.Navigation;
-using LocationAlarm.Repository;
 using LocationAlarm.View;
 using PropertyChanged;
 using System.Collections.Specialized;
@@ -15,16 +15,16 @@ namespace LocationAlarm.ViewModel
     [ImplementPropertyChanged]
     public class MainViewModel : ViewModelBaseEx
     {
-        private readonly AlarmsRepository _alarmsRepository;
-        public INotifyCollectionChanged AlarmsCollection => _alarmsRepository.Collection;
+        private readonly LocationAlarmModel _locationAlarmModel;
+        public INotifyCollectionChanged AlarmsCollection => _locationAlarmModel.Collection;
 
         public ICommand EditAlarmCommand { get; private set; }
 
         public int SelectedAlarm { get; set; }
 
-        public MainViewModel(AlarmsRepository alarmsRepository, NavigationServiceWithToken navigationService) : base(navigationService)
+        public MainViewModel(LocationAlarmModel locationAlarmModel, NavigationServiceWithToken navigationService) : base(navigationService)
         {
-            _alarmsRepository = alarmsRepository;
+            _locationAlarmModel = locationAlarmModel;
 
             EditAlarmCommand = new RelayCommand<ItemClickEventArgs>(EditAlarmExecute);
         }
@@ -33,7 +33,7 @@ namespace LocationAlarm.ViewModel
         public void AddNewAlarm()
         {
             _navigationService.Token = Token.AddNew;
-            _selectedAlarm = _alarmsRepository.CreateTransitive();
+            _selectedAlarm = _locationAlarmModel.CreateTransitive();
             _navigationService.NavigateTo(nameof(MapPage), new NavigationMessage(_navigationService.CurrentPageKey));
         }
 
@@ -50,9 +50,15 @@ namespace LocationAlarm.ViewModel
 
                 case nameof(AlarmSettingsPage):
                     if (_navigationService.Token != Token.AddNew) break;
-                    _alarmsRepository.Add(_selectedAlarm);
+                    _locationAlarmModel.Add(_selectedAlarm);
                     break;
             }
+        }
+
+        [OnCommand("DeleteAlarmCommand")]
+        private void DeleteAlarmExecute(AlarmItemEventArgs eventArgs)
+        {
+            _locationAlarmModel.Remove(eventArgs.Source);
         }
 
         private void EditAlarmExecute(ItemClickEventArgs itemClickEventArgs)
