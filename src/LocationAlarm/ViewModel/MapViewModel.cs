@@ -1,13 +1,13 @@
 ﻿using ArrivalAlarm.Model;
 using Commander;
 using GalaSoft.MvvmLight.Messaging;
-using GalaSoft.MvvmLight.Threading;
 using LocationAlarm.Common;
 using LocationAlarm.Location;
 using LocationAlarm.Location.LocationAutosuggestion;
 using LocationAlarm.Navigation;
 using LocationAlarm.View;
 using PropertyChanged;
+using System;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using System.Windows.Input;
@@ -109,6 +109,23 @@ namespace LocationAlarm.ViewModel
             await UpdateUserLocationAsync().ConfigureAwait(false);
         }
 
+        /// <summary>
+        /// Fetches location name and geographic position if needed 
+        /// </summary>
+        private async Task<Tuple<Geopoint, ReadableLocationName>> FetchGeolocationDataFromServiceAsync(bool fetchActualLocation = false)
+        {
+            Geopoint updatedLocation = ActualLocation;
+
+            if (fetchActualLocation || updatedLocation == null)
+            {
+                var geoposition = await _geolocationModel.GetActualLocationAsync().ConfigureAwait(false);
+                updatedLocation = geoposition.Coordinate.Point;
+            }
+            var readableLocationName = await _geolocationModel.FindBestMatchedLocationAtAsync(updatedLocation).ConfigureAwait(false);
+
+            return new Tuple<Geopoint, ReadableLocationName>(updatedLocation, readableLocationName);
+        }
+
         private async void OnSuggestionSelected(MapLocation selectedLocation)
         {
             Messenger.Default.Send(new MessageBase(), Token.FocusOnMap);
@@ -132,29 +149,24 @@ namespace LocationAlarm.ViewModel
         }
 
         [OnCommand("FindMeCommand")]
-        private async void UpdatePosition() => await UpdateUserLocationAsync(true).ConfigureAwait(true);
+        private async void UpdatePosition() => await UpdateUserLocationAsync(true)
+            .ConfigureAwait(false);
 
         private async Task UpdateUserLocationAsync(bool fetchActualLocation = false)
         {
-            Geopoint updatedLocation = ActualLocation;
+            // Catch UI thread context
+            var locationData = await FetchGeolocationDataFromServiceAsync(fetchActualLocation)
+                .ConfigureAwait(true);
 
-            if (fetchActualLocation || updatedLocation == null)
-            {
-                var geoposition = await _geolocationModel.GetActualLocationAsync().ConfigureAwait(false);
-                updatedLocation = geoposition.Coordinate.Point;
-            }
-            var readableLocationName = await _geolocationModel.FindBestMatchedLocationAtAsync(updatedLocation).ConfigureAwait(false);
-            _monitoredArea.Name = readableLocationName.ToString();
+            _monitoredArea.Name = locationData.Item2.ToString();
 
-            DispatcherHelper.CheckBeginInvokeOnUI(() =>
-            {
-                ActualLocation = updatedLocation; // UI
-                AutoSuggestionLocationQuery = _monitoredArea.Name; // UI
-                ZoomLevel = 12; // UI
-                PushpinVisible = true; // UI
-                IsMapLoaded = true; //UI
-            });
-            MessengerInstance.Send(updatedLocation);
+            ActualLocation = locationData.Item1; // UI
+            AutoSuggestionLocationQuery = _monitoredArea.Name; // UI
+            ZoomLevel = 12; // UI
+            PushpinVisible = true; // UI
+            IsMapLoaded = true; //UI
+
+            MessengerInstance.Send(ActualLocation);
         }
     }
 }
