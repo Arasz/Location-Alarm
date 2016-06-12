@@ -8,6 +8,7 @@
     xmlns:controls="using:LocationAlarm.Controls"
     xmlns:interactivity="using:Microsoft.Xaml.Interactivity"
     xmlns:core="using:Microsoft.Xaml.Interactions.Core"
+    xmlns:alarmItem="using:LocationAlarm.Controls.AlarmItem"
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
     DataContext="{Binding Source={StaticResource Locator}, Path=Main}">
@@ -15,8 +16,14 @@
     <view:BindablePage.Resources>
         <ResourceDictionary>
             <DataTemplate x:Key="alarmModelTemplate">
-                <controls:AlarmItemControl DataContext="{Binding}" Width="{Binding
-                    RelativeSource={RelativeSource TemplatedParent} ,Path=Width}" />
+                <alarmItem:AlarmItemControl DataContext="{Binding}" Width="{Binding
+                    RelativeSource={RelativeSource TemplatedParent} ,Path=Width}">
+                    <interactivity:Interaction.Behaviors>
+                        <core:EventTriggerBehavior EventName="SwypeToDeleteCompleted">
+                            <core:InvokeCommandAction Command="{Binding ElementName=LayoutRoot, Path=DataContext.DeleteAlarmCommand}" />
+                        </core:EventTriggerBehavior>
+                    </interactivity:Interaction.Behaviors>
+                </alarmItem:AlarmItemControl>
             </DataTemplate>
         </ResourceDictionary>
     </view:BindablePage.Resources>
