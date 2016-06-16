@@ -24,7 +24,7 @@ namespace LocationAlarm.ViewModel
 
             RegisterServices();
 
-            SimpleIoc.Default.Register<LocationAlarmModel>();
+            SimpleIoc.Default.Register<LocationAlarmsManager>();
             SimpleIoc.Default.Register<LocationAutoSuggestion>();
             SimpleIoc.Default.Register<GeolocationModel>();
             SimpleIoc.Default.Register<MapViewModel>();

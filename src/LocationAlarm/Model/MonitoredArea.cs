@@ -1,10 +1,11 @@
-﻿using LocationAlarm.Model;
+﻿using SQLite;
+using SQLiteNetExtensions.Attributes;
 using System;
 using System.Runtime.Serialization;
 using Windows.Devices.Geolocation;
 using Windows.Devices.Geolocation.Geofencing;
 
-namespace ArrivalAlarm.Model
+namespace LocationAlarm.Model
 {
     /// <summary>
     /// Geofence class decorator 
@@ -68,6 +69,9 @@ namespace ArrivalAlarm.Model
         /// </summary>
         public string Id => Name;
 
+        [ForeignKey(typeof(global::LocationAlarm.Model.LocationAlarm))]
+        public int LocationAlarmId { get; set; }
+
         /// <summary>
         /// Indicates the states that the geofence is being monitored for 
         /// </summary>
@@ -76,7 +80,7 @@ namespace ArrivalAlarm.Model
         /// <summary>
         /// Monitored area name 
         /// </summary>
-        [DataMember]
+        [DataMember, PrimaryKey]
         public string Name { get; set; } = "Name";
 
         /// <summary>

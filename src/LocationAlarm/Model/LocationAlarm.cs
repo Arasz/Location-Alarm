@@ -1,5 +1,5 @@
-﻿using ArrivalAlarm.Model;
-using SQLite;
+﻿using SQLite;
+using SQLiteNetExtensions.Attributes;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,7 +17,7 @@ namespace LocationAlarm.Model
         /// <summary>
         /// Days in which alarm is active 
         /// </summary>
-        [DataMember]
+        [DataMember, OneToMany]
         public ISet<DayOfWeek> ActiveDays { get; set; } = new SortedSet<DayOfWeek>();
 
         /// <summary>
@@ -60,7 +60,7 @@ namespace LocationAlarm.Model
         /// <summary>
         /// Area on enter to which alarm will be activated 
         /// </summary>
-        [DataMember]
+        [DataMember, OneToOne]
         public MonitoredArea MonitoredArea { get; set; }
 
         /// <summary>

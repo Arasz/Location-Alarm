@@ -1,9 +1,9 @@
-﻿using ArrivalAlarm.Model;
-using Commander;
+﻿using Commander;
 using GalaSoft.MvvmLight.Messaging;
 using LocationAlarm.Common;
 using LocationAlarm.Location;
 using LocationAlarm.Location.LocationAutosuggestion;
+using LocationAlarm.Model;
 using LocationAlarm.Navigation;
 using LocationAlarm.View;
 using PropertyChanged;

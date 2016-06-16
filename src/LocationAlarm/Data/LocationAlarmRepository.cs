@@ -12,13 +12,17 @@ namespace LocationAlarm.Data
         public LocationAlarmRepository(IDataContext dataContext)
         {
             _dataContext = dataContext;
+            CreateTable();
         }
 
         public void DeleteAllLocationAlarms()
         {
             using (var connection = _dataContext.Connection)
             {
-                connection.DeleteAll<Model.LocationAlarm>();
+                connection.RunInTransaction(() =>
+                {
+                    connection.DeleteAll<Model.LocationAlarm>();
+                });
             }
         }
 
@@ -26,15 +30,23 @@ namespace LocationAlarm.Data
         {
             using (var connection = _dataContext.Connection)
             {
-                connection.Delete<Model.LocationAlarm>(alarm);
+                connection.RunInTransaction(() =>
+                {
+                    connection.Delete(alarm);
+                });
             }
         }
 
-        public void InsertLocationAlarm(Model.LocationAlarm alarm)
+        public int InsertLocationAlarm(Model.LocationAlarm alarm)
         {
             using (var connection = _dataContext.Connection)
             {
-                connection.Update(alarm, typeof(Model.LocationAlarm));
+                int primaryKey = -1;
+                connection.RunInTransaction(() =>
+                {
+                    primaryKey = connection.Insert(alarm, typeof(Model.LocationAlarm));
+                });
+                return primaryKey;
             }
         }
 
@@ -59,7 +71,10 @@ namespace LocationAlarm.Data
         {
             using (var connection = _dataContext.Connection)
             {
-                connection.Insert(alarm, typeof(Model.LocationAlarm));
+                connection.RunInTransaction(() =>
+                {
+                    connection.Update(alarm, typeof(Model.LocationAlarm));
+                });
             }
         }
 
