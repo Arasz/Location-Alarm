@@ -99,6 +99,8 @@
     <Compile Include="Navigation\NavigationMessage.cs" />
     <Compile Include="Navigation\NavigationServiceWithToken.cs" />
     <Compile Include="Model\LocationAlarmModel.cs" />
+    <Compile Include="SQLite.cs" />
+    <Compile Include="SQLiteAsync.cs" />
     <Compile Include="Tasks\BackgroundTaskManager.cs" />
     <Compile Include="Tasks\BackgroundTaskManagerEventArgs.cs" />
     <Compile Include="Utils\AssetsNamesReader.cs" />
@@ -217,8 +219,8 @@
       <HintPath>..\..\packages\NullGuard.Fody.1.4.6\lib\dotnet\NullGuard.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="PropertyChanged, Version=1.51.0.0, Culture=neutral, PublicKeyToken=ee3ee20bcf148ddd, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\PropertyChanged.Fody.1.51.0\lib\dotnet\PropertyChanged.dll</HintPath>
+    <Reference Include="PropertyChanged, Version=1.51.1.0, Culture=neutral, PublicKeyToken=ee3ee20bcf148ddd, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\PropertyChanged.Fody.1.51.1\lib\dotnet\PropertyChanged.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Visualize, Version=0.4.5.0, Culture=neutral, processorArchitecture=MSIL">
