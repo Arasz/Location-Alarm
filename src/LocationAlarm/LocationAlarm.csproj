@@ -99,6 +99,8 @@
     <Compile Include="Navigation\NavigationMessage.cs" />
     <Compile Include="Navigation\NavigationServiceWithToken.cs" />
     <Compile Include="Model\LocationAlarmModel.cs" />
+    <Compile Include="Tasks\BackgroundTaskManager.cs" />
+    <Compile Include="Tasks\BackgroundTaskManagerEventArgs.cs" />
     <Compile Include="Utils\AssetsNamesReader.cs" />
     <Compile Include="Utils\IAssetsNamesReader.cs" />
     <Compile Include="ViewModel\AlarmSettingsViewModel.cs" />
@@ -239,6 +241,16 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Resources\Strings\pl-PL\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\CoreLibrary\CoreLibrary.csproj">
+      <Project>{4aa10b83-682e-49c4-b843-f295bc2d3711}</Project>
+      <Name>CoreLibrary</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\GeofenceJob\GeofenceBackgroundTask.csproj">
+      <Project>{da8962a6-c89d-4a75-9bcd-fe434e9a5e5e}</Project>
+      <Name>GeofenceBackgroundTask</Name>
+    </ProjectReference>
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '12.0' ">
     <VisualStudioVersion>12.0</VisualStudioVersion>

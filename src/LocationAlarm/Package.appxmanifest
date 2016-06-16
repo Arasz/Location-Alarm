@@ -25,7 +25,7 @@
         </m3:InitialRotationPreference>
       </m3:VisualElements>
       <Extensions>
-        <Extension Category="windows.backgroundTasks">
+        <Extension Category="windows.backgroundTasks" EntryPoint="BackgroundTask.GeofenceTask">
           <BackgroundTasks>
             <Task Type="pushNotification" />
             <m2:Task Type="location" />

@@ -1,4 +1,4 @@
-﻿namespace GeofenceJob
+﻿namespace BackgroundTask
 {
     /// <summary>
     /// Interface of task which can manage geofences and geolocation notifications 
