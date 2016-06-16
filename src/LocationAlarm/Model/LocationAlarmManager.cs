@@ -3,13 +3,13 @@ using System.Collections.Specialized;
 
 namespace LocationAlarm.Model
 {
-    public class LocationAlarmModel
+    public class LocationAlarmManager
     {
         private ObservableCollection<AlarmModel> _alarms = new ObservableCollection<AlarmModel>();
 
         public INotifyCollectionChanged Collection => _alarms;
 
-        public LocationAlarmModel()
+        public LocationAlarmManager()
         {
         }
 

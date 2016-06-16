@@ -16,14 +16,14 @@ namespace LocationAlarm.ViewModel
     [ImplementPropertyChanged]
     public class MainViewModel : ViewModelBaseEx
     {
-        private readonly LocationAlarmModel _locationAlarmModel;
+        private readonly LocationAlarmManager _locationAlarmModel;
         public INotifyCollectionChanged AlarmsCollection => _locationAlarmModel.Collection;
 
         public ICommand EditAlarmCommand { get; private set; }
 
         public int SelectedAlarm { get; set; }
 
-        public MainViewModel(LocationAlarmModel locationAlarmModel, NavigationServiceWithToken navigationService) : base(navigationService)
+        public MainViewModel(LocationAlarmManager locationAlarmModel, NavigationServiceWithToken navigationService) : base(navigationService)
         {
             _locationAlarmModel = locationAlarmModel;
 
