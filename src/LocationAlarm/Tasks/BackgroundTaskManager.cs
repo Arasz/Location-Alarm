@@ -72,20 +72,20 @@ namespace LocationAlarm.Tasks
             return registeredTask != null;
         }
 
-        private void RegistrationOnCompleted(BackgroundTaskRegistration sender, BackgroundTaskCompletedEventArgs args)
+        private void OnRegisteredTaskCompleted(BackgroundTaskRegistration sender, BackgroundTaskCompletedEventArgs args)
         {
-            throw new NotImplementedException();
+            OnTaskCompleted();
         }
 
-        private void RegistrationOnProgress(BackgroundTaskRegistration sender, BackgroundTaskProgressEventArgs args)
+        private void OnRegisteredTaskProgress(BackgroundTaskRegistration sender, BackgroundTaskProgressEventArgs args)
         {
-            throw new NotImplementedException();
+            OnTaskProgress();
         }
 
         private void SubcribeBackgroundTaskEvents(IBackgroundTaskRegistration registration)
         {
-            registration.Completed += RegistrationOnCompleted;
-            registration.Progress += RegistrationOnProgress;
+            registration.Completed += OnRegisteredTaskCompleted;
+            registration.Progress += OnRegisteredTaskProgress;
         }
     }
 }
