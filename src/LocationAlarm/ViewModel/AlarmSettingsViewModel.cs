@@ -21,7 +21,7 @@ namespace LocationAlarm.ViewModel
     {
         private readonly MediaPlayer _mediaPlayer = BackgroundMediaPlayer.Current;
         private readonly ResourceLoader _resourceLoader;
-        public string AlarmName => _selectedAlarm.MonitoredArea.Name;
+        public string AlarmName => SelectedLocationAlarm.MonitoredArea.Name;
 
         public IEnumerable<AlarmType> AlarmTypes { get; private set; } = Enum.GetValues(typeof(AlarmType))
             .Cast<AlarmType>();
@@ -29,29 +29,29 @@ namespace LocationAlarm.ViewModel
         public IEnumerable<DayOfWeek> DaysOfWeek { get; private set; } = Enum.GetValues(typeof(DayOfWeek))
             .Cast<DayOfWeek>();
 
-        public BitmapImage MapScreen => _selectedAlarm.MapScreen;
+        public BitmapImage MapScreen => SelectedLocationAlarm.MapScreen;
 
         public IEnumerable<string> NotificationSounds { get; private set; } = new List<string> { "default" };
 
         public AlarmType SelectedAlarmType
         {
-            get { return _selectedAlarm.AlarmType; }
-            set { _selectedAlarm.AlarmType = value; }
+            get { return SelectedLocationAlarm.AlarmType; }
+            set { SelectedLocationAlarm.AlarmType = value; }
         }
 
         public ISet<DayOfWeek> SelectedDays
         {
-            get { return _selectedAlarm.ActiveDays; }
+            get { return SelectedLocationAlarm.ActiveDays; }
             set
             {
-                _selectedAlarm.ActiveDays = value;
+                SelectedLocationAlarm.ActiveDays = value;
             }
         }
 
         public string SelectedNotificationSound
         {
-            get { return _selectedAlarm.AlarmSound; }
-            set { _selectedAlarm.AlarmSound = value; }
+            get { return SelectedLocationAlarm.AlarmSound; }
+            set { SelectedLocationAlarm.AlarmSound = value; }
         }
 
         public AlarmSettingsViewModel(NavigationServiceWithToken navigationService) : base(navigationService)

@@ -13,7 +13,7 @@
     Height="140"
     MaxHeight="400"
     x:Name="Control"
-    d:DataContext="{d:DesignInstance model:AlarmModel, IsDesignTimeCreatable=True}"
+    d:DataContext="{d:DesignInstance model:LocationAlarm, IsDesignTimeCreatable=True}"
     ManipulationStarted="AlarmItemControl_OnManipulationStarted"
     ManipulationCompleted="AlarmItemControl_OnManipulationCompleted"
     ManipulationDelta="AlarmItemControl_OnManipulationDelta"

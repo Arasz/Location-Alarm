@@ -34,7 +34,7 @@ namespace LocationAlarm.ViewModel
         public void AddNewAlarm()
         {
             _navigationService.Token = Token.AddNew;
-            _selectedAlarm = _locationAlarmModel.CreateTransitive();
+            SelectedLocationAlarm = _locationAlarmModel.CreateTransitive();
             _navigationService.NavigateTo(nameof(MapPage), new NavigationMessage(_navigationService.CurrentPageKey));
         }
 
@@ -51,7 +51,7 @@ namespace LocationAlarm.ViewModel
 
                 case nameof(AlarmSettingsPage):
                     if (_navigationService.Token != Token.AddNew) break;
-                    _locationAlarmModel.Add(_selectedAlarm);
+                    _locationAlarmModel.Add(SelectedLocationAlarm);
                     break;
             }
         }
@@ -64,7 +64,7 @@ namespace LocationAlarm.ViewModel
 
         private void EditAlarmExecute(SelectionChangedEventArgs itemClickEventArgs)
         {
-            _selectedAlarm = itemClickEventArgs.AddedItems.First() as AlarmModel;
+            SelectedLocationAlarm = itemClickEventArgs.AddedItems.First() as Model.LocationAlarm;
             _navigationService.Token = Token.None;
             _navigationService.NavigateTo(nameof(AlarmSettingsPage));
         }

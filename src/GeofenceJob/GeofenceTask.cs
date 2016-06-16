@@ -62,6 +62,7 @@ namespace BackgroundTask
 
         private IEnumerable<GeofenceStateChangeReport> FilterReports(IEnumerable<GeofenceStateChangeReport> reports)
         {
+            return null;
         }
     }
 }

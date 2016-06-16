@@ -53,8 +53,8 @@ namespace LocationAlarm.ViewModel
 
         public BitmapImage MapScreenshot
         {
-            get { return _selectedAlarm.MapScreen; }
-            set { _selectedAlarm.MapScreen = value; }
+            get { return SelectedLocationAlarm.MapScreen; }
+            set { SelectedLocationAlarm.MapScreen = value; }
         }
 
         public double MaxGeocircleRadius { get; } = 5000;
@@ -86,7 +86,7 @@ namespace LocationAlarm.ViewModel
         public override void GoBack()
         {
             if (_navigationService.LastPageKey == nameof(AlarmSettingsPage))
-                _selectedAlarm.MonitoredArea = _monitoredAreaCopy;
+                SelectedLocationAlarm.MonitoredArea = _monitoredAreaCopy;
             base.GoBack();
         }
 
@@ -99,8 +99,8 @@ namespace LocationAlarm.ViewModel
 
         public override async void OnNavigatedTo(NavigationMessage parameter)
         {
-            _monitoredArea = _selectedAlarm.MonitoredArea;
-            _monitoredAreaCopy = new MonitoredArea(_selectedAlarm.MonitoredArea);
+            _monitoredArea = SelectedLocationAlarm.MonitoredArea;
+            _monitoredAreaCopy = new MonitoredArea(SelectedLocationAlarm.MonitoredArea);
 
             MessengerInstance.Register<MapLocation>(this, OnSuggestionSelected);
 

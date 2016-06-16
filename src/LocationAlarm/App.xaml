@@ -10,6 +10,7 @@
             <Style x:Name="CommandBarStyle" TargetType="CommandBar">
                 <Setter Property="ClosedDisplayMode" Value="Compact" />
             </Style>
+            <x:String x:Key="DbConnectionString">""</x:String>
         </ResourceDictionary>
     </Application.Resources>
 </Application>

@@ -5,7 +5,7 @@ namespace LocationAlarm.Model
 {
     public class LocationAlarmModel
     {
-        private ObservableCollection<AlarmModel> _alarms = new ObservableCollection<AlarmModel>();
+        private ObservableCollection<LocationAlarm> _alarms = new ObservableCollection<LocationAlarm>();
 
         public INotifyCollectionChanged Collection => _alarms;
 
@@ -13,20 +13,20 @@ namespace LocationAlarm.Model
         {
         }
 
-        public void Add(AlarmModel alarm)
+        public void Add(LocationAlarm locationAlarm)
         {
-            _alarms.Add(alarm);
+            _alarms.Add(locationAlarm);
         }
 
-        public AlarmModel CreateTransitive()
+        public LocationAlarm CreateTransitive()
         {
-            var alarm = new AlarmModel();
+            var alarm = new LocationAlarm();
             return alarm;
         }
 
-        public void Remove(AlarmModel alarmModel)
+        public void Remove(LocationAlarm locationAlarm)
         {
-            _alarms.Remove(alarmModel);
+            _alarms.Remove(locationAlarm);
         }
     }
 }

@@ -5,9 +5,9 @@ namespace LocationAlarm.Controls.AlarmItem
 {
     public class AlarmItemEventArgs : EventArgs
     {
-        public AlarmModel Source { get; }
+        public Model.LocationAlarm Source { get; }
 
-        public AlarmItemEventArgs(AlarmModel source)
+        public AlarmItemEventArgs(Model.LocationAlarm source)
         {
             Source = source;
         }

@@ -89,6 +89,9 @@
     <Compile Include="Converters\DayOfWeekToStringConverter.cs" />
     <Compile Include="Converters\AlarmTypeConverter.cs" />
     <Compile Include="Converters\SliderValueConverter.cs" />
+    <Compile Include="Data\DataContext.cs" />
+    <Compile Include="Data\IDataContext.cs" />
+    <Compile Include="Data\LocationAlarmRepository.cs" />
     <Compile Include="Interceptors\AsyncErrorHandler.cs" />
     <Compile Include="Location\IReverseGeolocationQuery.cs" />
     <Compile Include="Location\LocationAutosuggestion\LocationAutosuggestion.cs" />
@@ -118,10 +121,8 @@
     <Compile Include="Common\RelayCommand.cs" />
     <Compile Include="Common\SuspensionManager.cs" />
     <Compile Include="Converters\VisibilityConverter.cs" />
-    <Compile Include="GeofenceService.cs" />
     <Compile Include="Common\Token.cs" />
-    <Compile Include="Model\AlarmModel.cs" />
-    <Compile Include="Model\AlarmsMonitor.cs" />
+    <Compile Include="Model\LocationAlarm.cs" />
     <Compile Include="Location\GeolocationModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ViewModel\MainViewModel.cs" />
@@ -239,6 +240,12 @@
   <ItemGroup>
     <SDKReference Include="BehaviorsXamlSDKManaged, Version=12.0">
       <Name>Behaviors SDK %28XAML%29</Name>
+    </SDKReference>
+    <SDKReference Include="Microsoft.VCLibs, version=12.0">
+      <Name>Microsoft Visual C++ 2013 Runtime Package for Windows Phone</Name>
+    </SDKReference>
+    <SDKReference Include="SQLite.WP81, Version=3.13.0">
+      <Name>SQLite for Windows Phone 8.1</Name>
     </SDKReference>
   </ItemGroup>
   <ItemGroup>

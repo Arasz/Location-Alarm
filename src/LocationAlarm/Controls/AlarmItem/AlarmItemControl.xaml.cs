@@ -65,7 +65,7 @@ namespace LocationAlarm.Controls.AlarmItem
 
         private void OnSwypeToDeleteCompleted()
         {
-            SwypeToDeleteCompleted?.Invoke(this, new AlarmItemEventArgs(DataContext as AlarmModel));
+            SwypeToDeleteCompleted?.Invoke(this, new AlarmItemEventArgs(DataContext as Model.LocationAlarm));
         }
     }
 }
