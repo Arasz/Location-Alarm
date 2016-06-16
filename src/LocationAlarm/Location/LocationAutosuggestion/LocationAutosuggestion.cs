@@ -1,5 +1,5 @@
 ﻿using GalaSoft.MvvmLight.Command;
-using System;
+using GalaSoft.MvvmLight.Messaging;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -12,12 +12,9 @@ namespace LocationAlarm.Location.LocationAutosuggestion
     {
         public ObservableCollection<ReadableLocationName> SuggestedLocations = new ObservableCollection<ReadableLocationName>();
 
-        private readonly IReverseGeolocationQuery _reverseGeolocationQueryService;
-
         /// <summary>
-        /// Triggered when suggestion from suggested locations is selected 
         /// </summary>
-        public event EventHandler<MapLocation> SuggestionSelected;
+        private readonly IReverseGeolocationQuery _reverseGeolocationQueryService;
 
         public IReadOnlyCollection<MapLocation> LocationQueryResults { get; set; }
 
@@ -44,19 +41,16 @@ namespace LocationAlarm.Location.LocationAutosuggestion
             SuggestionChosenCommand = new RelayCommand<object>(SuggestionChosen);
         }
 
-        protected virtual void OnSuggestionSelected(MapLocation selectedLocation)
-        {
-            SuggestionSelected?.Invoke(this, selectedLocation);
-        }
-
         private async void SuggestionChosen(object selectedItem)
         {
             if (selectedItem == null)
                 return;
 
             UserSelectedSuggestion = (ReadableLocationName)selectedItem;
-            LocationQueryResults = await _reverseGeolocationQueryService.FindLocationsAsync(UserSelectedSuggestion.FullLocationName).ConfigureAwait(true);
-            OnSuggestionSelected(LocationQueryResults.FirstOrDefault());
+            LocationQueryResults = await _reverseGeolocationQueryService
+                .FindLocationAsync(UserSelectedSuggestion.FullLocationName)
+                .ConfigureAwait(true);
+            Messenger.Default.Send(LocationQueryResults.FirstOrDefault());
         }
 
         private async void TextChanged(bool isUserInputReason)
@@ -65,10 +59,11 @@ namespace LocationAlarm.Location.LocationAutosuggestion
             if (!isUserInputReason || string.IsNullOrEmpty(ProvidedLocationQuery)) return;
 
             var userInput = ProvidedLocationQuery;
-            LocationQueryResults = await _reverseGeolocationQueryService.FindLocationsAsync(userInput).ConfigureAwait(true);
+            LocationQueryResults = await _reverseGeolocationQueryService
+                .FindLocationAsync(userInput)
+                .ConfigureAwait(true);
 
             LocationQueryResults?
-                //.OrderByDescending(location => (location.Address.Town + location.Address.Street + location.Address.StreetNumber).Length)
                 .Select(location => new ReadableLocationName(location, userInput))
                 .Where(locationName => !string.IsNullOrEmpty(locationName.MainLocationName))
                 .ForEach(locationName => SuggestedLocations.Add(locationName));

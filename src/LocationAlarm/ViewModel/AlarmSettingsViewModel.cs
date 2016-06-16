@@ -1,7 +1,4 @@
 ﻿using Commander;
-using GalaSoft.MvvmLight;
-using GalaSoft.MvvmLight.Ioc;
-using GalaSoft.MvvmLight.Views;
 using LocationAlarm.Common;
 using LocationAlarm.Model;
 using LocationAlarm.Navigation;
@@ -20,124 +17,61 @@ using Windows.UI.Xaml.Media.Imaging;
 namespace LocationAlarm.ViewModel
 {
     [ImplementPropertyChanged]
-    public class AlarmSettingsViewModel : ViewModelBase, INavigable
+    public class AlarmSettingsViewModel : ViewModelBaseEx
     {
-        /// <summary>
-        /// </summary>
-        private readonly Dictionary<string, AlarmType> _alarmTypeMap = new Dictionary<string, AlarmType>();
-
-        /// <summary>
-        /// </summary>
-        private readonly Dictionary<string, DayOfWeek> _dayOfWeekMap = new Dictionary<string, DayOfWeek>();
-
-        /// <summary>
-        /// </summary>
         private readonly MediaPlayer _mediaPlayer = BackgroundMediaPlayer.Current;
-
-        private readonly INavigationService _navigationService;
-
-        /// <summary>
-        /// </summary>
         private readonly ResourceLoader _resourceLoader;
+        public string AlarmName => _selectedAlarm.MonitoredArea.Name;
 
-        //BUG: HAck
-        private AlarmModel _alarmModel = new AlarmModel();
+        public IEnumerable<AlarmType> AlarmTypes { get; private set; } = Enum.GetValues(typeof(AlarmType))
+            .Cast<AlarmType>();
 
-        private Token _navigationToken;
+        public IEnumerable<DayOfWeek> DaysOfWeek { get; private set; } = Enum.GetValues(typeof(DayOfWeek))
+            .Cast<DayOfWeek>();
 
-        private string _selectedDaysConcated;
-        public string AlarmName => _alarmModel.MonitoredArea.Name;
+        public BitmapImage MapScreen => _selectedAlarm.MapScreen;
 
-        /// <summary>
-        /// </summary>
-        public IEnumerable<string> AlarmTypes { get; private set; }
-
-        /// <summary>
-        /// </summary>
-        public IList<string> DaysOfWeek { get; private set; }
-
-        /// <summary>
-        /// </summary>
-        public BitmapImage MapScreen => _alarmModel.MapScreen;
-
-        /// <summary>
-        /// </summary>
         public IEnumerable<string> NotificationSounds { get; private set; } = new List<string> { "default" };
 
-        /// <summary>
-        /// </summary>
-        public string SelectedAlarmType
+        public AlarmType SelectedAlarmType
         {
-            get { return _resourceLoader.GetString(_alarmModel.AlarmType.ToString()); }
-            set { _alarmModel.AlarmType = _alarmTypeMap[value]; }
+            get { return _selectedAlarm.AlarmType; }
+            set { _selectedAlarm.AlarmType = value; }
         }
 
-        /// <summary>
-        /// </summary>
-        public IEnumerable<string> SelectedDays
+        public ISet<DayOfWeek> SelectedDays
         {
-            get { return _alarmModel.ActiveDays.Select(week => _resourceLoader.GetString(week.ToString())); }
+            get { return _selectedAlarm.ActiveDays; }
             set
             {
-                _alarmModel.ActiveDays.Clear();
-                value.ForEach(day => _alarmModel.ActiveDays.Add(_dayOfWeekMap[day]));
+                _selectedAlarm.ActiveDays = value;
             }
         }
 
-        public string SelectedDaysConcated
-        {
-            get
-            {
-                var stringRepresentation = SelectedDays.Aggregate("", (agg, day) => agg + $", {day.TrimStart(' ').Substring(0, 3)}").TrimStart(',', ' ');
-                _selectedDaysConcated = string.IsNullOrEmpty(stringRepresentation) ? _resourceLoader.GetString("RepeatOnce") : stringRepresentation;
-                return _selectedDaysConcated;
-            }
-
-            set { _selectedDaysConcated = value; }
-        }
-
-        /// <summary>
-        /// </summary>
         public string SelectedNotificationSound
         {
-            get { return _alarmModel.NotificationSound; }
-            set { _alarmModel.NotificationSound = value; }
+            get { return _selectedAlarm.AlarmSound; }
+            set { _selectedAlarm.AlarmSound = value; }
         }
 
-        /// <summary>
-        /// </summary>
-        public AlarmSettingsViewModel()
+        public AlarmSettingsViewModel(NavigationServiceWithToken navigationService) : base(navigationService)
         {
             _resourceLoader = ResourceLoader.GetForCurrentView("Resources");
 
-            SelectedDaysConcated = _resourceLoader.GetString("RepeatOnce");
-
-            InitializeAlarmTypes();
-            InitializeDaysOfWeek();
             InitializeAlaram();
-
-            _navigationService = SimpleIoc.Default.GetInstance<INavigationService>();
         }
 
-        public void GoBack()
+        [OnCommand("EditLocationCommand")]
+        public void EditLocation()
         {
-            _navigationService.GoBack();
+            _navigationService.NavigateTo(nameof(MapPage));
         }
 
-        public void OnNavigatedFrom(NavigationMessage message)
+        public override async void OnNavigatedTo(NavigationMessage message)
         {
-            _alarmModel = null;
-        }
-
-        public async void OnNavigatedTo(NavigationMessage message)
-        {
-            _navigationToken = message.Token;
-
-            _alarmModel = message.Data as AlarmModel;
-
             if (NotificationSounds.Count() <= 1)
-                await InitializeSoundFileNames().ConfigureAwait(true);
-            if (_navigationToken == Token.AddNew)
+                await InitializeSoundFileNamesAsync().ConfigureAwait(true);
+            if (_navigationService.Token == Token.AddNew)
                 InitializeAlaram();
         }
 
@@ -148,47 +82,18 @@ namespace LocationAlarm.ViewModel
             _mediaPlayer.Play();
         }
 
-        [OnCommand("RepeatWeeklyClosedCommand")]
-        public void OnRepeatWeeklyClosed() => RaisePropertyChanged(nameof(SelectedDaysConcated));
-
         [OnCommand("SaveSettingsCommand")]
         public void OnSaveAlarmSettings()
         {
-            _navigationService.NavigateTo(nameof(MainPage), new NavigationMessage(_navigationService.CurrentPageKey, _alarmModel, _navigationToken));
+            _navigationService.NavigateTo(nameof(MainPage));
         }
 
         private void InitializeAlaram()
         {
-            SelectedAlarmType = AlarmTypes.First();
             SelectedNotificationSound = NotificationSounds.First();
         }
 
-        private void InitializeAlarmTypes()
-        {
-            AlarmTypes = Enum.GetNames(typeof(AlarmType))
-                .Select(enumName =>
-                {
-                    var alarmTypeName = _resourceLoader.GetString(enumName);
-                    _alarmTypeMap[alarmTypeName] = (AlarmType)Enum.Parse(typeof(AlarmType), enumName);
-                    return alarmTypeName;
-                }).ToList();
-        }
-
-        /// <summary>
-        /// </summary>
-        private void InitializeDaysOfWeek()
-        {
-            DaysOfWeek = Enum.GetNames(typeof(DayOfWeek))
-                .Select(enumName =>
-                {
-                    var dayOfWeekName = _resourceLoader.GetString(enumName);
-                    _dayOfWeekMap[dayOfWeekName] = (DayOfWeek)Enum.Parse(typeof(DayOfWeek), enumName);
-                    return dayOfWeekName;
-                })
-                .ToList();
-        }
-
-        private async Task InitializeSoundFileNames()
+        private async Task InitializeSoundFileNamesAsync()
         {
             var notificationSounds = await ServiceLocator.Current
                 .GetInstance<IAssetsNamesReader>()

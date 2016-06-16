@@ -1,84 +1,72 @@
 using Commander;
-using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
-using GalaSoft.MvvmLight.Views;
 using LocationAlarm.Common;
+using LocationAlarm.Controls.AlarmItem;
 using LocationAlarm.Model;
 using LocationAlarm.Navigation;
-using LocationAlarm.Repository;
 using LocationAlarm.View;
 using PropertyChanged;
 using System.Collections.Specialized;
+using System.Linq;
 using System.Windows.Input;
 using Windows.UI.Xaml.Controls;
 
 namespace LocationAlarm.ViewModel
 {
-    /// <summary>
-    /// This class contains properties that the main View can data bind to. 
-    /// <para> Use the <strong> mvvminpc </strong> snippet to add bindable properties to this ViewModel. </para>
-    /// <para> You can also use Blend to data bind with the tool's support. </para>
-    /// <para> See http://www.galasoft.ch/mvvm </para>
-    /// </summary>
     [ImplementPropertyChanged]
-    public class MainViewModel : ViewModelBase, INavigable
+    public class MainViewModel : ViewModelBaseEx
     {
-        private readonly AlarmsRepository _alarmsRepository;
-        private readonly INavigationService _navigationService;
-        private Token _navigationToken;
-        public INotifyCollectionChanged AlarmsCollection => _alarmsRepository.Collection;
+        private readonly LocationAlarmManager _locationAlarmModel;
+        public INotifyCollectionChanged AlarmsCollection => _locationAlarmModel.Collection;
 
         public ICommand EditAlarmCommand { get; private set; }
 
         public int SelectedAlarm { get; set; }
 
-        /// <summary>
-        /// Initializes a new instance of the MainViewModel class. 
-        /// </summary>
-        public MainViewModel(AlarmsRepository alarmsRepository, INavigationService navigationService)
+        public MainViewModel(LocationAlarmManager locationAlarmModel, NavigationServiceWithToken navigationService) : base(navigationService)
         {
-            _alarmsRepository = alarmsRepository;
-            _navigationService = navigationService;
+            _locationAlarmModel = locationAlarmModel;
 
-            EditAlarmCommand = new RelayCommand<ItemClickEventArgs>(EditAlarmExecute);
+            EditAlarmCommand = new RelayCommand<SelectionChangedEventArgs>(EditAlarmExecute);
         }
 
         [OnCommand("AddNewAlarmCommand")]
         public void AddNewAlarm()
         {
-            _navigationToken = Token.AddNew;
-            _navigationService.NavigateTo(nameof(MapPage), new NavigationMessage(_navigationService.CurrentPageKey, _alarmsRepository.CreateTransitive(), _navigationToken));
+            _navigationService.Token = Token.AddNew;
+            _selectedAlarm = _locationAlarmModel.CreateTransitive();
+            _navigationService.NavigateTo(nameof(MapPage), new NavigationMessage(_navigationService.CurrentPageKey));
         }
 
-        public void GoBack()
+        public override void GoBack()
         {
         }
 
-        public void OnNavigatedFrom(NavigationMessage parameter)
+        public override void OnNavigatedTo(NavigationMessage message)
         {
-        }
-
-        public void OnNavigatedTo(NavigationMessage parameter)
-        {
-            _navigationToken = parameter.Token;
-            switch (parameter.From)
+            switch (_navigationService.LastPageKey)
             {
                 case nameof(MapPage):
                     break;
 
                 case nameof(AlarmSettingsPage):
-                    if (_navigationToken != Token.AddNew) break;
-                    var alarm = parameter.Data as AlarmModel;
-                    if (alarm == null) return;
-                    _alarmsRepository.Add(alarm);
+                    if (_navigationService.Token != Token.AddNew) break;
+                    _locationAlarmModel.Add(_selectedAlarm);
                     break;
             }
         }
 
-        private void EditAlarmExecute(ItemClickEventArgs itemClickEventArgs)
+        [OnCommand("DeleteAlarmCommand")]
+        private void DeleteAlarmExecute(AlarmItemEventArgs eventArgs)
         {
-            var clickedItem = itemClickEventArgs.ClickedItem as AlarmModel;
-            _navigationService.NavigateTo(nameof(AlarmSettingsPage), new NavigationMessage(_navigationService.CurrentPageKey, clickedItem));
+            _locationAlarmModel.Remove(eventArgs.Source);
+        }
+
+        private void EditAlarmExecute(SelectionChangedEventArgs itemClickEventArgs)
+        {
+            _selectedAlarm = itemClickEventArgs.AddedItems.First() as AlarmModel;
+            _navigationService.Token = Token.None;
+            _navigationService.NavigateTo(nameof(AlarmSettingsPage));
         }
     }
 }

@@ -1,16 +1,15 @@
-﻿using LocationAlarm.Model;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 
-namespace LocationAlarm.Repository
+namespace LocationAlarm.Model
 {
-    public class AlarmsRepository
+    public class LocationAlarmManager
     {
         private ObservableCollection<AlarmModel> _alarms = new ObservableCollection<AlarmModel>();
 
         public INotifyCollectionChanged Collection => _alarms;
 
-        public AlarmsRepository()
+        public LocationAlarmManager()
         {
         }
 
@@ -25,15 +24,9 @@ namespace LocationAlarm.Repository
             return alarm;
         }
 
-        public void Remove(AlarmModel alarm)
+        public void Remove(AlarmModel alarmModel)
         {
-            _alarms.Remove(alarm);
-        }
-
-        public void Update(AlarmModel alarm)
-        {
-            Remove(alarm);
-            _alarms.Add(alarm);
+            _alarms.Remove(alarmModel);
         }
     }
 }

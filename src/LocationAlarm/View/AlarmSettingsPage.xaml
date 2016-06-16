@@ -8,6 +8,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:core="using:Microsoft.Xaml.Interactions.Core"
     xmlns:interactivity="using:Microsoft.Xaml.Interactivity"
+    xmlns:converters="using:LocationAlarm.Converters"
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
     DataContext="{Binding Source={StaticResource Locator}, Path=AlarmSettings}">
@@ -30,6 +31,9 @@
             <Setter Property="HorizontalAlignment" Value="Stretch" />
             <Setter Property="Margin" Value="10,0" />
         </Style>
+        <converters:DayNameConverter x:Key="DayNameConverter" />
+        <converters:DayOfWeekToStringConverter x:Key="DayOfWeekToStringConverter" />
+        <converters:AlarmTypeConverter x:Key="AlarmTypeConverter" />
     </local:BindablePage.Resources>
 
     <Grid x:Name="LayoutRoot">
@@ -53,14 +57,20 @@
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
-                <ColumnDefinition />
-                <ColumnDefinition />
+                <ColumnDefinition Width="2*" />
+                <ColumnDefinition  Width="3*" />
             </Grid.ColumnDefinitions>
 
-            <Image Grid.Row="0" Grid.ColumnSpan="2" Source="{Binding MapScreen}" Stretch="UniformToFill" />
+            <Image Grid.Row="0" Grid.ColumnSpan="2" Source="{Binding MapScreen}" Stretch="UniformToFill">
+                <interactivity:Interaction.Behaviors>
+                    <core:EventTriggerBehavior EventName="Tapped">
+                        <core:InvokeCommandAction Command="{Binding EditLocationCommand}" />
+                    </core:EventTriggerBehavior>
+                </interactivity:Interaction.Behaviors>
+            </Image>
             <Border Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Background="#26000000" VerticalAlignment="Bottom">
                 <TextBlock VerticalAlignment="Bottom" Foreground="Black"
-                       Text="{Binding AlarmName}" FontSize="30" HorizontalAlignment="Stretch" Margin="5,0" />
+                       Text="{Binding AlarmName}" FontSize="20" HorizontalAlignment="Stretch" Margin="5,0" />
             </Border>
 
             <Line Grid.Row="1" Grid.ColumnSpan="2" VerticalAlignment="Stretch" Fill="White"
@@ -71,8 +81,17 @@
 
             <Button Grid.Row="2" Grid.Column="1" Content="{Binding SelectedAlarmType}" HorizontalAlignment="Stretch">
                 <Button.Flyout>
-                    <ListPickerFlyout ItemsSource="{Binding AlarmTypes}" Placement="Bottom"
-                                      SelectedItem="{Binding SelectedAlarmType, Mode=TwoWay}" />
+                    <ListPickerFlyout ItemsSource="{Binding AlarmTypes}" Placement="Top"
+                                      SelectedItem="{Binding SelectedAlarmType, Mode=TwoWay, Converter={StaticResource AlarmTypeConverter}}">
+                        <ListPickerFlyout.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="{Binding Converter={StaticResource AlarmTypeConverter}}"
+                                               HorizontalAlignment="Stretch" VerticalAlignment="Center" />
+                                </StackPanel>
+                            </DataTemplate>
+                        </ListPickerFlyout.ItemTemplate>
+                    </ListPickerFlyout>
                 </Button.Flyout>
             </Button>
 
@@ -99,7 +118,7 @@
 
             <TextBlock Grid.Row="4" Grid.Column="0" x:Uid="AlarmSettingsRepeat" Text="Placeholder"
                        Style="{StaticResource ItemNameTextBlockStyle}" />
-            <Button  Grid.Row="4" Grid.Column="1" Content="{Binding SelectedDaysConcated}"
+            <Button  Grid.Row="4" Grid.Column="1" Content="{Binding SelectedDays, Converter={StaticResource DayNameConverter}}"
                      HorizontalAlignment="Stretch" x:Name="RepeatSettingsButton">
                 <Button.Flyout>
                     <ListPickerFlyout ItemsSource="{Binding DaysOfWeek}" Placement="Full"
@@ -109,7 +128,7 @@
                             <DataTemplate>
                                 <StackPanel Orientation="Horizontal">
                                     <TextBlock Text=" " Margin="5" />
-                                    <TextBlock Text="{Binding}" />
+                                    <TextBlock Text="{Binding Converter={StaticResource DayOfWeekToStringConverter}}" />
                                 </StackPanel>
                             </DataTemplate>
                         </ListPickerFlyout.ItemTemplate>
@@ -119,7 +138,7 @@
         </Grid>
     </Grid>
     <local:BindablePage.BottomAppBar>
-        <CommandBar>
+        <CommandBar Style="{StaticResource CommandBarStyle}">
             <AppBarButton x:Uid="AlarmSettingsSave" Icon="Save" Command="{Binding SaveSettingsCommand}" />
         </CommandBar>
     </local:BindablePage.BottomAppBar>

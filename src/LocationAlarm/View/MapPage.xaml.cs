@@ -1,12 +1,11 @@
-﻿using ArrivalAlarm.Messages;
-using GalaSoft.MvvmLight.Messaging;
+﻿using GalaSoft.MvvmLight.Messaging;
+using GalaSoft.MvvmLight.Threading;
 using LocationAlarm.Common;
 using LocationAlarm.View.Map;
 using LocationAlarm.ViewModel;
 using System;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
-using System.Threading.Tasks;
 using Windows.Devices.Geolocation;
 using Windows.Foundation;
 using Windows.Graphics.Display;
@@ -26,6 +25,7 @@ namespace LocationAlarm.View
 {
     public sealed partial class MapPage
     {
+        public event EventHandler MapScreenshootTaken;
         private readonly MapCircleDrawer _mapCircleDrawer;
         private readonly MapViewModel _viewModel;
 
@@ -36,20 +36,13 @@ namespace LocationAlarm.View
             _viewModel = DataContext as MapViewModel;
             _mapCircleDrawer = new MapCircleDrawer(mapControl);
 
-            mapControl.LoadingStatusChanged += (sender, args) =>
-            {
-                if (sender.LoadingStatus == MapLoadingStatus.Loaded)
-                {
-                    Messenger.Default.Send(true, Token.MapLoaded);
-                }
-            };
-            _viewModel.CurrentLocationLoaded += ViewModelOnCurrentLocationLoaded;
-            Messenger.Default.Register<MapMessage>(this, Token.TakeScreenshot, TakeMapScreenshotAsync);
-            Messenger.Default.Register<MapMessage>(this, Token.FocusOnMap, SetFocusOnMap);
-
             mapControl.Tapped += MapControlOnTapped;
             mapControl.PitchChanged += MapControlOnPitchChanged;
             mapControl.ZoomLevelChanged += MapControlOnZoomLevelChanged;
+
+            Messenger.Default.Register<Geopoint>(this, ViewModelOnCurrentLocationLoaded);
+            Messenger.Default.Register<MessageBase>(this, Token.TakeScreenshot, TakeMapScreenshotAsync);
+            Messenger.Default.Register<MessageBase>(this, Token.FocusOnMap, SetFocusOnMap);
         }
 
         private void MapControlOnPitchChanged(MapControl sender, object args)
@@ -59,7 +52,6 @@ namespace LocationAlarm.View
                 .Cast<Ellipse>()
                 .ForEach(ellipse =>
             {
-                //ellipse.RenderTransformOrigin = new Point(0, .5);
                 ellipse.Projection = new PlaneProjection()
                 {
                     CenterOfRotationX = 0,
@@ -70,62 +62,55 @@ namespace LocationAlarm.View
             });
         }
 
-        private void MapControlOnTapped(object sender, TappedRoutedEventArgs tappedRoutedEventArgs)
+        private void MapControlOnTapped(object sender, TappedRoutedEventArgs tappedRoutedEventArgs) => mapControl.Focus(FocusState.Pointer);
+
+        private void MapControlOnZoomLevelChanged(MapControl sender, object args) => _mapCircleDrawer.Draw(_viewModel?.ActualLocation, _viewModel.GeocircleRadius);
+
+        private void RangeBase_OnValueChanged(object sender, RangeBaseValueChangedEventArgs e) => _mapCircleDrawer.Draw(_viewModel?.ActualLocation, _viewModel.GeocircleRadius);
+
+        private void SetFocusOnMap(MessageBase message) => mapControl.Focus(FocusState.Pointer);
+
+        private void TakeMapScreenshotAsync(MessageBase message)
         {
-            mapControl.Focus(FocusState.Pointer);
+            DispatcherHelper.CheckBeginInvokeOnUI(async () =>
+            {
+                if (mapControl.RenderSize == new Size(0, 0))
+                    return;
+                var dpi = DisplayInformation.GetForCurrentView().LogicalDpi;
+
+                var renderTargetBitmap = new RenderTargetBitmap();
+                await renderTargetBitmap.RenderAsync(mapControl);
+                var pixelBuffer = await renderTargetBitmap.GetPixelsAsync();
+                var randomAccessStream = new InMemoryRandomAccessStream();
+
+                var encoder = await BitmapEncoder.CreateAsync(BitmapEncoder.PngEncoderId, randomAccessStream);
+                encoder.SetPixelData(
+                    BitmapPixelFormat.Bgra8,
+                    BitmapAlphaMode.Ignore,
+                    (uint)renderTargetBitmap.PixelWidth,
+                    (uint)renderTargetBitmap.PixelHeight,
+                    dpi,
+                    dpi,
+                    pixelBuffer.ToArray());
+
+                await encoder.FlushAsync();
+
+                var bitmapImage = new BitmapImage();
+                await bitmapImage.SetSourceAsync(randomAccessStream);
+                _viewModel.MapScreenshot = bitmapImage;
+            });
         }
 
-        private void MapControlOnZoomLevelChanged(MapControl sender, object args)
+        private void ViewModelOnCurrentLocationLoaded(Geopoint geopoint)
         {
-            _mapCircleDrawer.Draw(_viewModel?.ActualLocation, _viewModel.GeocircleRadius);
-        }
-
-        private void RangeBase_OnValueChanged(object sender, RangeBaseValueChangedEventArgs e)
-        {
-            _mapCircleDrawer.Draw(_viewModel?.ActualLocation, _viewModel.GeocircleRadius);
-        }
-
-        private void SetFocusOnMap(MapMessage mapMessage)
-        {
-            mapControl.Focus(FocusState.Pointer);
-        }
-
-        /// <summary>
-        /// </summary>
-        private async void TakeMapScreenshotAsync(MapMessage mapMessage)
-        {
-            if (mapControl.RenderSize == new Size(0, 0))
-                return;
-            var dpi = DisplayInformation.GetForCurrentView().LogicalDpi;
-
-            var renderTargetBitmap = new RenderTargetBitmap();
-            await renderTargetBitmap.RenderAsync(mapControl);
-            var pixelBuffer = await renderTargetBitmap.GetPixelsAsync();
-            var randomAccessStream = new InMemoryRandomAccessStream();
-
-            var encoder = await BitmapEncoder.CreateAsync(BitmapEncoder.PngEncoderId, randomAccessStream);
-            encoder.SetPixelData(
-                BitmapPixelFormat.Bgra8,
-                BitmapAlphaMode.Ignore,
-                (uint)renderTargetBitmap.PixelWidth,
-                (uint)renderTargetBitmap.PixelHeight,
-                dpi,
-                dpi,
-                pixelBuffer.ToArray());
-
-            await encoder.FlushAsync();
-
-            var bitmapImage = new BitmapImage();
-            await bitmapImage.SetSourceAsync(randomAccessStream);
-
-            _viewModel.MapScreenshot = bitmapImage;
-        }
-
-        private async Task ViewModelOnCurrentLocationLoaded(object o, Geopoint geopoint)
-        {
-            LoadingProgressBar.Opacity = 100;
-            await mapControl.TrySetViewAsync(geopoint, _viewModel.ZoomLevel, 0, 0, MapAnimationKind.Linear);
-            LoadingProgressBar.Opacity = 0;
+            DispatcherHelper.CheckBeginInvokeOnUI(
+                async () =>
+                {
+                    LoadingProgressBar.Opacity = 100;
+                    await mapControl.TrySetViewAsync(geopoint, _viewModel.ZoomLevel, 0, 0, MapAnimationKind.Linear);
+                    LoadingProgressBar.Opacity = 0;
+                }
+                );
         }
     }
 }

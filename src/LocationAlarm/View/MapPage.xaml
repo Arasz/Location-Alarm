@@ -35,7 +35,7 @@
             <TextBlock x:Uid="MapPageSelectLocation" Text="Placeholder" Margin="5,15,5,5"
                        Style="{StaticResource  GroupHeaderTextBlockStyle}" Foreground="White" />
             <AutoSuggestBox ItemsSource="{Binding SuggestedLocations, Mode=OneWay}" Margin="5,5" AllowDrop="True"
-                            Text="{Binding LocationQuery, Mode=TwoWay}">
+                            Text="{Binding AutoSuggestionLocationQuery, Mode=TwoWay}">
                 <AutoSuggestBox.ItemTemplate>
                     <DataTemplate>
                         <StackPanel Orientation="Vertical">
@@ -90,7 +90,7 @@
     </Grid>
 
     <view:BindablePage.BottomAppBar>
-        <CommandBar>
+        <CommandBar Style="{StaticResource CommandBarStyle}">
             <AppBarButton x:Uid="MapPageFindMe" Label="Find me" Icon="Target"
                           Command="{Binding FindMeCommand}" />
             <AppBarButton x:Name="saveLocationButton" x:Uid="MapPageSaveLocation" Label="Save location" Icon="Save"

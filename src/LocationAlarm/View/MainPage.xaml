@@ -8,15 +8,23 @@
     xmlns:controls="using:LocationAlarm.Controls"
     xmlns:interactivity="using:Microsoft.Xaml.Interactivity"
     xmlns:core="using:Microsoft.Xaml.Interactions.Core"
+    xmlns:alarmItem="using:LocationAlarm.Controls.AlarmItem"
     mc:Ignorable="d"
+    x:Name="RootPage"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
     DataContext="{Binding Source={StaticResource Locator}, Path=Main}">
 
     <view:BindablePage.Resources>
         <ResourceDictionary>
             <DataTemplate x:Key="alarmModelTemplate">
-                <controls:AlarmItemControl DataContext="{Binding}" Width="{Binding
-                    RelativeSource={RelativeSource TemplatedParent} ,Path=Width}" />
+                <alarmItem:AlarmItemControl DataContext="{Binding}" Width="{Binding
+                    RelativeSource={RelativeSource TemplatedParent} ,Path=Width}">
+                    <interactivity:Interaction.Behaviors>
+                        <core:EventTriggerBehavior EventName="SwypeToDeleteCompleted">
+                            <core:InvokeCommandAction Command="{Binding ElementName=LayoutRoot, Path=DataContext.DeleteAlarmCommand}" />
+                        </core:EventTriggerBehavior>
+                    </interactivity:Interaction.Behaviors>
+                </alarmItem:AlarmItemControl>
             </DataTemplate>
         </ResourceDictionary>
     </view:BindablePage.Resources>
@@ -31,7 +39,7 @@
 
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
-            <RowDefinition Height="*" />
+            <RowDefinition Height="1*" />
         </Grid.RowDefinitions>
 
         <!-- Title Panel -->
@@ -40,23 +48,25 @@
         </StackPanel>
 
         <!--TODO: Content should be placed within the following grid-->
-        <Grid Grid.Row="1" x:Name="ContentRoot" Margin="19,9.5,19,0">
-            <StackPanel Orientation="Vertical">
-                <ListView ItemsSource="{Binding AlarmsCollection}" ShowsScrollingPlaceholders="True"
-                          SelectionMode="Single" IsItemClickEnabled="True" ItemTemplate="{StaticResource alarmModelTemplate}"
-                          CanReorderItems="True" CanDragItems="True">
+        <Grid Grid.Row="1" x:Name="ContentRoot" Height="500" VerticalAlignment="Stretch"
+              HorizontalAlignment="Stretch">
+            <ScrollViewer VerticalScrollBarVisibility="Visible" VerticalAlignment="Stretch"
+                          HorizontalScrollBarVisibility="Disabled" VerticalScrollMode="Enabled"
+                          IsEnabled="True">
+                <ListView ItemsSource="{Binding AlarmsCollection}" SelectionMode="Single"  ItemTemplate="{StaticResource alarmModelTemplate}"
+                          IsActiveView="True" CanDragItems="True" CanReorderItems="True">
                     <interactivity:Interaction.Behaviors>
-                        <core:EventTriggerBehavior EventName="ItemClick">
+                        <core:EventTriggerBehavior EventName="SelectionChanged">
                             <core:InvokeCommandAction Command="{Binding EditAlarmCommand}" />
                         </core:EventTriggerBehavior>
                     </interactivity:Interaction.Behaviors>
                 </ListView>
-            </StackPanel>
+            </ScrollViewer>
         </Grid>
     </Grid>
 
     <view:BindablePage.BottomAppBar>
-        <CommandBar>
+        <CommandBar Style="{StaticResource CommandBarStyle}">
             <AppBarButton Label="Add alarm" Icon="Add" Command="{Binding AddNewAlarmCommand}" />
         </CommandBar>
     </view:BindablePage.BottomAppBar>

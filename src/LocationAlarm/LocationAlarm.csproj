@@ -84,6 +84,10 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\AlarmItem\AlarmItemEventArgs.cs" />
+    <Compile Include="Controls\AlarmItem\MetersToKilometersConverter.cs" />
+    <Compile Include="Converters\DayOfWeekToStringConverter.cs" />
+    <Compile Include="Converters\AlarmTypeConverter.cs" />
     <Compile Include="Converters\SliderValueConverter.cs" />
     <Compile Include="Interceptors\AsyncErrorHandler.cs" />
     <Compile Include="Location\IReverseGeolocationQuery.cs" />
@@ -91,12 +95,17 @@
     <Compile Include="Location\ReadableLocationName.cs" />
     <Compile Include="Model\GeofenceBuilder.cs" />
     <Compile Include="Model\MonitoredArea.cs" />
+    <Compile Include="Navigation\INavigationServiceWithToken.cs" />
     <Compile Include="Navigation\NavigationMessage.cs" />
-    <Compile Include="Repository\AlarmsRepository.cs" />
+    <Compile Include="Navigation\NavigationServiceWithToken.cs" />
+    <Compile Include="Model\LocationAlarmManager.cs" />
+    <Compile Include="Tasks\BackgroundTaskManager.cs" />
+    <Compile Include="Tasks\BackgroundTaskManagerEventArgs.cs" />
     <Compile Include="Utils\AssetsNamesReader.cs" />
     <Compile Include="Utils\IAssetsNamesReader.cs" />
     <Compile Include="ViewModel\AlarmSettingsViewModel.cs" />
     <Compile Include="ViewModel\DataTemplates\DayOfWeekDataTemplate.cs" />
+    <Compile Include="ViewModel\ViewModelBaseEx.cs" />
     <Compile Include="View\AlarmSettingsPage.xaml.cs">
       <DependentUpon>AlarmSettingsPage.xaml</DependentUpon>
     </Compile>
@@ -107,17 +116,14 @@
     <Compile Include="Common\RelayCommand.cs" />
     <Compile Include="Common\SuspensionManager.cs" />
     <Compile Include="Converters\VisibilityConverter.cs" />
-    <Compile Include="GeofenceService.cs" />
-    <Compile Include="Messages\MapMessage.cs" />
     <Compile Include="Common\Token.cs" />
     <Compile Include="Model\AlarmModel.cs" />
-    <Compile Include="Model\AlarmsMonitor.cs" />
-    <Compile Include="Model\MapModel.cs" />
+    <Compile Include="Location\GeolocationModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ViewModel\MainViewModel.cs" />
     <Compile Include="ViewModel\MapViewModel.cs" />
     <Compile Include="ViewModel\ViewModelLocator.cs" />
-    <Compile Include="Controls\AlarmItemControl.xaml.cs">
+    <Compile Include="Controls\AlarmItem\AlarmItemControl.xaml.cs">
       <DependentUpon>AlarmItemControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Converters\AutoSuggestBoxSuggestionChosenEventArgsToSelectedItemConverter.cs" />
@@ -154,9 +160,14 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Page Include="Controls\AlarmItemControl.xaml">
+    <Page Include="Controls\AlarmItem\AlarmItemControl.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Controls\AlarmItem\AlarmItemResources.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Page>
     <Page Include="View\AlarmSettingsPage.xaml">
       <SubType>Designer</SubType>
@@ -204,8 +215,8 @@
       <HintPath>..\..\packages\NullGuard.Fody.1.4.6\lib\dotnet\NullGuard.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="PropertyChanged, Version=1.51.0.0, Culture=neutral, PublicKeyToken=ee3ee20bcf148ddd, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\PropertyChanged.Fody.1.51.0\lib\dotnet\PropertyChanged.dll</HintPath>
+    <Reference Include="PropertyChanged, Version=1.51.1.0, Culture=neutral, PublicKeyToken=ee3ee20bcf148ddd, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\PropertyChanged.Fody.1.51.1\lib\dotnet\PropertyChanged.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Visualize, Version=0.4.5.0, Culture=neutral, processorArchitecture=MSIL">
@@ -230,9 +241,13 @@
     <Folder Include="Resources\Strings\pl-PL\" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\AsyncEventHandler\AsyncEventHandler.csproj">
-      <Project>{70326a21-cd63-474a-a762-0e4437e1ceea}</Project>
-      <Name>AsyncEventHandler</Name>
+    <ProjectReference Include="..\CoreLibrary\CoreLibrary.csproj">
+      <Project>{4aa10b83-682e-49c4-b843-f295bc2d3711}</Project>
+      <Name>CoreLibrary</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\GeofenceJob\GeofenceBackgroundTask.csproj">
+      <Project>{da8962a6-c89d-4a75-9bcd-fe434e9a5e5e}</Project>
+      <Name>GeofenceBackgroundTask</Name>
     </ProjectReference>
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '12.0' ">
