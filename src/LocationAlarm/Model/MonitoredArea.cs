@@ -8,29 +8,27 @@ namespace ArrivalAlarm.Model
     /// Contains all informations about monitored area 
     /// </summary>
     [DataContract]
-    public class MonitoredArea
+    public struct MonitoredArea
     {
         [DataMember]
-        public BasicGeoposition? Geoposition { get; set; }
+        public BasicGeoposition Geoposition { get; set; }
 
         [DataMember]
         public MonitoredGeofenceStates MonitoredStates { get; set; }
 
         [DataMember]
-        public string Name { get; set; } = "Name";
+        public string Name { get; set; }
 
         [DataMember]
-        public double Radius { get; set; } = 500;
+        public double Radius { get; set; }
 
-        public MonitoredArea()
+        public MonitoredArea(double radius, string name = "", BasicGeoposition geoposition = default(BasicGeoposition),
+            MonitoredGeofenceStates monitoredStates = MonitoredGeofenceStates.Entered)
         {
-        }
-
-        public MonitoredArea(MonitoredArea prototype)
-        {
-            Name = prototype.Name;
-            Radius = prototype.Radius;
-            Geoposition = prototype.Geoposition;
+            Name = name;
+            Radius = radius;
+            Geoposition = geoposition;
+            MonitoredStates = monitoredStates;
         }
     }
 }

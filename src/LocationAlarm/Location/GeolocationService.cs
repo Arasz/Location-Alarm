@@ -65,7 +65,7 @@ namespace LocationAlarm.Location
 
             var locations = await FindLocationAtAsync(queryPoint).ConfigureAwait(false);
 
-            if (locations == null) return null;
+            if (locations == null || !locations.Any()) return null;
 
             return matchCriteria == null ?
                 new ReadableLocationName(locations.First()) :

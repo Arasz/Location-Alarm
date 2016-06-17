@@ -2,6 +2,7 @@
 using Commander;
 using GalaSoft.MvvmLight.Messaging;
 using LocationAlarm.Common;
+using LocationAlarm.Extensions;
 using LocationAlarm.Location;
 using LocationAlarm.Location.LocationAutosuggestion;
 using LocationAlarm.Navigation;
@@ -25,7 +26,7 @@ namespace LocationAlarm.ViewModel
         private MonitoredArea _monitoredArea;
         private MonitoredArea _monitoredAreaCopy;
 
-        public BasicGeoposition? ActualLocation
+        public BasicGeoposition ActualLocation
         {
             get { return _monitoredArea.Geoposition; }
             private set { _monitoredArea.Geoposition = value; }
@@ -83,24 +84,19 @@ namespace LocationAlarm.ViewModel
             SuggestionChosenCommand = _autoSuggestion.SuggestionChosenCommand;
         }
 
-        public override void GoBack()
-        {
-            if (_navigationService.LastPageKey == nameof(AlarmSettingsPage))
-                _selectedAlarm.MonitoredArea = _monitoredAreaCopy;
-            base.GoBack();
-        }
-
         public override void OnNavigatedFrom(NavigationMessage parameter)
         {
+            _selectedAlarm.MonitoredArea = _navigationService.LastPageKey == nameof(AlarmSettingsPage) ? _monitoredAreaCopy : _monitoredArea;
             IsMapLoaded = false;
             PushpinVisible = false;
+
             MessengerInstance.Unregister<MapLocation>(this, OnSuggestionSelected);
         }
 
         public override async void OnNavigatedTo(NavigationMessage parameter)
         {
             _monitoredArea = _selectedAlarm.MonitoredArea;
-            _monitoredAreaCopy = new MonitoredArea(_selectedAlarm.MonitoredArea);
+            _monitoredAreaCopy = _selectedAlarm.MonitoredArea;
 
             MessengerInstance.Register<MapLocation>(this, OnSuggestionSelected);
 
@@ -112,20 +108,20 @@ namespace LocationAlarm.ViewModel
         /// <summary>
         /// Fetches location name and geographic position if needed 
         /// </summary>
-        private async Task<Tuple<BasicGeoposition?, ReadableLocationName>> FetchGeolocationDataFromServiceAsync(bool fetchActualLocation = false)
+        private async Task<Tuple<BasicGeoposition, ReadableLocationName>> FetchGeolocationDataFromServiceAsync(bool fetchActualLocation = false)
         {
-            BasicGeoposition? updatedLocation = ActualLocation;
+            BasicGeoposition updatedLocation = ActualLocation;
 
-            if (fetchActualLocation || updatedLocation == null)
+            if (fetchActualLocation || updatedLocation.IsDefault())
             {
                 var geoposition = await _geolocationService.GetActualLocationAsync().ConfigureAwait(false);
                 updatedLocation = geoposition.Coordinate.Point.Position;
             }
 
-            var geopoint = new Geopoint(updatedLocation.Value);
+            var geopoint = new Geopoint(updatedLocation);
             var readableLocationName = await _geolocationService.FindBestMatchedLocationAtAsync(geopoint).ConfigureAwait(false);
 
-            return new Tuple<BasicGeoposition?, ReadableLocationName>(updatedLocation, readableLocationName);
+            return new Tuple<BasicGeoposition, ReadableLocationName>(updatedLocation, readableLocationName);
         }
 
         private async void OnSuggestionSelected(MapLocation selectedLocation)
@@ -168,7 +164,7 @@ namespace LocationAlarm.ViewModel
             PushpinVisible = true; // UI
             IsMapLoaded = true; //UI
 
-            MessengerInstance.Send(new Geopoint(ActualLocation.Value));
+            MessengerInstance.Send(new Geopoint(ActualLocation));
         }
     }
 }

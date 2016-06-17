@@ -53,7 +53,7 @@ namespace LocationAlarm.Model
 
         public AlarmModel()
         {
-            MonitoredArea = new MonitoredArea();
+            MonitoredArea = new MonitoredArea(radius: 500);
         }
     }
 
