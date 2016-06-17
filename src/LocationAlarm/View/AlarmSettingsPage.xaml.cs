@@ -2,7 +2,6 @@
 
 using LocationAlarm.ViewModel;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using Windows.UI.Xaml.Controls;
 
@@ -26,7 +25,7 @@ namespace LocationAlarm.View
             var flyout = RepeatSettingsButton.Flyout as ListPickerFlyout;
             _viewModel.SelectedDays.Clear();
             var selectedItems = flyout.SelectedItems.ToList();
-            _viewModel.SelectedDays = new SortedSet<DayOfWeek>(selectedItems.Cast<DayOfWeek>());
+            _viewModel.SelectedDays = selectedItems.Cast<DayOfWeek>().OrderBy(week => week).ToList();
         }
 
         private void FlyoutBase_OnOpening(object sender, object e)

@@ -21,7 +21,7 @@ namespace LocationAlarm.ViewModel
     {
         private readonly MediaPlayer _mediaPlayer = BackgroundMediaPlayer.Current;
         private readonly ResourceLoader _resourceLoader;
-        public string AlarmName => _selectedAlarm.MonitoredArea.Name;
+        public string AlarmName { get; private set; }
 
         public IEnumerable<AlarmType> AlarmTypes { get; private set; } = Enum.GetValues(typeof(AlarmType))
             .Cast<AlarmType>();
@@ -29,30 +29,15 @@ namespace LocationAlarm.ViewModel
         public IEnumerable<DayOfWeek> DaysOfWeek { get; private set; } = Enum.GetValues(typeof(DayOfWeek))
             .Cast<DayOfWeek>();
 
-        public BitmapImage MapScreen => _selectedAlarm.MapScreen;
+        public BitmapImage MapScreen { get; private set; }
 
         public IEnumerable<string> NotificationSounds { get; private set; } = new List<string> { "default" };
 
-        public AlarmType SelectedAlarmType
-        {
-            get { return _selectedAlarm.AlarmType; }
-            set { _selectedAlarm.AlarmType = value; }
-        }
+        public AlarmType SelectedAlarmType { get; set; }
 
-        public ISet<DayOfWeek> SelectedDays
-        {
-            get { return _selectedAlarm.ActiveDays; }
-            set
-            {
-                _selectedAlarm.ActiveDays = value;
-            }
-        }
+        public List<DayOfWeek> SelectedDays { get; set; }
 
-        public string SelectedNotificationSound
-        {
-            get { return _selectedAlarm.AlarmSound; }
-            set { _selectedAlarm.AlarmSound = value; }
-        }
+        public string SelectedNotificationSound { get; set; }
 
         public AlarmSettingsViewModel(NavigationServiceWithToken navigationService) : base(navigationService)
         {
@@ -69,6 +54,12 @@ namespace LocationAlarm.ViewModel
 
         public override async void OnNavigatedTo(NavigationMessage message)
         {
+            MapScreen = _selectedAlarm.MapScreen;
+            SelectedAlarmType = _selectedAlarm.AlarmType;
+            SelectedDays = _selectedAlarm.ActiveDays;
+            SelectedNotificationSound = _selectedAlarm.AlarmSound;
+            AlarmName = _selectedAlarm.Label;
+
             if (NotificationSounds.Count() <= 1)
                 await InitializeSoundFileNamesAsync().ConfigureAwait(true);
             if (_navigationService.Token == Token.AddNew)
@@ -85,6 +76,11 @@ namespace LocationAlarm.ViewModel
         [OnCommand("SaveSettingsCommand")]
         public void OnSaveAlarmSettings()
         {
+            _selectedAlarm.MapScreen = MapScreen;
+            _selectedAlarm.AlarmType = SelectedAlarmType;
+            _selectedAlarm.ActiveDays = SelectedDays;
+            _selectedAlarm.AlarmSound = SelectedNotificationSound;
+
             _navigationService.NavigateTo(nameof(MainPage));
         }
 

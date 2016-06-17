@@ -16,7 +16,7 @@ namespace LocationAlarm.Model
         /// Days in which alarm is active 
         /// </summary>
         [DataMember]
-        public ISet<DayOfWeek> ActiveDays { get; set; } = new SortedSet<DayOfWeek>();
+        public List<DayOfWeek> ActiveDays { get; set; } = new List<DayOfWeek>(7);
 
         /// <summary>
         /// Ringtone 
@@ -37,11 +37,11 @@ namespace LocationAlarm.Model
         public bool IsActive { get; set; }
 
         [DataMember]
-        public string Label => MonitoredArea.Name;
+        public string Label
+        {
+            get { return MonitoredArea.Name; }
+        }
 
-        /// <summary>
-        /// Selected location screen shot 
-        /// </summary>
         [DataMember]
         public BitmapImage MapScreen { get; set; }
 

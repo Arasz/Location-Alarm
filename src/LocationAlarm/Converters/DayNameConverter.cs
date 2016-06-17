@@ -13,14 +13,14 @@ namespace LocationAlarm.Converters
 
         public object Convert(object value, Type targetType, object parameter, string language)
         {
-            var activeDays = (ISet<DayOfWeek>)value;
+            var activeDays = (IEnumerable<DayOfWeek>)value;
             if (!activeDays.Any())
                 return _repeatOnceString;
 
-            if (activeDays.Count == 7)
+            if (activeDays.Count() == 7)
                 return _everydayString;
 
-            return activeDays.Select(dayOfWeek => dayOfWeek.ToString().Substring(0, 3))
+            return activeDays.OrderBy(week => week).Select(dayOfWeek => dayOfWeek.ToString().Substring(0, 3))
                     .Aggregate("", (aggregator, dayOfWeek) => aggregator += $"{dayOfWeek}, ")
                     .Trim(' ', ',');
         }

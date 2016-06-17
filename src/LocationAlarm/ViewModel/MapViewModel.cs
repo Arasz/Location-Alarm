@@ -84,9 +84,14 @@ namespace LocationAlarm.ViewModel
             SuggestionChosenCommand = _autoSuggestion.SuggestionChosenCommand;
         }
 
-        public override void OnNavigatedFrom(NavigationMessage parameter)
+        public override void GoBack()
         {
             _selectedAlarm.MonitoredArea = _navigationService.LastPageKey == nameof(AlarmSettingsPage) ? _monitoredAreaCopy : _monitoredArea;
+            base.GoBack();
+        }
+
+        public override void OnNavigatedFrom(NavigationMessage parameter)
+        {
             IsMapLoaded = false;
             PushpinVisible = false;
 
@@ -143,6 +148,9 @@ namespace LocationAlarm.ViewModel
                 {
                 }
             }).ConfigureAwait(true);
+
+            _selectedAlarm.MonitoredArea = _monitoredArea;
+
             _navigationService.NavigateTo(nameof(AlarmSettingsPage));
         }
 
