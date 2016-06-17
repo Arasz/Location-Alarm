@@ -21,14 +21,14 @@ namespace LocationAlarm.ViewModel
     public class MapViewModel : ViewModelBaseEx
     {
         private readonly LocationAutoSuggestion _autoSuggestion;
-        private readonly GeolocationModel _geolocationModel;
+        private readonly GeolocationService _geolocationService;
         private MonitoredArea _monitoredArea;
         private MonitoredArea _monitoredAreaCopy;
 
-        public Geopoint ActualLocation
+        public BasicGeoposition? ActualLocation
         {
-            get { return _monitoredArea.Geopoint; }
-            private set { _monitoredArea.Geopoint = value; }
+            get { return _monitoredArea.Geoposition; }
+            private set { _monitoredArea.Geoposition = value; }
         }
 
         public string AutoSuggestionLocationQuery
@@ -74,10 +74,10 @@ namespace LocationAlarm.ViewModel
             get; private set;
         }
 
-        public MapViewModel(NavigationServiceWithToken navigationService, GeolocationModel geolocationModel) : base(navigationService)
+        public MapViewModel(NavigationServiceWithToken navigationService, GeolocationService geolocationService) : base(navigationService)
         {
-            _autoSuggestion = new LocationAutoSuggestion(geolocationModel);
-            _geolocationModel = geolocationModel;
+            _autoSuggestion = new LocationAutoSuggestion(geolocationService);
+            _geolocationService = geolocationService;
 
             TextChangeCommand = _autoSuggestion.TextChangedCommand;
             SuggestionChosenCommand = _autoSuggestion.SuggestionChosenCommand;
@@ -112,24 +112,26 @@ namespace LocationAlarm.ViewModel
         /// <summary>
         /// Fetches location name and geographic position if needed 
         /// </summary>
-        private async Task<Tuple<Geopoint, ReadableLocationName>> FetchGeolocationDataFromServiceAsync(bool fetchActualLocation = false)
+        private async Task<Tuple<BasicGeoposition?, ReadableLocationName>> FetchGeolocationDataFromServiceAsync(bool fetchActualLocation = false)
         {
-            Geopoint updatedLocation = ActualLocation;
+            BasicGeoposition? updatedLocation = ActualLocation;
 
             if (fetchActualLocation || updatedLocation == null)
             {
-                var geoposition = await _geolocationModel.GetActualLocationAsync().ConfigureAwait(false);
-                updatedLocation = geoposition.Coordinate.Point;
+                var geoposition = await _geolocationService.GetActualLocationAsync().ConfigureAwait(false);
+                updatedLocation = geoposition.Coordinate.Point.Position;
             }
-            var readableLocationName = await _geolocationModel.FindBestMatchedLocationAtAsync(updatedLocation).ConfigureAwait(false);
 
-            return new Tuple<Geopoint, ReadableLocationName>(updatedLocation, readableLocationName);
+            var geopoint = new Geopoint(updatedLocation.Value);
+            var readableLocationName = await _geolocationService.FindBestMatchedLocationAtAsync(geopoint).ConfigureAwait(false);
+
+            return new Tuple<BasicGeoposition?, ReadableLocationName>(updatedLocation, readableLocationName);
         }
 
         private async void OnSuggestionSelected(MapLocation selectedLocation)
         {
-            Messenger.Default.Send(new MessageBase(), Token.FocusOnMap);
-            ActualLocation = selectedLocation.Point;
+            MessengerInstance.Send(new MessageBase(), Token.FocusOnMap);
+            ActualLocation = selectedLocation.Point.Position;
 
             await UpdateUserLocationAsync().ConfigureAwait(false);
         }
@@ -137,7 +139,7 @@ namespace LocationAlarm.ViewModel
         [OnCommand("SaveLocationCommand")]
         private async void SaveLocationExecute()
         {
-            Messenger.Default.Send(new MessageBase(), Token.TakeScreenshot);
+            MessengerInstance.Send(new MessageBase(), Token.TakeScreenshot);
             MapScreenshot = null;
             await Task.Factory.StartNew(() =>
             {
@@ -166,7 +168,7 @@ namespace LocationAlarm.ViewModel
             PushpinVisible = true; // UI
             IsMapLoaded = true; //UI
 
-            MessengerInstance.Send(ActualLocation);
+            MessengerInstance.Send(new Geopoint(ActualLocation.Value));
         }
     }
 }

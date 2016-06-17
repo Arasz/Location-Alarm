@@ -7,7 +7,7 @@ using Windows.Services.Maps;
 
 namespace LocationAlarm.Location
 {
-    public class GeolocationModel : IReverseGeolocationQuery
+    public class GeolocationService : IReverseGeolocationQuery
     {
         /// <summary>
         /// Object which contains all logic responsible for localization 
@@ -42,7 +42,7 @@ namespace LocationAlarm.Location
         /// </summary>
         public uint ReportInterval { get; set; } = 1000;
 
-        public GeolocationModel()
+        public GeolocationService()
         {
             _geolocator = new Geolocator()
             {

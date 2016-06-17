@@ -18,6 +18,7 @@
             <converters:VisibilityConverter x:Key="VisibilityConverter" />
             <converters:AutoSuggestionBoxTextChangeToBoolConverter x:Key="AutoSuggestionBoxTextChangeToBoolConverter" />
             <converters:AutoSuggestBoxSuggestionChosenEventArgsToSelectedItemConverter x:Key="ArgsToSelectedItemConverter" />
+            <converters:GeopositionToGeopointConverter x:Key="GeopointConverter" />
         </ResourceDictionary>
     </view:BindablePage.Resources>
 
@@ -73,11 +74,13 @@
                 </TextBlock>
             </Border>
             <Image Source="ms-appx:///Assets/pushpin-google-green-hi.png" Stretch="Fill" Width="40" Height="40" Canvas.ZIndex="1"
-                   map:MapControl.Location="{Binding ActualLocation}" map:MapControl.NormalizedAnchorPoint="0.3, 1"
+                   map:MapControl.Location="{Binding ActualLocation, Converter={StaticResource GeopointConverter}}"
+                   map:MapControl.NormalizedAnchorPoint="0.3, 1"
                    Visibility="{Binding PushpinVisible, Converter={StaticResource VisibilityConverter}}" CompositeMode="SourceOver">
             </Image>
             <Ellipse Width="{Binding GeocircleRadius}" Height="{Binding GeocircleRadius}" Fill="#66060606" Canvas.ZIndex="0"
-                     map:MapControl.Location="{Binding ActualLocation}" map:MapControl.NormalizedAnchorPoint="0.5, 0.5"
+                     map:MapControl.Location="{Binding ActualLocation, Converter={StaticResource GeopointConverter}}"
+                     map:MapControl.NormalizedAnchorPoint="0.5, 0.5"
                      Visibility="{Binding PushpinVisible, Converter={StaticResource VisibilityConverter}}" Stroke="#C8000000" />
         </map:MapControl>
 
