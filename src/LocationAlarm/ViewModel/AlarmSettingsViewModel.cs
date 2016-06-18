@@ -54,12 +54,6 @@ namespace LocationAlarm.ViewModel
 
         public override async void OnNavigatedTo(NavigationMessage message)
         {
-            MapScreen = _selectedAlarm.MapScreen;
-            SelectedAlarmType = _selectedAlarm.AlarmType;
-            SelectedDays = _selectedAlarm.ActiveDays;
-            SelectedNotificationSound = _selectedAlarm.AlarmSound;
-            AlarmName = _selectedAlarm.Label;
-
             if (NotificationSounds.Count() <= 1)
                 await InitializeSoundFileNamesAsync().ConfigureAwait(true);
             if (_navigationService.Token == Token.AddNew)
@@ -76,11 +70,6 @@ namespace LocationAlarm.ViewModel
         [OnCommand("SaveSettingsCommand")]
         public void OnSaveAlarmSettings()
         {
-            _selectedAlarm.MapScreen = MapScreen;
-            _selectedAlarm.AlarmType = SelectedAlarmType;
-            _selectedAlarm.ActiveDays = SelectedDays;
-            _selectedAlarm.AlarmSound = SelectedNotificationSound;
-
             _navigationService.NavigateTo(nameof(MainPage));
         }
 
