@@ -17,14 +17,14 @@ namespace LocationAlarm.ViewModel
     [ImplementPropertyChanged]
     public class MainViewModel : ViewModelBaseEx
     {
-        private readonly LocationAlarmManager _locationAlarmModel;
-        public INotifyCollectionChanged AlarmsCollection => _locationAlarmModel.Collection;
+        private readonly LocationAlarmModel _locationAlarmModel;
+        public INotifyCollectionChanged AlarmsCollection => _locationAlarmModel.GeolocationAlarms;
 
         public ICommand EditAlarmCommand { get; private set; }
 
         public int SelectedAlarm { get; set; }
 
-        public MainViewModel(LocationAlarmManager locationAlarmModel, NavigationServiceWithToken navigationService) : base(navigationService)
+        public MainViewModel(LocationAlarmModel locationAlarmModel, NavigationServiceWithToken navigationService) : base(navigationService)
         {
             _locationAlarmModel = locationAlarmModel;
 
@@ -34,7 +34,7 @@ namespace LocationAlarm.ViewModel
         [OnCommand("AddNewAlarmCommand")]
         public void AddNewAlarm()
         {
-            CurrentAlarm = _locationAlarmModel.CreateTransitive();
+            CurrentAlarm = _locationAlarmModel.NewAlarm;
             _navigationService.NavigateTo(nameof(MapPage), CurrentAlarm, Token.AddNew);
         }
 
@@ -53,7 +53,7 @@ namespace LocationAlarm.ViewModel
 
                 case nameof(AlarmSettingsPage):
                     if (_navigationService.Token != Token.AddNew) break;
-                    _locationAlarmModel.Add(CurrentAlarm);
+                    _locationAlarmModel.Save(CurrentAlarm);
                     break;
             }
         }
@@ -61,7 +61,7 @@ namespace LocationAlarm.ViewModel
         [OnCommand("DeleteAlarmCommand")]
         private void DeleteAlarmExecute(AlarmItemEventArgs eventArgs)
         {
-            _locationAlarmModel.Remove(eventArgs.Source);
+            _locationAlarmModel.Delete(eventArgs.Source);
         }
 
         private void EditAlarmExecute(SelectionChangedEventArgs itemClickEventArgs)
