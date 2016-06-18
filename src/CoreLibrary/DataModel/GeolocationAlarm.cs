@@ -86,7 +86,6 @@ namespace CoreLibrary.DataModel
                 Geoposition = Geoposition,
                 IsActive = IsActive,
                 MapScreen = MapScreen,
-                MonitoredStates = MonitoredStates,
                 Name = Name,
                 Radius = Radius,
             };
