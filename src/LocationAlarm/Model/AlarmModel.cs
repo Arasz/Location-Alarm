@@ -1,7 +1,9 @@
-﻿using ArrivalAlarm.Model;
+﻿using CoreLibrary.DataModel;
 using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
+using Windows.Devices.Geolocation;
+using Windows.Devices.Geolocation.Geofencing;
 using Windows.UI.Xaml.Media.Imaging;
 
 namespace LocationAlarm.Model
@@ -9,26 +11,32 @@ namespace LocationAlarm.Model
     /// <summary>
     /// Location alarm data model 
     /// </summary>
-    [DataContract]
-    public class AlarmModel
+    [DataContract, Equals]
+    public class AlarmModel : Entity
     {
         /// <summary>
         /// Days in which alarm is active 
         /// </summary>
         [DataMember]
-        public List<DayOfWeek> ActiveDays { get; set; } = new List<DayOfWeek>(7);
+        public List<DayOfWeek> ActiveDays { get; set; }
 
         /// <summary>
         /// Ringtone 
         /// </summary>
         [DataMember]
-        public string AlarmSound { get; set; } = "default";
+        public string AlarmSound { get; set; }
 
         /// <summary>
         /// Type of alarm 
         /// </summary>
         [DataMember]
-        public AlarmType AlarmType { get; set; } = AlarmType.Notification;
+        public AlarmType AlarmType { get; set; }
+
+        /// <summary>
+        /// Geographic position 
+        /// </summary>
+        [DataMember]
+        public BasicGeoposition Geoposition { get; set; }
 
         /// <summary>
         /// Alarm state 
@@ -37,23 +45,30 @@ namespace LocationAlarm.Model
         public bool IsActive { get; set; }
 
         [DataMember]
-        public string Label
-        {
-            get { return MonitoredArea.Name; }
-        }
-
-        [DataMember]
         public BitmapImage MapScreen { get; set; }
 
         /// <summary>
-        /// Area on enter to which alarm will be activated 
+        /// States in which alarm will activate 
         /// </summary>
         [DataMember]
-        public MonitoredArea MonitoredArea { get; set; }
+        public MonitoredGeofenceStates MonitoredStates { get; set; }
+
+        [DataMember]
+        public string Name { get; set; }
+
+        /// <summary>
+        /// Monitored area radius 
+        /// </summary>
+        [DataMember]
+        public double Radius { get; set; }
 
         public AlarmModel()
         {
-            MonitoredArea = new MonitoredArea(radius: 500);
+            ActiveDays = new List<DayOfWeek>(7);
+            AlarmSound = "default";
+            AlarmType = AlarmType.Notification;
+            Radius = 500;
+            MonitoredStates = MonitoredGeofenceStates.Entered;
         }
     }
 
