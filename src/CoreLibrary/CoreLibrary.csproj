@@ -90,8 +90,9 @@
     <Compile Include="DataModel\GeolocationAlarm.cs" />
     <Compile Include="DataModel\Entity.cs" />
     <Compile Include="DataModel\IEntity.cs" />
+    <Compile Include="Service\Geofencing\GeofenceService.cs" />
     <Compile Include="Service\Geolocation\GeolocationService.cs" />
-    <Compile Include="Service\Geofence\IGeofenceService.cs" />
+    <Compile Include="Service\Geofencing\IGeofenceService.cs" />
     <Compile Include="Service\Geolocation\IGeolocationService.cs" />
     <Compile Include="Service\Geolocation\IReverseGeolocationService.cs" />
     <Compile Include="Service\Geolocation\ReadableLocationName.cs" />
