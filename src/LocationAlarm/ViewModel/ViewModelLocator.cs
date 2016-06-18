@@ -1,7 +1,7 @@
 using CoreLibrary.DataModel;
+using CoreLibrary.Service.Geolocation;
 using GalaSoft.MvvmLight.Ioc;
 using GalaSoft.MvvmLight.Views;
-using LocationAlarm.Location;
 using LocationAlarm.Location.LocationAutosuggestion;
 using LocationAlarm.Model;
 using LocationAlarm.Navigation;
@@ -28,7 +28,7 @@ namespace LocationAlarm.ViewModel
             SimpleIoc.Default.Register<GelocationAlarmRepository>();
             SimpleIoc.Default.Register<LocationAlarmModel>();
             SimpleIoc.Default.Register<LocationAutoSuggestion>();
-            SimpleIoc.Default.Register<GeolocationService>();
+            SimpleIoc.Default.Register<IGeolocationService, GeolocationService>();
             SimpleIoc.Default.Register<MapViewModel>();
             SimpleIoc.Default.Register<MainViewModel>();
             SimpleIoc.Default.Register<AlarmSettingsViewModel>();

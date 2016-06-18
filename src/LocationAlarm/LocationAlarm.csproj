@@ -91,9 +91,7 @@
     <Compile Include="Converters\SliderValueConverter.cs" />
     <Compile Include="Extensions\BasicGeopositionExtension.cs" />
     <Compile Include="Interceptors\AsyncErrorHandler.cs" />
-    <Compile Include="Location\IReverseGeolocationQuery.cs" />
     <Compile Include="Location\LocationAutosuggestion\LocationAutosuggestion.cs" />
-    <Compile Include="Location\ReadableLocationName.cs" />
     <Compile Include="Model\GeofenceBuilder.cs" />
     <Compile Include="Navigation\INavigationServiceWithToken.cs" />
     <Compile Include="Navigation\NavigationServiceWithToken.cs" />
@@ -116,7 +114,6 @@
     <Compile Include="Common\SuspensionManager.cs" />
     <Compile Include="Converters\VisibilityConverter.cs" />
     <Compile Include="Common\Token.cs" />
-    <Compile Include="Location\GeolocationService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ViewModel\MainViewModel.cs" />
     <Compile Include="ViewModel\MapViewModel.cs" />
