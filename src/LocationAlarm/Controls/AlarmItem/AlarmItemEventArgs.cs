@@ -1,13 +1,13 @@
-﻿using LocationAlarm.Model;
+﻿using CoreLibrary.DataModel;
 using System;
 
 namespace LocationAlarm.Controls.AlarmItem
 {
     public class AlarmItemEventArgs : EventArgs
     {
-        public AlarmModel Source { get; }
+        public GeolocationAlarm Source { get; }
 
-        public AlarmItemEventArgs(AlarmModel source)
+        public AlarmItemEventArgs(GeolocationAlarm source)
         {
             Source = source;
         }

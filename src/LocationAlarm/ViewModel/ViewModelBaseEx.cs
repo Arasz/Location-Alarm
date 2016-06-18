@@ -1,5 +1,5 @@
-﻿using GalaSoft.MvvmLight;
-using LocationAlarm.Model;
+﻿using CoreLibrary.DataModel;
+using GalaSoft.MvvmLight;
 using LocationAlarm.Navigation;
 
 namespace LocationAlarm.ViewModel
@@ -7,7 +7,7 @@ namespace LocationAlarm.ViewModel
     public class ViewModelBaseEx : ViewModelBase, INavigable
     {
         //TODO: Shouldn't be static
-        protected static volatile AlarmModel _selectedAlarm;
+        protected static volatile GeolocationAlarm _selectedAlarm;
 
         protected readonly NavigationServiceWithToken _navigationService;
 

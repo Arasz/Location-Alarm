@@ -1,18 +1,19 @@
-﻿using CoreLibrary.DataModel;
+﻿using CoreLibrary.StateManagement;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.Serialization;
 using Windows.Devices.Geolocation;
 using Windows.Devices.Geolocation.Geofencing;
 using Windows.UI.Xaml.Media.Imaging;
 
-namespace LocationAlarm.Model
+namespace CoreLibrary.DataModel
 {
     /// <summary>
     /// Location alarm data model 
     /// </summary>
     [DataContract, Equals]
-    public class AlarmModel : Entity
+    public class GeolocationAlarm : Entity, IRestorable<GeolocationAlarm>
     {
         /// <summary>
         /// Days in which alarm is active 
@@ -62,13 +63,42 @@ namespace LocationAlarm.Model
         [DataMember]
         public double Radius { get; set; }
 
-        public AlarmModel()
+        public GeolocationAlarm()
         {
             ActiveDays = new List<DayOfWeek>(7);
             AlarmSound = "default";
             AlarmType = AlarmType.Notification;
             Radius = 500;
             MonitoredStates = MonitoredGeofenceStates.Entered;
+        }
+
+        public void Restore(GeolocationAlarm savedState)
+        {
+            ActiveDays = savedState.ActiveDays.ToList();
+            AlarmSound = savedState.AlarmSound;
+            AlarmType = savedState.AlarmType;
+            Geoposition = savedState.Geoposition;
+            IsActive = savedState.IsActive;
+            MapScreen = savedState.MapScreen;
+            MonitoredStates = savedState.MonitoredStates;
+            Name = savedState.Name;
+            Radius = savedState.Radius;
+        }
+
+        public GeolocationAlarm Save()
+        {
+            return new GeolocationAlarm()
+            {
+                ActiveDays = ActiveDays.ToList(),
+                AlarmSound = AlarmSound,
+                AlarmType = AlarmType,
+                Geoposition = Geoposition,
+                IsActive = IsActive,
+                MapScreen = MapScreen,
+                MonitoredStates = MonitoredStates,
+                Name = Name,
+                Radius = Radius,
+            };
         }
     }
 

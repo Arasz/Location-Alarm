@@ -1,5 +1,4 @@
-﻿using ArrivalAlarm.Model;
-using Commander;
+﻿using Commander;
 using GalaSoft.MvvmLight.Messaging;
 using LocationAlarm.Common;
 using LocationAlarm.Extensions;
@@ -23,13 +22,11 @@ namespace LocationAlarm.ViewModel
     {
         private readonly LocationAutoSuggestion _autoSuggestion;
         private readonly GeolocationService _geolocationService;
-        private MonitoredArea _monitoredArea;
-        private MonitoredArea _monitoredAreaCopy;
 
         public BasicGeoposition ActualLocation
         {
-            get { return _monitoredArea.Geoposition; }
-            private set { _monitoredArea.Geoposition = value; }
+            get { return _selectedAlarm.Geoposition; }
+            private set { _selectedAlarm.Geoposition = value; }
         }
 
         public string AutoSuggestionLocationQuery
@@ -46,8 +43,8 @@ namespace LocationAlarm.ViewModel
 
         public double GeocircleRadius
         {
-            get { return _monitoredArea.Radius; }
-            set { _monitoredArea.Radius = value; }
+            get { return _selectedAlarm.Radius; }
+            set { _selectedAlarm.Radius = value; }
         }
 
         public bool IsMapLoaded { get; private set; }
@@ -86,7 +83,7 @@ namespace LocationAlarm.ViewModel
 
         public override void GoBack()
         {
-            _selectedAlarm.MonitoredArea = _navigationService.LastPageKey == nameof(AlarmSettingsPage) ? _monitoredAreaCopy : _monitoredArea;
+            //_selectedAlarm = _navigationService.LastPageKey == nameof(AlarmSettingsPage) ? _monitoredAreaCopy : _monitoredArea;
             base.GoBack();
         }
 
@@ -100,9 +97,6 @@ namespace LocationAlarm.ViewModel
 
         public override async void OnNavigatedTo(NavigationMessage parameter)
         {
-            _monitoredArea = _selectedAlarm.MonitoredArea;
-            _monitoredAreaCopy = _selectedAlarm.MonitoredArea;
-
             MessengerInstance.Register<MapLocation>(this, OnSuggestionSelected);
 
             IsMapLoaded = false;
@@ -149,8 +143,6 @@ namespace LocationAlarm.ViewModel
                 }
             }).ConfigureAwait(true);
 
-            _selectedAlarm.MonitoredArea = _monitoredArea;
-
             _navigationService.NavigateTo(nameof(AlarmSettingsPage));
         }
 
@@ -164,10 +156,10 @@ namespace LocationAlarm.ViewModel
             var locationData = await FetchGeolocationDataFromServiceAsync(fetchActualLocation)
                 .ConfigureAwait(true);
 
-            _monitoredArea.Name = locationData.Item2.ToString();
+            _selectedAlarm.Name = locationData.Item2.ToString();
 
             ActualLocation = locationData.Item1; // UI
-            AutoSuggestionLocationQuery = _monitoredArea.Name; // UI
+            AutoSuggestionLocationQuery = _selectedAlarm.Name; // UI
             ZoomLevel = 12; // UI
             PushpinVisible = true; // UI
             IsMapLoaded = true; //UI

@@ -1,11 +1,12 @@
-﻿using System.Collections.ObjectModel;
+﻿using CoreLibrary.DataModel;
+using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 
 namespace LocationAlarm.Model
 {
     public class LocationAlarmManager
     {
-        private ObservableCollection<AlarmModel> _alarms = new ObservableCollection<AlarmModel>();
+        private ObservableCollection<GeolocationAlarm> _alarms = new ObservableCollection<GeolocationAlarm>();
 
         public INotifyCollectionChanged Collection => _alarms;
 
@@ -13,18 +14,18 @@ namespace LocationAlarm.Model
         {
         }
 
-        public void Add(AlarmModel alarm)
+        public void Add(GeolocationAlarm alarm)
         {
             _alarms.Add(alarm);
         }
 
-        public AlarmModel CreateTransitive()
+        public GeolocationAlarm CreateTransitive()
         {
-            var alarm = new AlarmModel();
+            var alarm = new GeolocationAlarm();
             return alarm;
         }
 
-        public void Remove(AlarmModel alarmModel)
+        public void Remove(GeolocationAlarm alarmModel)
         {
             _alarms.Remove(alarmModel);
         }

@@ -1,6 +1,6 @@
 ﻿using Commander;
+using CoreLibrary.DataModel;
 using LocationAlarm.Common;
-using LocationAlarm.Model;
 using LocationAlarm.Navigation;
 using LocationAlarm.Utils;
 using LocationAlarm.View;

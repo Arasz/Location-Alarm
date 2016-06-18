@@ -5,7 +5,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:model="using:LocationAlarm.Model"
-    xmlns:alarmItem="using:LocationAlarm.Controls.AlarmItem"
+    xmlns:dataModel="using:CoreLibrary.DataModel"
     mc:Ignorable="d"
     d:DesignHeight="200"
     d:DesignWidth="300"
@@ -13,7 +13,7 @@
     Height="140"
     MaxHeight="400"
     x:Name="Control"
-    d:DataContext="{d:DesignInstance model:AlarmModel, IsDesignTimeCreatable=True}"
+    d:DataContext="{d:DesignInstance dataModel:GeolocationAlarm, IsDesignTimeCreatable=True}"
     ManipulationStarted="AlarmItemControl_OnManipulationStarted"
     ManipulationCompleted="AlarmItemControl_OnManipulationCompleted"
     ManipulationDelta="AlarmItemControl_OnManipulationDelta"
@@ -41,7 +41,7 @@
                 <ColumnDefinition />
             </Grid.ColumnDefinitions>
             <SymbolIcon Grid.Column="0" Symbol="Map" Margin="0,0,10,0" />
-            <TextBlock Grid.Column="1" Text="{Binding Path=Label}" TextWrapping="Wrap"
+            <TextBlock Grid.Column="1" Text="{Binding Path=Name}" TextWrapping="Wrap"
                        FontSize="20"
                        HorizontalAlignment="Left" VerticalAlignment="Center" />
         </Grid>
@@ -49,7 +49,7 @@
         <TextBlock Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2" Margin="5, 5" FontSize="18"
                    HorizontalAlignment="Right" VerticalAlignment="Center">
             <Run Text="+" />
-            <Run Text="{Binding Path=MonitoredArea.Radius,  Converter={StaticResource MetersToKilometersConverter}}" />
+            <Run Text="{Binding Path=Radius,  Converter={StaticResource MetersToKilometersConverter}}" />
             <Run Text="km" />
         </TextBlock>
 

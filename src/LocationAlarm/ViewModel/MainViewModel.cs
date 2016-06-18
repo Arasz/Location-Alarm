@@ -1,4 +1,5 @@
 using Commander;
+using CoreLibrary.DataModel;
 using GalaSoft.MvvmLight.Command;
 using LocationAlarm.Common;
 using LocationAlarm.Controls.AlarmItem;
@@ -64,7 +65,7 @@ namespace LocationAlarm.ViewModel
 
         private void EditAlarmExecute(SelectionChangedEventArgs itemClickEventArgs)
         {
-            _selectedAlarm = itemClickEventArgs.AddedItems.First() as AlarmModel;
+            _selectedAlarm = itemClickEventArgs.AddedItems.First() as GeolocationAlarm;
             _navigationService.Token = Token.None;
             _navigationService.NavigateTo(nameof(AlarmSettingsPage));
         }
