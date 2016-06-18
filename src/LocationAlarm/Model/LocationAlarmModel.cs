@@ -44,6 +44,13 @@ namespace LocationAlarm.Model
             _geofenceService.RegisterGeofence(geofence);
         }
 
+        public void Update(GeolocationAlarm alarm)
+        {
+            _repository.Update(alarm);
+
+            _geofenceService.ReplaceGeofence(alarm.Name, CreateGeofenceFromAlarm(alarm));
+        }
+
         private Geofence CreateGeofenceFromAlarm(GeolocationAlarm alarm)
         {
             _registeredGeofences[alarm.Name] = new GeofenceBuilder()
