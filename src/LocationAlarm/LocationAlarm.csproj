@@ -86,7 +86,6 @@
     </Compile>
     <Compile Include="Controls\AlarmItem\AlarmItemEventArgs.cs" />
     <Compile Include="Controls\AlarmItem\MetersToKilometersConverter.cs" />
-    <Compile Include="Converters\DayOfWeekToStringConverter.cs" />
     <Compile Include="Converters\AlarmTypeConverter.cs" />
     <Compile Include="Converters\GeopositionToGeopointConverter.cs" />
     <Compile Include="Converters\SliderValueConverter.cs" />

@@ -32,7 +32,6 @@
             <Setter Property="Margin" Value="10,0" />
         </Style>
         <converters:DayNameConverter x:Key="DayNameConverter" />
-        <converters:DayOfWeekToStringConverter x:Key="DayOfWeekToStringConverter" />
         <converters:AlarmTypeConverter x:Key="AlarmTypeConverter" />
     </local:BindablePage.Resources>
 
