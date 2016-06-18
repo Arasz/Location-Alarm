@@ -1,4 +1,5 @@
 using CoreLibrary.DataModel;
+using CoreLibrary.Service.Geofencing;
 using CoreLibrary.Service.Geolocation;
 using GalaSoft.MvvmLight.Ioc;
 using GalaSoft.MvvmLight.Views;
@@ -25,6 +26,7 @@ namespace LocationAlarm.ViewModel
 
             RegisterServices();
 
+            SimpleIoc.Default.Register<IGeolocationService, GeofenceService>();
             SimpleIoc.Default.Register<GelocationAlarmRepository>();
             SimpleIoc.Default.Register<LocationAlarmModel>();
             SimpleIoc.Default.Register<LocationAutoSuggestion>();

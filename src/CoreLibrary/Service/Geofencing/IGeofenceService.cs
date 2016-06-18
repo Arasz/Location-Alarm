@@ -9,6 +9,11 @@ namespace CoreLibrary.Service
     public interface IGeofenceService
     {
         /// <summary>
+        /// Collection of all active geofences 
+        /// </summary>
+        IEnumerable<Geofence> AllActiveGeofences { get; }
+
+        /// <summary>
         /// Reports of geofence state change 
         /// </summary>
         IReadOnlyList<GeofenceStateChangeReport> GeofenceStateChangeReports { get; }
@@ -34,6 +39,12 @@ namespace CoreLibrary.Service
         /// </summary>
         /// <param name="geofence"></param>
         void RemoveGeofence(Geofence geofence);
+
+        /// <summary>
+        /// Remove geofence with given id 
+        /// </summary>
+        /// <param name="geofence"></param>
+        void RemoveGeofence(string id);
 
         /// <summary>
         /// Replace geofence of given id with new geofence. If geofence of given id doesn't exist,

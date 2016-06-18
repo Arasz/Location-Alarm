@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Windows.Devices.Geolocation.Geofencing;
 
@@ -6,7 +7,9 @@ namespace CoreLibrary.Service.Geofencing
 {
     public class GeofenceService : IGeofenceService
     {
-        private GeofenceMonitor _geofenceMonitor;
+        private readonly GeofenceMonitor _geofenceMonitor;
+
+        public IEnumerable<Geofence> AllActiveGeofences => _geofenceMonitor.Geofences.AsEnumerable();
 
         public IReadOnlyList<GeofenceStateChangeReport> GeofenceStateChangeReports => _geofenceMonitor.ReadReports();
 
@@ -25,6 +28,14 @@ namespace CoreLibrary.Service.Geofencing
         public void RegisterGeofence(Geofence geofence) => _geofenceMonitor.Geofences.Add(geofence);
 
         public void RemoveGeofence(Geofence geofence) => _geofenceMonitor.Geofences.Remove(geofence);
+
+        public void RemoveGeofence(string id)
+        {
+            var geofence = ReadGeofence(id);
+            if (geofence != null) RemoveGeofence(geofence);
+
+            throw new ArgumentException($"Geofence of {id} id isn't registered");
+        }
 
         public void ReplaceGeofence(string id, Geofence geofence)
         {

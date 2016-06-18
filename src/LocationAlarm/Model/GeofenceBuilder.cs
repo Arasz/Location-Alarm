@@ -20,7 +20,7 @@ namespace LocationAlarm.Model
         /// <summary>
         /// The shape of the geofence region 
         /// </summary>
-        private Geocircle _geoshape = new Geocircle(new BasicGeoposition(), 4d);
+        private Geocircle _geoshape;
 
         /// <summary>
         /// The id of the Geofence 
@@ -38,7 +38,7 @@ namespace LocationAlarm.Model
         private bool _singleUse;
 
         /// <summary>
-        /// The time to start monitoring the Geofence. 
+        /// Time when geofence will be monitored. 
         /// </summary>
         private DateTimeOffset? _startTime;
 
@@ -71,6 +71,12 @@ namespace LocationAlarm.Model
         public GeofenceBuilder ConfigureMonitoredStates(MonitoredGeofenceStates states)
         {
             _monitoredStates = states;
+            return this;
+        }
+
+        public GeofenceBuilder IsUsedOnce(bool singleUse)
+        {
+            _singleUse = singleUse;
             return this;
         }
 
@@ -110,6 +116,15 @@ namespace LocationAlarm.Model
         public GeofenceBuilder UseOnlyOnce()
         {
             _singleUse = true;
+            return this;
+        }
+
+        public GeofenceBuilder WithDefaultParameters()
+        {
+            _startTime = DateTimeOffset.Now;
+            _duration = TimeSpan.FromSeconds(0); // will never expire
+            _dwellTime = TimeSpan.FromSeconds(30); // for test only
+            _monitoredStates = MonitoredGeofenceStates.Entered | MonitoredGeofenceStates.Removed;
             return this;
         }
     }

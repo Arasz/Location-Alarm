@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
 using Windows.Devices.Geolocation;
-using Windows.Devices.Geolocation.Geofencing;
 using Windows.UI.Xaml.Media.Imaging;
 
 namespace CoreLibrary.DataModel
@@ -47,12 +46,6 @@ namespace CoreLibrary.DataModel
         [DataMember]
         public BitmapImage MapScreen { get; set; }
 
-        /// <summary>
-        /// States in which alarm will activate 
-        /// </summary>
-        [DataMember]
-        public MonitoredGeofenceStates MonitoredStates { get; set; }
-
         [DataMember]
         public string Name { get; set; }
 
@@ -69,7 +62,6 @@ namespace CoreLibrary.DataModel
             AlarmSound = "default";
             AlarmType = AlarmType.Notification;
             Radius = 500;
-            MonitoredStates = MonitoredGeofenceStates.Entered;
         }
 
         public void Restore(GeolocationAlarm savedState)
@@ -80,7 +72,6 @@ namespace CoreLibrary.DataModel
             Geoposition = savedState.Geoposition;
             IsActive = savedState.IsActive;
             MapScreen = savedState.MapScreen;
-            MonitoredStates = savedState.MonitoredStates;
             Name = savedState.Name;
             Radius = savedState.Radius;
         }
