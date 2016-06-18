@@ -122,13 +122,14 @@
                      HorizontalAlignment="Stretch" x:Name="RepeatSettingsButton">
                 <Button.Flyout>
                     <ListPickerFlyout ItemsSource="{Binding DaysOfWeek}" Placement="Full"
-                                      SelectionMode="Multiple" Opening="FlyoutBase_OnOpening"
+                                      SelectionMode="Multiple"
+                                      Opening="FlyoutBase_OnOpening"
                                       Closed="FlyoutBase_OnClosed">
                         <ListPickerFlyout.ItemTemplate>
                             <DataTemplate>
                                 <StackPanel Orientation="Horizontal">
                                     <TextBlock Text=" " Margin="5" />
-                                    <TextBlock Text="{Binding Converter={StaticResource DayOfWeekToStringConverter}}" />
+                                    <TextBlock Text="{Binding}" />
                                 </StackPanel>
                             </DataTemplate>
                         </ListPickerFlyout.ItemTemplate>

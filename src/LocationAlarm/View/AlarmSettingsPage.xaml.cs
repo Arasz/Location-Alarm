@@ -1,15 +1,12 @@
 ﻿// The Basic Page item template is documented at http://go.microsoft.com/fwlink/?LinkID=390556
 
+using CoreLibrary.DataModel;
 using LocationAlarm.ViewModel;
-using System;
 using System.Linq;
 using Windows.UI.Xaml.Controls;
 
 namespace LocationAlarm.View
 {
-    /// <summary>
-    /// An empty page that can be used on its own or navigated to within a Frame. 
-    /// </summary>
     public sealed partial class AlarmSettingsPage : BindablePage
     {
         private AlarmSettingsViewModel _viewModel;
@@ -23,16 +20,16 @@ namespace LocationAlarm.View
         private void FlyoutBase_OnClosed(object sender, object e)
         {
             var flyout = RepeatSettingsButton.Flyout as ListPickerFlyout;
-            _viewModel.SelectedDays.Clear();
-            var selectedItems = flyout.SelectedItems.ToList();
-            _viewModel.SelectedDays = selectedItems.Cast<DayOfWeek>().OrderBy(week => week).ToList();
+            _viewModel.SelectedDays = flyout.SelectedItems.Cast<WeekDay>().ToList();
         }
 
         private void FlyoutBase_OnOpening(object sender, object e)
         {
             var flyout = RepeatSettingsButton.Flyout as ListPickerFlyout;
             flyout.SelectedItems.Clear();
-            _viewModel.SelectedDays.ForEach(s => flyout.SelectedItems.Add(s));
+            var source = _viewModel.DaysOfWeek;
+
+            _viewModel.SelectedDays.ForEach(weekDay => flyout.SelectedItems.Add(source.First(day => day.Name == weekDay.Name)));
         }
     }
 }

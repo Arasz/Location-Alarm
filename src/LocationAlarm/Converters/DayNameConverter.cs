@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CoreLibrary.DataModel;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Windows.ApplicationModel.Resources;
@@ -14,15 +15,15 @@ namespace LocationAlarm.Converters
         public object Convert(object value, Type targetType, object parameter, string language)
         {
             if (null == value) return value;
-            var activeDays = (IEnumerable<DayOfWeek>)value;
+            var activeDays = (IEnumerable<WeekDay>)value;
             if (!activeDays.Any())
                 return _repeatOnceString;
 
             if (activeDays.Count() == 7)
                 return _everydayString;
 
-            return activeDays.OrderBy(week => week).Select(dayOfWeek => dayOfWeek.ToString().Substring(0, 3))
-                    .Aggregate("", (aggregator, dayOfWeek) => aggregator += $"{dayOfWeek}, ")
+            return activeDays.OrderBy(day => day.Day).Select(day => day.ShortName)
+                    .Aggregate("", (aggregator, day) => aggregator += $"{day}, ")
                     .Trim(' ', ',');
         }
 

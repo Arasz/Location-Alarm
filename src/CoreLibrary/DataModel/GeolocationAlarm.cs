@@ -1,5 +1,4 @@
 ﻿using CoreLibrary.StateManagement;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
@@ -19,7 +18,7 @@ namespace CoreLibrary.DataModel
         /// Days in which alarm is active 
         /// </summary>
         [DataMember]
-        public List<DayOfWeek> ActiveDays { get; set; }
+        public List<WeekDay> ActiveDays { get; set; }
 
         /// <summary>
         /// Ringtone 
@@ -66,7 +65,7 @@ namespace CoreLibrary.DataModel
         public GeolocationAlarm()
         {
             Name = "";
-            ActiveDays = new List<DayOfWeek>(7);
+            ActiveDays = new List<WeekDay>(7);
             AlarmSound = "default";
             AlarmType = AlarmType.Notification;
             Radius = 500;

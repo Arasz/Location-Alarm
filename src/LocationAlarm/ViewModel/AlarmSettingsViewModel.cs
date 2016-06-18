@@ -30,10 +30,10 @@ namespace LocationAlarm.ViewModel
         }
 
         public IEnumerable<AlarmType> AlarmTypes { get; private set; } = Enum.GetValues(typeof(AlarmType))
-            .Cast<AlarmType>();
+            .Cast<AlarmType>().ToList();
 
-        public IEnumerable<DayOfWeek> DaysOfWeek { get; private set; } = Enum.GetValues(typeof(DayOfWeek))
-            .Cast<DayOfWeek>();
+        public IEnumerable<WeekDay> DaysOfWeek { get; private set; } = Enum.GetValues(typeof(DayOfWeek))
+            .Cast<DayOfWeek>().Select(week => new WeekDay(week)).ToList();
 
         public BitmapImage MapScreen
         {
@@ -49,7 +49,7 @@ namespace LocationAlarm.ViewModel
             set { CurrentAlarm.AlarmType = value; }
         }
 
-        public List<DayOfWeek> SelectedDays
+        public List<WeekDay> SelectedDays
         {
             get { return CurrentAlarm.ActiveDays; }
             set { CurrentAlarm.ActiveDays = value; }
