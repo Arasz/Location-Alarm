@@ -1,4 +1,5 @@
 using Commander;
+using CoreLibrary.DataModel;
 using GalaSoft.MvvmLight.Command;
 using LocationAlarm.Common;
 using LocationAlarm.Controls.AlarmItem;
@@ -17,7 +18,7 @@ namespace LocationAlarm.ViewModel
     public class MainViewModel : ViewModelBaseEx
     {
         private readonly LocationAlarmModel _locationAlarmModel;
-        public INotifyCollectionChanged AlarmsCollection => _locationAlarmModel.Collection;
+        public INotifyCollectionChanged AlarmsCollection => _locationAlarmModel.GeolocationAlarms;
 
         public ICommand EditAlarmCommand { get; private set; }
 
@@ -33,17 +34,18 @@ namespace LocationAlarm.ViewModel
         [OnCommand("AddNewAlarmCommand")]
         public void AddNewAlarm()
         {
-            _navigationService.Token = Token.AddNew;
-            _selectedAlarm = _locationAlarmModel.CreateTransitive();
-            _navigationService.NavigateTo(nameof(MapPage), new NavigationMessage(_navigationService.CurrentPageKey));
+            CurrentAlarm = _locationAlarmModel.NewAlarm;
+            _navigationService.NavigateTo(nameof(MapPage), CurrentAlarm, Token.AddNew);
         }
 
         public override void GoBack()
         {
         }
 
-        public override void OnNavigatedTo(NavigationMessage message)
+        public override void OnNavigatedTo(object parameter)
         {
+            CurrentAlarm = parameter as GeolocationAlarm;
+
             switch (_navigationService.LastPageKey)
             {
                 case nameof(MapPage):
@@ -51,7 +53,7 @@ namespace LocationAlarm.ViewModel
 
                 case nameof(AlarmSettingsPage):
                     if (_navigationService.Token != Token.AddNew) break;
-                    _locationAlarmModel.Add(_selectedAlarm);
+                    _locationAlarmModel.Save(CurrentAlarm);
                     break;
             }
         }
@@ -59,14 +61,13 @@ namespace LocationAlarm.ViewModel
         [OnCommand("DeleteAlarmCommand")]
         private void DeleteAlarmExecute(AlarmItemEventArgs eventArgs)
         {
-            _locationAlarmModel.Remove(eventArgs.Source);
+            _locationAlarmModel.Delete(eventArgs.Source);
         }
 
         private void EditAlarmExecute(SelectionChangedEventArgs itemClickEventArgs)
         {
-            _selectedAlarm = itemClickEventArgs.AddedItems.First() as AlarmModel;
-            _navigationService.Token = Token.None;
-            _navigationService.NavigateTo(nameof(AlarmSettingsPage));
+            CurrentAlarm = itemClickEventArgs.AddedItems.First() as GeolocationAlarm;
+            _navigationService.NavigateTo(nameof(AlarmSettingsPage), CurrentAlarm, Token.None);
         }
     }
 }

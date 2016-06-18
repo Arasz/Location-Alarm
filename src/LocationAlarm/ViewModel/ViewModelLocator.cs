@@ -1,3 +1,4 @@
+using CoreLibrary.DataModel;
 using GalaSoft.MvvmLight.Ioc;
 using GalaSoft.MvvmLight.Views;
 using LocationAlarm.Location;
@@ -24,9 +25,10 @@ namespace LocationAlarm.ViewModel
 
             RegisterServices();
 
+            SimpleIoc.Default.Register<GelocationAlarmRepository>();
             SimpleIoc.Default.Register<LocationAlarmModel>();
             SimpleIoc.Default.Register<LocationAutoSuggestion>();
-            SimpleIoc.Default.Register<GeolocationModel>();
+            SimpleIoc.Default.Register<GeolocationService>();
             SimpleIoc.Default.Register<MapViewModel>();
             SimpleIoc.Default.Register<MainViewModel>();
             SimpleIoc.Default.Register<AlarmSettingsViewModel>();

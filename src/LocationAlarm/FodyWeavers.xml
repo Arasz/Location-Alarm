@@ -5,4 +5,5 @@
   <ConfigureAwait />
   <Visualize />
   <Commander />
+  <Equals />
 </Weavers>

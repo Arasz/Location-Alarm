@@ -1,32 +1,34 @@
-﻿using System.Collections.ObjectModel;
+﻿using CoreLibrary.DataModel;
+using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 
 namespace LocationAlarm.Model
 {
     public class LocationAlarmModel
     {
-        private ObservableCollection<AlarmModel> _alarms = new ObservableCollection<AlarmModel>();
+        private ObservableCollection<GeolocationAlarm> _alarms;
+        private GelocationAlarmRepository _repository;
 
-        public INotifyCollectionChanged Collection => _alarms;
+        public INotifyCollectionChanged GeolocationAlarms => _alarms;
 
-        public LocationAlarmModel()
+        public GeolocationAlarm NewAlarm => new GeolocationAlarm();
+
+        public LocationAlarmModel(GelocationAlarmRepository repository)
         {
+            _repository = repository;
+            _alarms = new ObservableCollection<GeolocationAlarm>();
         }
 
-        public void Add(AlarmModel alarm)
+        public void Delete(GeolocationAlarm alarm)
+        {
+            _alarms.Remove(alarm);
+            _repository.Delete(alarm);
+        }
+
+        public void Save(GeolocationAlarm alarm)
         {
             _alarms.Add(alarm);
-        }
-
-        public AlarmModel CreateTransitive()
-        {
-            var alarm = new AlarmModel();
-            return alarm;
-        }
-
-        public void Remove(AlarmModel alarmModel)
-        {
-            _alarms.Remove(alarmModel);
+            alarm.Id = _repository.Create(alarm);
         }
     }
 }
