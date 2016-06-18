@@ -65,6 +65,7 @@ namespace CoreLibrary.DataModel
 
         public GeolocationAlarm()
         {
+            Name = "";
             ActiveDays = new List<DayOfWeek>(7);
             AlarmSound = "default";
             AlarmType = AlarmType.Notification;

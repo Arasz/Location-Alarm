@@ -4,8 +4,8 @@
     {
         void GoBack();
 
-        void OnNavigatedFrom(NavigationMessage message);
+        void OnNavigatedFrom(object parameter);
 
-        void OnNavigatedTo(NavigationMessage message);
+        void OnNavigatedTo(object parameter);
     }
 }

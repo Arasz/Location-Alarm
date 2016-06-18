@@ -13,6 +13,7 @@ namespace LocationAlarm.Converters
 
         public object Convert(object value, Type targetType, object parameter, string language)
         {
+            if (null == value) return value;
             var activeDays = (IEnumerable<DayOfWeek>)value;
             if (!activeDays.Any())
                 return _repeatOnceString;

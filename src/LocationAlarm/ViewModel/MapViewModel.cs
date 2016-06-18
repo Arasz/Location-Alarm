@@ -1,4 +1,6 @@
 ﻿using Commander;
+using CoreLibrary.DataModel;
+using CoreLibrary.StateManagement;
 using GalaSoft.MvvmLight.Messaging;
 using LocationAlarm.Common;
 using LocationAlarm.Extensions;
@@ -25,8 +27,8 @@ namespace LocationAlarm.ViewModel
 
         public BasicGeoposition ActualLocation
         {
-            get { return _selectedAlarm.Geoposition; }
-            private set { _selectedAlarm.Geoposition = value; }
+            get { return CurrentAlarm.Geoposition; }
+            private set { CurrentAlarm.Geoposition = value; }
         }
 
         public string AutoSuggestionLocationQuery
@@ -43,16 +45,16 @@ namespace LocationAlarm.ViewModel
 
         public double GeocircleRadius
         {
-            get { return _selectedAlarm.Radius; }
-            set { _selectedAlarm.Radius = value; }
+            get { return CurrentAlarm.Radius; }
+            set { CurrentAlarm.Radius = value; }
         }
 
         public bool IsMapLoaded { get; private set; }
 
         public BitmapImage MapScreenshot
         {
-            get { return _selectedAlarm.MapScreen; }
-            set { _selectedAlarm.MapScreen = value; }
+            get { return CurrentAlarm.MapScreen; }
+            set { CurrentAlarm.MapScreen = value; }
         }
 
         public double MaxGeocircleRadius { get; } = 5000;
@@ -84,10 +86,11 @@ namespace LocationAlarm.ViewModel
         public override void GoBack()
         {
             //_selectedAlarm = _navigationService.LastPageKey == nameof(AlarmSettingsPage) ? _monitoredAreaCopy : _monitoredArea;
-            base.GoBack();
+            AlarmStateManager.Restore();
+            _navigationService.GoBack();
         }
 
-        public override void OnNavigatedFrom(NavigationMessage parameter)
+        public override void OnNavigatedFrom(object parameter)
         {
             IsMapLoaded = false;
             PushpinVisible = false;
@@ -95,8 +98,12 @@ namespace LocationAlarm.ViewModel
             MessengerInstance.Unregister<MapLocation>(this, OnSuggestionSelected);
         }
 
-        public override async void OnNavigatedTo(NavigationMessage parameter)
+        public override async void OnNavigatedTo(object parameter)
         {
+            CurrentAlarm = parameter as GeolocationAlarm;
+            AlarmStateManager = new StateManager<GeolocationAlarm>(CurrentAlarm);
+            AlarmStateManager.Save();
+
             MessengerInstance.Register<MapLocation>(this, OnSuggestionSelected);
 
             IsMapLoaded = false;
@@ -143,7 +150,7 @@ namespace LocationAlarm.ViewModel
                 }
             }).ConfigureAwait(true);
 
-            _navigationService.NavigateTo(nameof(AlarmSettingsPage));
+            _navigationService.NavigateTo(nameof(AlarmSettingsPage), CurrentAlarm);
         }
 
         [OnCommand("FindMeCommand")]
@@ -156,10 +163,10 @@ namespace LocationAlarm.ViewModel
             var locationData = await FetchGeolocationDataFromServiceAsync(fetchActualLocation)
                 .ConfigureAwait(true);
 
-            _selectedAlarm.Name = locationData.Item2.ToString();
+            CurrentAlarm.Name = locationData.Item2.ToString();
 
             ActualLocation = locationData.Item1; // UI
-            AutoSuggestionLocationQuery = _selectedAlarm.Name; // UI
+            AutoSuggestionLocationQuery = CurrentAlarm.Name; // UI
             ZoomLevel = 12; // UI
             PushpinVisible = true; // UI
             IsMapLoaded = true; //UI

@@ -1,4 +1,5 @@
 ﻿using CoreLibrary.DataModel;
+using CoreLibrary.StateManagement;
 using GalaSoft.MvvmLight;
 using LocationAlarm.Navigation;
 
@@ -6,10 +7,11 @@ namespace LocationAlarm.ViewModel
 {
     public class ViewModelBaseEx : ViewModelBase, INavigable
     {
-        //TODO: Shouldn't be static
-        protected static volatile GeolocationAlarm _selectedAlarm;
-
         protected readonly NavigationServiceWithToken _navigationService;
+
+        protected StateManager<GeolocationAlarm> AlarmStateManager { get; set; }
+
+        protected GeolocationAlarm CurrentAlarm { get; set; }
 
         public ViewModelBaseEx(NavigationServiceWithToken navigationService)
         {
@@ -21,11 +23,11 @@ namespace LocationAlarm.ViewModel
             _navigationService.GoBack();
         }
 
-        public virtual void OnNavigatedFrom(NavigationMessage message)
+        public virtual void OnNavigatedFrom(object parameter)
         {
         }
 
-        public virtual void OnNavigatedTo(NavigationMessage message)
+        public virtual void OnNavigatedTo(object parameter)
         {
         }
     }

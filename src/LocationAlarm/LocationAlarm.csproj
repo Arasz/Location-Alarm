@@ -97,7 +97,6 @@
     <Compile Include="Location\ReadableLocationName.cs" />
     <Compile Include="Model\GeofenceBuilder.cs" />
     <Compile Include="Navigation\INavigationServiceWithToken.cs" />
-    <Compile Include="Navigation\NavigationMessage.cs" />
     <Compile Include="Navigation\NavigationServiceWithToken.cs" />
     <Compile Include="Model\LocationAlarmManager.cs" />
     <Compile Include="Tasks\BackgroundTaskManager.cs" />

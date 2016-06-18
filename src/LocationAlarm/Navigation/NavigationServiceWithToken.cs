@@ -38,8 +38,22 @@ namespace LocationAlarm.Navigation
             _navigationService.NavigateTo(pageKey);
         }
 
+        public void NavigateTo(string pageKey, Token newToken)
+        {
+            Token = newToken;
+            LastPageKey = CurrentPageKey;
+            _navigationService.NavigateTo(pageKey);
+        }
+
         public void NavigateTo(string pageKey, object parameter)
         {
+            LastPageKey = CurrentPageKey;
+            _navigationService.NavigateTo(pageKey, parameter);
+        }
+
+        public void NavigateTo(string pageKey, object parameter, Token newToken)
+        {
+            Token = newToken;
             LastPageKey = CurrentPageKey;
             _navigationService.NavigateTo(pageKey, parameter);
         }

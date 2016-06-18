@@ -34,17 +34,18 @@ namespace LocationAlarm.ViewModel
         [OnCommand("AddNewAlarmCommand")]
         public void AddNewAlarm()
         {
-            _navigationService.Token = Token.AddNew;
-            _selectedAlarm = _locationAlarmModel.CreateTransitive();
-            _navigationService.NavigateTo(nameof(MapPage), new NavigationMessage(_navigationService.CurrentPageKey));
+            CurrentAlarm = _locationAlarmModel.CreateTransitive();
+            _navigationService.NavigateTo(nameof(MapPage), CurrentAlarm, Token.AddNew);
         }
 
         public override void GoBack()
         {
         }
 
-        public override void OnNavigatedTo(NavigationMessage message)
+        public override void OnNavigatedTo(object parameter)
         {
+            CurrentAlarm = parameter as GeolocationAlarm;
+
             switch (_navigationService.LastPageKey)
             {
                 case nameof(MapPage):
@@ -52,7 +53,7 @@ namespace LocationAlarm.ViewModel
 
                 case nameof(AlarmSettingsPage):
                     if (_navigationService.Token != Token.AddNew) break;
-                    _locationAlarmModel.Add(_selectedAlarm);
+                    _locationAlarmModel.Add(CurrentAlarm);
                     break;
             }
         }
@@ -65,9 +66,8 @@ namespace LocationAlarm.ViewModel
 
         private void EditAlarmExecute(SelectionChangedEventArgs itemClickEventArgs)
         {
-            _selectedAlarm = itemClickEventArgs.AddedItems.First() as GeolocationAlarm;
-            _navigationService.Token = Token.None;
-            _navigationService.NavigateTo(nameof(AlarmSettingsPage));
+            CurrentAlarm = itemClickEventArgs.AddedItems.First() as GeolocationAlarm;
+            _navigationService.NavigateTo(nameof(AlarmSettingsPage), CurrentAlarm, Token.None);
         }
     }
 }
