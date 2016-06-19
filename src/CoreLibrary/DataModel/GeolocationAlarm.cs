@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
 using Windows.Devices.Geolocation;
+using Windows.Devices.Geolocation.Geofencing;
 using Windows.UI.Xaml.Media.Imaging;
 
 namespace CoreLibrary.DataModel
@@ -30,6 +31,13 @@ namespace CoreLibrary.DataModel
         /// </summary>
         [DataMember]
         public AlarmType AlarmType { get; set; }
+
+        public Geofence Geofence => new GeofenceBuilder()
+                                        .WithDefaultParameters()
+                                        .SetRequiredId(Name)
+                                        .ThenSetGeocircle(Geoposition, Radius)
+                                        .IsUsedOnce(!ActiveDays.Any())
+                                        .Build();
 
         /// <summary>
         /// Geographic position 

@@ -1,6 +1,9 @@
-﻿using GalaSoft.MvvmLight.Threading;
+﻿using Autofac;
+using GalaSoft.MvvmLight.Threading;
+using LocationAlarm.Utils;
 using System;
 using System.Diagnostics;
+using System.Reflection;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
 using Windows.Globalization;
@@ -19,6 +22,7 @@ namespace ArrivalAlarm
     /// </summary>
     public sealed partial class App : Application
     {
+        private IContainer _container;
         private TransitionCollection transitions;
 
         /// <summary>
@@ -29,6 +33,13 @@ namespace ArrivalAlarm
         {
             InitializeComponent();
             Suspending += OnSuspending;
+            UnhandledException += OnUnhandledException;
+        }
+
+        private void OnUnhandledException(object sender, UnhandledExceptionEventArgs unhandledExceptionEventArgs)
+        {
+            Debug.WriteLine($"Message: {unhandledExceptionEventArgs.Message}");
+            Debug.WriteLine($"Stack trace: {unhandledExceptionEventArgs.Exception.StackTrace}");
         }
 
         /// <summary>
@@ -95,6 +106,7 @@ namespace ArrivalAlarm
 
             // Ensure the current window is active
             Window.Current.Activate();
+            //ConfigureContainer();
             DispatcherHelper.Initialize();
         }
 
@@ -123,6 +135,21 @@ namespace ArrivalAlarm
 
             // TODO: Save application state and stop any background activity
             deferral.Complete();
+        }
+
+        private void ConfigureContainer()
+        {
+            var containerBuilder = new ContainerBuilder();
+            var assembly = typeof(App).GetTypeInfo().Assembly;
+            containerBuilder.RegisterAssemblyTypes(assembly)
+                .AsSelf()
+                .AsImplementedInterfaces();
+
+            containerBuilder.RegisterType<AssetsNamesReader>()
+                .SingleInstance()
+                .AsImplementedInterfaces();
+
+            _container = containerBuilder.Build();
         }
     }
 }

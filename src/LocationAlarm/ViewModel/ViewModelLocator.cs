@@ -9,22 +9,19 @@ using LocationAlarm.Model;
 using LocationAlarm.Navigation;
 using LocationAlarm.Utils;
 using LocationAlarm.View;
-using Microsoft.Practices.ServiceLocation;
 
 namespace LocationAlarm.ViewModel
 {
     public class ViewModelLocator
     {
-        public AlarmSettingsViewModel AlarmSettings => ServiceLocator.Current.GetInstance<AlarmSettingsViewModel>();
+        public AlarmSettingsViewModel AlarmSettings => SimpleIoc.Default.GetInstance<AlarmSettingsViewModel>();
 
-        public MainViewModel Main => ServiceLocator.Current.GetInstance<MainViewModel>();
+        public MainViewModel Main => SimpleIoc.Default.GetInstance<MainViewModel>();
 
-        public MapViewModel Map => ServiceLocator.Current.GetInstance<MapViewModel>();
+        public MapViewModel Map => SimpleIoc.Default.GetInstance<MapViewModel>();
 
         public ViewModelLocator()
         {
-            ServiceLocator.SetLocatorProvider(() => SimpleIoc.Default);
-
             RegisterServices();
 
             SimpleIoc.Default.Register<IGeofenceService, GeofenceService>();
