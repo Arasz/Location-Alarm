@@ -5,7 +5,6 @@ using LocationAlarm.Common;
 using LocationAlarm.Navigation;
 using LocationAlarm.Utils;
 using LocationAlarm.View;
-using Microsoft.Practices.ServiceLocation;
 using PropertyChanged;
 using System;
 using System.Collections.Generic;
@@ -20,6 +19,7 @@ namespace LocationAlarm.ViewModel
     [ImplementPropertyChanged]
     public class AlarmSettingsViewModel : ViewModelBaseEx
     {
+        private readonly IAssetsNamesReader _assetsNamesReader;
         private readonly MediaPlayer _mediaPlayer = BackgroundMediaPlayer.Current;
         private readonly ResourceLoader _resourceLoader;
 
@@ -61,8 +61,10 @@ namespace LocationAlarm.ViewModel
             set { CurrentAlarm.AlarmSound = value; }
         }
 
-        public AlarmSettingsViewModel(NavigationServiceWithToken navigationService) : base(navigationService)
+        public AlarmSettingsViewModel(NavigationServiceWithToken navigationService, IAssetsNamesReader assetsNamesReader) : base(navigationService)
         {
+            _assetsNamesReader = assetsNamesReader;
+
             _resourceLoader = ResourceLoader.GetForCurrentView("Resources");
             CurrentAlarm = new GeolocationAlarm();
             InitializeAlaram();
@@ -112,8 +114,7 @@ namespace LocationAlarm.ViewModel
 
         private async Task InitializeSoundFileNamesAsync()
         {
-            var notificationSounds = await ServiceLocator.Current
-                .GetInstance<IAssetsNamesReader>()
+            var notificationSounds = await _assetsNamesReader
                 .ReadAsync("Sounds").ConfigureAwait(true);
 
             NotificationSounds = notificationSounds
