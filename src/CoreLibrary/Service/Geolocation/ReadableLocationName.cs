@@ -1,6 +1,6 @@
 ﻿using Windows.Services.Maps;
 
-namespace LocationAlarm.Location
+namespace CoreLibrary.Service.Geolocation
 {
     /// <summary>
     /// Readable, adjusted to binding location name <remarks> Doesn't hold reference to input objects </remarks>
@@ -13,7 +13,7 @@ namespace LocationAlarm.Location
 
         public string MainLocationName { get; }
 
-        public ReadableLocationName(MapLocation location, string userProvidedName = "")
+        public ReadableLocationName(MapLocation location)
         {
             var address = location.Address;
             MainLocationName = $"{address.Town}, {address.Street}, {address.StreetNumber}".Trim(',', ' ');

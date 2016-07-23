@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 namespace LocationAlarm.Utils
 {
-    internal interface IAssetsNamesReader
+    public interface IAssetsNamesReader
     {
         /// <summary>
         /// Reads file names from given folder. If empty string is given read all files from assets folder 

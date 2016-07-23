@@ -1,10 +1,10 @@
 ﻿using Commander;
 using CoreLibrary.DataModel;
+using CoreLibrary.Service.Geolocation;
 using CoreLibrary.StateManagement;
 using GalaSoft.MvvmLight.Messaging;
 using LocationAlarm.Common;
 using LocationAlarm.Extensions;
-using LocationAlarm.Location;
 using LocationAlarm.Location.LocationAutosuggestion;
 using LocationAlarm.Navigation;
 using LocationAlarm.View;
@@ -23,7 +23,7 @@ namespace LocationAlarm.ViewModel
     public class MapViewModel : ViewModelBaseEx
     {
         private readonly LocationAutoSuggestion _autoSuggestion;
-        private readonly GeolocationService _geolocationService;
+        private readonly IGeolocationService _geolocationService;
 
         public BasicGeoposition ActualLocation
         {
@@ -74,7 +74,7 @@ namespace LocationAlarm.ViewModel
             get; private set;
         }
 
-        public MapViewModel(NavigationServiceWithToken navigationService, GeolocationService geolocationService) : base(navigationService)
+        public MapViewModel(NavigationServiceWithToken navigationService, IGeolocationService geolocationService) : base(navigationService)
         {
             _autoSuggestion = new LocationAutoSuggestion(geolocationService);
             _geolocationService = geolocationService;
@@ -120,7 +120,7 @@ namespace LocationAlarm.ViewModel
 
             if (fetchActualLocation || updatedLocation.IsDefault())
             {
-                var geoposition = await _geolocationService.GetActualLocationAsync().ConfigureAwait(false);
+                var geoposition = await _geolocationService.GetActualPositionAsync().ConfigureAwait(false);
                 updatedLocation = geoposition.Coordinate.Point.Position;
             }
 

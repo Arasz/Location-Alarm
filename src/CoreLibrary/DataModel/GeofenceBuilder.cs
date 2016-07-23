@@ -2,7 +2,7 @@
 using Windows.Devices.Geolocation;
 using Windows.Devices.Geolocation.Geofencing;
 
-namespace LocationAlarm.Model
+namespace CoreLibrary.DataModel
 {
     public class GeofenceBuilder
     {

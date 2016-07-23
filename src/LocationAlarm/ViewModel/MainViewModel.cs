@@ -52,8 +52,10 @@ namespace LocationAlarm.ViewModel
                     break;
 
                 case nameof(AlarmSettingsPage):
-                    if (_navigationService.Token != Token.AddNew) break;
-                    _locationAlarmModel.Save(CurrentAlarm);
+                    if (_navigationService.Token == Token.AddNew)
+                        _locationAlarmModel.Save(CurrentAlarm);
+                    else
+                        _locationAlarmModel.Update(CurrentAlarm);
                     break;
             }
         }

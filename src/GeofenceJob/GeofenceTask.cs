@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using CoreLibrary.Service;
+using System.Collections.Generic;
 using System.Linq;
 using Windows.ApplicationModel.Background;
 using Windows.Devices.Geolocation.Geofencing;
@@ -10,6 +11,7 @@ namespace BackgroundTask
     public sealed class GeofenceTask : IGeofenceTask
     {
         private GeofenceMonitor _geofenceMonitor;
+        private IGeofenceService _geofenceService;
         private ToastNotifier _toastNotifier;
 
         public GeofenceTask()

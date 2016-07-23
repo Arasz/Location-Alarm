@@ -1,4 +1,5 @@
-﻿using GalaSoft.MvvmLight.Command;
+﻿using CoreLibrary.Service.Geolocation;
+using GalaSoft.MvvmLight.Command;
 using GalaSoft.MvvmLight.Messaging;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -14,7 +15,7 @@ namespace LocationAlarm.Location.LocationAutosuggestion
 
         /// <summary>
         /// </summary>
-        private readonly IReverseGeolocationQuery _reverseGeolocationQueryService;
+        private readonly IGeolocationService _reverseGeolocationServiceService;
 
         public IReadOnlyCollection<MapLocation> LocationQueryResults { get; set; }
 
@@ -32,9 +33,9 @@ namespace LocationAlarm.Location.LocationAutosuggestion
         /// </summary>
         public ReadableLocationName UserSelectedSuggestion { get; set; }
 
-        public LocationAutoSuggestion(IReverseGeolocationQuery reverseGeolocationQueryService)
+        public LocationAutoSuggestion(IGeolocationService reverseGeolocationServiceService)
         {
-            _reverseGeolocationQueryService = reverseGeolocationQueryService;
+            _reverseGeolocationServiceService = reverseGeolocationServiceService;
 
             TextChangedCommand = new RelayCommand<bool>(TextChanged);
 
@@ -47,7 +48,7 @@ namespace LocationAlarm.Location.LocationAutosuggestion
                 return;
 
             UserSelectedSuggestion = (ReadableLocationName)selectedItem;
-            LocationQueryResults = await _reverseGeolocationQueryService
+            LocationQueryResults = await _reverseGeolocationServiceService
                 .FindLocationAsync(UserSelectedSuggestion.FullLocationName)
                 .ConfigureAwait(true);
             Messenger.Default.Send(LocationQueryResults.FirstOrDefault());
@@ -59,12 +60,12 @@ namespace LocationAlarm.Location.LocationAutosuggestion
             if (!isUserInputReason || string.IsNullOrEmpty(ProvidedLocationQuery)) return;
 
             var userInput = ProvidedLocationQuery;
-            LocationQueryResults = await _reverseGeolocationQueryService
+            LocationQueryResults = await _reverseGeolocationServiceService
                 .FindLocationAsync(userInput)
                 .ConfigureAwait(true);
 
             LocationQueryResults?
-                .Select(location => new ReadableLocationName(location, userInput))
+                .Select(location => new ReadableLocationName(location))
                 .Where(locationName => !string.IsNullOrEmpty(locationName.MainLocationName))
                 .ForEach(locationName => SuggestedLocations.Add(locationName));
         }

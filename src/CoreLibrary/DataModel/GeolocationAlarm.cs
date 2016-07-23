@@ -32,6 +32,13 @@ namespace CoreLibrary.DataModel
         [DataMember]
         public AlarmType AlarmType { get; set; }
 
+        public Geofence Geofence => new GeofenceBuilder()
+                                        .WithDefaultParameters()
+                                        .SetRequiredId(Name)
+                                        .ThenSetGeocircle(Geoposition, Radius)
+                                        .IsUsedOnce(!ActiveDays.Any())
+                                        .Build();
+
         /// <summary>
         /// Geographic position 
         /// </summary>
@@ -46,12 +53,6 @@ namespace CoreLibrary.DataModel
 
         [DataMember]
         public BitmapImage MapScreen { get; set; }
-
-        /// <summary>
-        /// States in which alarm will activate 
-        /// </summary>
-        [DataMember]
-        public MonitoredGeofenceStates MonitoredStates { get; set; }
 
         [DataMember]
         public string Name { get; set; }
@@ -69,7 +70,6 @@ namespace CoreLibrary.DataModel
             AlarmSound = "default";
             AlarmType = AlarmType.Notification;
             Radius = 500;
-            MonitoredStates = MonitoredGeofenceStates.Entered;
         }
 
         public void Restore(GeolocationAlarm savedState)
@@ -80,7 +80,6 @@ namespace CoreLibrary.DataModel
             Geoposition = savedState.Geoposition;
             IsActive = savedState.IsActive;
             MapScreen = savedState.MapScreen;
-            MonitoredStates = savedState.MonitoredStates;
             Name = savedState.Name;
             Radius = savedState.Radius;
         }
@@ -95,7 +94,6 @@ namespace CoreLibrary.DataModel
                 Geoposition = Geoposition,
                 IsActive = IsActive,
                 MapScreen = MapScreen,
-                MonitoredStates = MonitoredStates,
                 Name = Name,
                 Radius = Radius,
             };
