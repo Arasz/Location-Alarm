@@ -87,6 +87,7 @@
   <ItemGroup>
     <Compile Include="DataModel\DayOfWeek.cs" />
     <Compile Include="DataModel\GelocationAlarmRepository.cs" />
+    <Compile Include="DataModel\GeofenceBuilder.cs" />
     <Compile Include="DataModel\GeolocationAlarm.cs" />
     <Compile Include="DataModel\Entity.cs" />
     <Compile Include="DataModel\IEntity.cs" />
