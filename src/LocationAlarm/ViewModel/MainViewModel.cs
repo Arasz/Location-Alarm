@@ -53,9 +53,9 @@ namespace LocationAlarm.ViewModel
 
                 case nameof(AlarmSettingsPage):
                     if (_navigationService.Token == Token.AddNew)
-                        _locationAlarmModel.Save(CurrentAlarm);
+                        _locationAlarmModel.SaveAsync(CurrentAlarm);
                     else
-                        _locationAlarmModel.Update(CurrentAlarm);
+                        _locationAlarmModel.UpdateAsync(CurrentAlarm);
                     break;
             }
         }
@@ -63,7 +63,7 @@ namespace LocationAlarm.ViewModel
         [OnCommand("DeleteAlarmCommand")]
         private void DeleteAlarmExecute(AlarmItemEventArgs eventArgs)
         {
-            _locationAlarmModel.Delete(eventArgs.Source);
+            _locationAlarmModel.DeleteAsync(eventArgs.Source);
         }
 
         private void EditAlarmExecute(SelectionChangedEventArgs itemClickEventArgs)
