@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CoreLibrary.Data.Persistence;
+using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 
@@ -6,9 +7,18 @@ namespace CoreLibrary.DataModel
 {
     public class GelocationAlarmRepository
     {
+        private readonly ISessionFactory _sessionFactory;
+
+        public GelocationAlarmRepository(ISessionFactory sessionFactory)
+        {
+            _sessionFactory = sessionFactory;
+        }
+
         public int Create(GeolocationAlarm alarm)
         {
-            return 0;
+            using (var session = _sessionFactory.OpenSession())
+            {
+            }
         }
 
         public void Delete(GeolocationAlarm alarm)

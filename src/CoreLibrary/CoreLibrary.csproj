@@ -85,12 +85,12 @@
     <Content Include="FodyWeavers.xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DataModel\DayOfWeek.cs" />
-    <Compile Include="DataModel\GelocationAlarmRepository.cs" />
-    <Compile Include="DataModel\GeofenceBuilder.cs" />
-    <Compile Include="DataModel\GeolocationAlarm.cs" />
-    <Compile Include="DataModel\Entity.cs" />
-    <Compile Include="DataModel\IEntity.cs" />
+    <Compile Include="Data\DataModel\WeekDay.cs" />
+    <Compile Include="Data\GelocationAlarmRepository.cs" />
+    <Compile Include="Data\GeofenceBuilder.cs" />
+    <Compile Include="Data\DataModel\GeolocationAlarm.cs" />
+    <Compile Include="Data\DataModel\Entity.cs" />
+    <Compile Include="Data\DataModel\IEntity.cs" />
     <Compile Include="Service\Geofencing\GeofenceService.cs" />
     <Compile Include="Service\Geolocation\GeolocationService.cs" />
     <Compile Include="Service\Geofencing\IGeofenceService.cs" />
@@ -108,6 +108,10 @@
     <Reference Include="Equals, Version=1.5.0.0, Culture=neutral, PublicKeyToken=15432f00798e61a4, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Equals.Fody.1.5.0.0\lib\dotnet\Equals.dll</HintPath>
       <Private>False</Private>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Newtonsoft.Json.9.0.1\lib\portable-net45+wp80+win8+wpa81\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
     </Reference>
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '12.0' ">
