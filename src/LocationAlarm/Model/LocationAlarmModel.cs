@@ -27,14 +27,14 @@ namespace LocationAlarm.Model
         public void Delete(GeolocationAlarm alarm)
         {
             _alarms.Remove(alarm);
-            _repository.Delete(alarm);
+            _repository.DeleteAsync(alarm);
             _geofenceService.RemoveGeofence(alarm.Name);
         }
 
         public void Save(GeolocationAlarm alarm)
         {
             _alarms.Add(alarm);
-            alarm.Id = _repository.Create(alarm);
+            alarm.Id = _repository.CreateAsync(alarm);
             _geofenceService.RegisterGeofence(alarm.Geofence);
         }
 

@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
+using System.Threading.Tasks;
 
 namespace CoreLibrary.DataModel
 {
@@ -14,39 +15,49 @@ namespace CoreLibrary.DataModel
             _sessionFactory = sessionFactory;
         }
 
-        public int Create(GeolocationAlarm alarm)
+        public async Task<int> CreateAsync(GeolocationAlarm alarm)
         {
-            using (var session = _sessionFactory.OpenSessionAsync())
+            using (var session = await _sessionFactory.OpenSessionAsync<GeolocationAlarm>().ConfigureAwait(false))
             {
+                var id = session.Create(alarm);
+                alarm.Id = id;
+                return id;
             }
         }
 
-        public void Delete(GeolocationAlarm alarm)
+        public async Task DeleteAllAsync()
         {
+            using (var session = await _sessionFactory.OpenSessionAsync<GeolocationAlarm>().ConfigureAwait(false))
+                session.DeleteAll();
         }
 
-        public void DeleteAll()
+        public async Task DeleteAsync(GeolocationAlarm alarm)
         {
+            using (var session = await _sessionFactory.OpenSessionAsync<GeolocationAlarm>().ConfigureAwait(false))
+                session.Delete(alarm);
         }
 
-        public GeolocationAlarm Read(int index)
+        public async Task<IEnumerable<GeolocationAlarm>> ReadAllAsync()
         {
-            return null;
+            using (var session = await _sessionFactory.OpenSessionAsync<GeolocationAlarm>().ConfigureAwait(false))
+                return session.ReadAll();
         }
 
-        public IEnumerable<GeolocationAlarm> ReadAll()
+        public async Task<GeolocationAlarm> ReadAsync(int index)
         {
-            return null;
+            using (var session = await _sessionFactory.OpenSessionAsync<GeolocationAlarm>().ConfigureAwait(false))
+                return session.Read(index);
         }
 
-        public GeolocationAlarm ReadMatching(Expression<Func<GeolocationAlarm, bool>> criteria)
+        public async Task<GeolocationAlarm> ReadMatchingAsync(Expression<Func<GeolocationAlarm, bool>> criteria)
         {
-            return null;
+            throw new NotImplementedException("Will be implemented in future release");
         }
 
-        public bool Update(GeolocationAlarm alarm)
+        public async Task Update(GeolocationAlarm alarm)
         {
-            return false;
+            using (var session = await _sessionFactory.OpenSessionAsync<GeolocationAlarm>().ConfigureAwait(false))
+                session.Update(alarm);
         }
     }
 }

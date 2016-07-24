@@ -92,10 +92,13 @@
     <Compile Include="Data\DataModel\GeolocationAlarm.cs" />
     <Compile Include="Data\DataModel\Entity.cs" />
     <Compile Include="Data\DataModel\IEntity.cs" />
+    <Compile Include="Data\Persistence\ICrudable.cs" />
     <Compile Include="Data\Persistence\IDataContext.cs" />
     <Compile Include="Data\Persistence\ISelfSerializable.cs" />
     <Compile Include="Data\Persistence\ISession.cs" />
     <Compile Include="Data\Persistence\ISessionFactory.cs" />
+    <Compile Include="Data\Persistence\Session.cs" />
+    <Compile Include="Data\Persistence\SessionFactory.cs" />
     <Compile Include="Service\Geofencing\GeofenceService.cs" />
     <Compile Include="Service\Geolocation\GeolocationService.cs" />
     <Compile Include="Service\Geofencing\IGeofenceService.cs" />
