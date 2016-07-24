@@ -1,18 +1,17 @@
-﻿using CoreLibrary.DataModel;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace CoreLibrary.Data.Persistence
+namespace CoreLibrary.Data.Persistence.Session
 {
     public class Session<TEntity> : ISession<TEntity>
     {
-        private readonly IDataContext<GeolocationAlarm> _dataContext;
+        private readonly IDataContext<TEntity> _dataContext;
 
         public bool IsOpened { get; private set; }
 
-        public Session(IDataContext<GeolocationAlarm> dataContext)
+        public Session(IDataContext<TEntity> dataContext)
         {
-            _dataContext = dataContext as DataContext<GeolocationAlarm>;
+            _dataContext = dataContext;
         }
 
         public int Create(TEntity entity)
@@ -37,12 +36,17 @@ namespace CoreLibrary.Data.Persistence
 
         public void Dispose() => Dispose(true);
 
-        public async Task FlushAsync() => await _dataContext.SerializeAsync().ConfigureAwait(false);
+        public async Task FlushAsync()
+        {
+            var serializer = _dataContext as ISelfSerializable;
+            await serializer.SerializeAsync().ConfigureAwait(false);
+        }
 
         public async Task Open()
         {
             IsOpened = true;
-            await _dataContext.DeserializeAsync().ConfigureAwait(false);
+            var serializer = _dataContext as ISelfSerializable;
+            await serializer.DeserializeAsync().ConfigureAwait(false);
         }
 
         public TEntity Read(int id)

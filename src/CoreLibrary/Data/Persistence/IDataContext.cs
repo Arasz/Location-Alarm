@@ -6,10 +6,8 @@ namespace CoreLibrary.Data.Persistence
     /// Persistent data context 
     /// </summary>
     /// <typeparam name="TEntity"></typeparam>
-    public interface IDataContext<out TEntity> : ISelfSerializable
+    public interface IDataContext<TEntity> : ICrudable<TEntity>
     {
-        /// <summary>
-        /// </summary>
         IEnumerable<TEntity> Entities { get; }
     }
 }

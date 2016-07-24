@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using CoreLibrary.Data.Persistence.Session;
+using System.Threading.Tasks;
 
 namespace CoreLibrary.Data.Persistence
 {

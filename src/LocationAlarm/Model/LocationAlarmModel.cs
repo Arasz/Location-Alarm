@@ -31,10 +31,10 @@ namespace LocationAlarm.Model
             _geofenceService.RemoveGeofence(alarm.Name);
         }
 
-        public void Save(GeolocationAlarm alarm)
+        public void SaveAsync(GeolocationAlarm alarm)
         {
             _alarms.Add(alarm);
-            alarm.Id = _repository.CreateAsync(alarm);
+            _repository.CreateAsync(alarm);
             _geofenceService.RegisterGeofence(alarm.Geofence);
         }
 

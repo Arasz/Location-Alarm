@@ -53,7 +53,7 @@ namespace LocationAlarm.ViewModel
 
                 case nameof(AlarmSettingsPage):
                     if (_navigationService.Token == Token.AddNew)
-                        _locationAlarmModel.Save(CurrentAlarm);
+                        _locationAlarmModel.SaveAsync(CurrentAlarm);
                     else
                         _locationAlarmModel.Update(CurrentAlarm);
                     break;

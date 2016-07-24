@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 
-namespace CoreLibrary.Data.Persistence
+namespace CoreLibrary.Data.Persistence.Session
 {
     /// <summary>
     /// Represents batch of operations on data storage 

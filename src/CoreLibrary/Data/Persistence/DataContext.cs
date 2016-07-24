@@ -1,11 +1,6 @@
 ﻿using CoreLibrary.Data.Persistence;
-using Newtonsoft.Json;
-using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Runtime.Serialization;
-using System.Threading.Tasks;
-using Windows.Storage;
 
 namespace CoreLibrary.Data
 {
@@ -16,57 +11,52 @@ namespace CoreLibrary.Data
     [DataContract]
     public class DataContext<TEntity> : IDataContext<TEntity>
     {
-        private const string _dataFileExtension = @".ds";
+        [DataMember]
+        private Dictionary<int, TEntity> _entities = new Dictionary<int, TEntity>();
 
-        private readonly IStorageFolder _storageFolder = ApplicationData.Current.LocalFolder;
+        public IEnumerable<TEntity> Entities => _entities.Values;
 
         [DataMember]
-        private List<TEntity> _entities = new List<TEntity>();
+        public IIdentityGenerator IdentityGenerator { get; set; }
 
-        public IEnumerable<TEntity> Entities => _entities;
-
-        private string FullDataFileName => nameof(TEntity) + _dataFileExtension;
-
-        private IStorageFile StorageFile { get; set; }
-
-        public async Task DeserializeAsync()
+        public int Create(TEntity entity)
         {
-            if (await InitializeStorageFileAsync().ConfigureAwait(false)) return;
-
-            using (var serializationStream = await StorageFile.OpenStreamForReadAsync().ConfigureAwait(false))
-            {
-                var serializer = new JsonSerializer();
-                _entities = serializer.Deserialize<List<TEntity>>(new JsonTextReader(new StreamReader(serializationStream)));
-            }
+            throw new System.NotImplementedException();
         }
 
-        public async Task SerializeAsync()
+        public void Delete(TEntity entity)
         {
-            await InitializeStorageFileAsync().ConfigureAwait(false);
-
-            using (var serializationStream = await StorageFile.OpenStreamForWriteAsync().ConfigureAwait(false))
-            {
-                var serializer = new JsonSerializer();
-                serializer.Serialize(new JsonTextWriter(new StreamWriter(serializationStream)), _entities);
-            }
+            throw new System.NotImplementedException();
         }
 
-        /// <summary>
-        /// Gets handle to storage file, if don't exist creates it 
-        /// </summary>
-        /// <returns> True if file was created </returns>
-        private async Task<bool> InitializeStorageFileAsync()
+        public void Delete(int id)
         {
-            try
-            {
-                StorageFile = await _storageFolder.GetFileAsync(FullDataFileName);
-                return false;
-            }
-            catch (FileNotFoundException fileNotFoundException)
-            {
-                StorageFile = await _storageFolder.CreateFileAsync(FullDataFileName);
-                return true;
-            }
+            throw new System.NotImplementedException();
+        }
+
+        public void DeleteAll()
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public TEntity Read(int id)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public IEnumerable<TEntity> ReadAll()
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public void Update(TEntity entity)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public void UpdateAll(IEnumerable<TEntity> entities)
+        {
+            throw new System.NotImplementedException();
         }
     }
 }
