@@ -16,7 +16,7 @@ namespace CoreLibrary.DataModel
 
         public int Create(GeolocationAlarm alarm)
         {
-            using (var session = _sessionFactory.OpenSession())
+            using (var session = _sessionFactory.OpenSessionAsync())
             {
             }
         }

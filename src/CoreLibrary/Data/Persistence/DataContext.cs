@@ -14,7 +14,7 @@ namespace CoreLibrary.Data
     /// </summary>
     /// <typeparam name="TEntity"></typeparam>
     [DataContract]
-    public class DataContext<TEntity> : ISelfSerializable
+    public class DataContext<TEntity> : IDataContext<TEntity>
     {
         private const string _dataFileExtension = @".ds";
 
@@ -23,7 +23,7 @@ namespace CoreLibrary.Data
         [DataMember]
         private List<TEntity> _entities = new List<TEntity>();
 
-        public List<TEntity> Entities => _entities;
+        public IEnumerable<TEntity> Entities => _entities;
 
         private string FullDataFileName => nameof(TEntity) + _dataFileExtension;
 
