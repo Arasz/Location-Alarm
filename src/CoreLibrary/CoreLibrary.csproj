@@ -85,12 +85,17 @@
     <Content Include="FodyWeavers.xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Data\Persistence\DataContext.cs" />
     <Compile Include="Data\DataModel\WeekDay.cs" />
     <Compile Include="Data\GelocationAlarmRepository.cs" />
     <Compile Include="Data\GeofenceBuilder.cs" />
     <Compile Include="Data\DataModel\GeolocationAlarm.cs" />
     <Compile Include="Data\DataModel\Entity.cs" />
     <Compile Include="Data\DataModel\IEntity.cs" />
+    <Compile Include="Data\Persistence\IDataContext.cs" />
+    <Compile Include="Data\Persistence\ISelfSerializable.cs" />
+    <Compile Include="Data\Persistence\ISession.cs" />
+    <Compile Include="Data\Persistence\ISessionFactory.cs" />
     <Compile Include="Service\Geofencing\GeofenceService.cs" />
     <Compile Include="Service\Geolocation\GeolocationService.cs" />
     <Compile Include="Service\Geofencing\IGeofenceService.cs" />
