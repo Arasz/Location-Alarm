@@ -1,4 +1,4 @@
-﻿using CoreLibrary.DataModel;
+﻿using CoreLibrary.Data.DataModel.Base;
 
 namespace CoreLibrary.Data.Persistence.Identity
 {

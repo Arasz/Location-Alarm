@@ -1,4 +1,4 @@
-﻿using CoreLibrary.DataModel;
+﻿using CoreLibrary.Data.DataModel.Base;
 using System;
 using System.Globalization;
 using System.Linq;

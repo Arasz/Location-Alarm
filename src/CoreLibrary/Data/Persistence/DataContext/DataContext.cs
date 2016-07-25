@@ -1,5 +1,5 @@
-﻿using CoreLibrary.Data.Persistence.Identity;
-using CoreLibrary.DataModel;
+﻿using CoreLibrary.Data.DataModel.Base;
+using CoreLibrary.Data.Persistence.Identity;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 

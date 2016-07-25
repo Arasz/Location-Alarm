@@ -1,5 +1,5 @@
-﻿using CoreLibrary.Data.Persistence.Session;
-using CoreLibrary.DataModel;
+﻿using CoreLibrary.Data.DataModel.Base;
+using CoreLibrary.Data.Persistence.Session;
 using System.Threading.Tasks;
 
 namespace CoreLibrary.Data.Persistence
