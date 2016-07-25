@@ -4,19 +4,21 @@ using System.Threading.Tasks;
 
 namespace CoreLibrary.Data.Persistence
 {
-    public class SessionFactory : ISessionFactory
+    public class SessionFactory<TEntity> : ISessionFactory<TEntity>
+                    where TEntity : class, IEntity
     {
-        private readonly IDataContext<GeolocationAlarm> _dataContext;
+        private readonly IDataContext<TEntity> _dataContext;
 
-        public SessionFactory(IDataContext<GeolocationAlarm> dataContext)
+        public SessionFactory(IDataContext<TEntity> dataContext)
         {
             _dataContext = dataContext;
         }
 
-        public async Task<ISession<TEntity>> OpenSessionAsync<TEntity>()
+        public async Task<ISession<TEntity>> OpenSessionAsync()
+
         {
             var session = new Session<TEntity>(_dataContext);
-            await session.Open().ConfigureAwait(false);
+            await session.OpenAsync().ConfigureAwait(false);
             return session;
         }
     }

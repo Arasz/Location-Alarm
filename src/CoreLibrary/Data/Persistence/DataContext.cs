@@ -1,4 +1,5 @@
 ﻿using CoreLibrary.Data.Persistence;
+using CoreLibrary.DataModel;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 
@@ -10,6 +11,7 @@ namespace CoreLibrary.Data
     /// <typeparam name="TEntity"></typeparam>
     [DataContract]
     public class DataContext<TEntity> : IDataContext<TEntity>
+        where TEntity : class, IEntity
     {
         [DataMember]
         private Dictionary<int, TEntity> _entities = new Dictionary<int, TEntity>();
@@ -21,42 +23,31 @@ namespace CoreLibrary.Data
 
         public int Create(TEntity entity)
         {
-            throw new System.NotImplementedException();
+            IdentityGenerator.AssignUniqueIdentity(entity);
+            _entities[entity.Id] = entity;
+            return entity.Id;
         }
 
         public void Delete(TEntity entity)
         {
-            throw new System.NotImplementedException();
+            IdentityGenerator.RecycleIdentity(entity);
+            _entities[entity.Id] = null;
         }
 
-        public void Delete(int id)
-        {
-            throw new System.NotImplementedException();
-        }
+        public void Delete(int id) => _entities[id] = null;
 
-        public void DeleteAll()
-        {
-            throw new System.NotImplementedException();
-        }
+        public void DeleteAll() => _entities.Clear();
 
-        public TEntity Read(int id)
-        {
-            throw new System.NotImplementedException();
-        }
+        public TEntity Read(int id) => _entities[id];
 
-        public IEnumerable<TEntity> ReadAll()
-        {
-            throw new System.NotImplementedException();
-        }
+        public IEnumerable<TEntity> ReadAll() => _entities.Values;
 
-        public void Update(TEntity entity)
-        {
-            throw new System.NotImplementedException();
-        }
+        public void Update(TEntity entity) => _entities[entity.Id] = entity;
 
         public void UpdateAll(IEnumerable<TEntity> entities)
         {
-            throw new System.NotImplementedException();
+            foreach (var entity in entities)
+                _entities[entity.Id] = entity;
         }
     }
 }

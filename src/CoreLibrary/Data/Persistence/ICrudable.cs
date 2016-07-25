@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using CoreLibrary.DataModel;
+using System.Collections.Generic;
 
 namespace CoreLibrary.Data.Persistence
 {
@@ -6,6 +7,7 @@ namespace CoreLibrary.Data.Persistence
     /// Defines CRUD operations 
     /// </summary>
     public interface ICrudable<TEntity>
+        where TEntity : class, IEntity
     {
         /// <summary>
         /// Creates entity in persistent storage 

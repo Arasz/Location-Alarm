@@ -11,6 +11,16 @@ namespace CoreLibrary.Data.Persistence
         /// <summary>
         /// Assigns unique identity 
         /// </summary>
-        void AssignUniqueIdentity<TEntity>(TEntity entity) where TEntity : IEntity;
+        void AssignUniqueIdentity(IEntity entity);
+
+        /// <summary>
+        /// Returns entity identity to identity pool 
+        /// </summary>
+        void RecycleIdentity(IEntity entity);
+
+        /// <summary>
+        /// Returns identity to identity pool 
+        /// </summary>
+        void RecycleIdentity(int id);
     }
 }

@@ -20,11 +20,15 @@ namespace CoreLibrary.Data.Persistence
             private set { _lastIdentity = value; }
         }
 
-        public void AssignUniqueIdentity<TEntity>(TEntity entity) where TEntity : IEntity
+        public void AssignUniqueIdentity(IEntity entity)
         {
             FillQueue();
             entity.Id = IdentityQueue.Dequeue();
         }
+
+        public void RecycleIdentity(IEntity entity) => IdentityQueue.Enqueue(entity.Id);
+
+        public void RecycleIdentity(int id) => IdentityQueue.Enqueue(id);
 
         private void FillQueue()
         {

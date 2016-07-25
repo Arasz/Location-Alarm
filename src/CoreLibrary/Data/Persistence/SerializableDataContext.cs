@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using CoreLibrary.DataModel;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -11,6 +12,7 @@ namespace CoreLibrary.Data.Persistence
     /// Data context decorator which adds serialization 
     /// </summary>
     public class SerializableDataContext<TEntity> : IDataContext<TEntity>, ISelfSerializable
+        where TEntity : class, IEntity
     {
         private const string _dataFileExtension = @".ds";
 
@@ -29,6 +31,26 @@ namespace CoreLibrary.Data.Persistence
             _dataContext = dataContext;
         }
 
+        public int Create(TEntity entity)
+        {
+            return _dataContext.Create(entity);
+        }
+
+        public void Delete(TEntity entity)
+        {
+            _dataContext.Delete(entity);
+        }
+
+        public void Delete(int id)
+        {
+            _dataContext.Delete(id);
+        }
+
+        public void DeleteAll()
+        {
+            _dataContext.DeleteAll();
+        }
+
         public async Task DeserializeAsync()
         {
             if (await InitializeStorageFileAsync().ConfigureAwait(false)) return;
@@ -40,6 +62,16 @@ namespace CoreLibrary.Data.Persistence
             }
         }
 
+        public TEntity Read(int id)
+        {
+            return _dataContext.Read(id);
+        }
+
+        public IEnumerable<TEntity> ReadAll()
+        {
+            return _dataContext.ReadAll();
+        }
+
         public async Task SerializeAsync()
         {
             await InitializeStorageFileAsync().ConfigureAwait(false);
@@ -49,6 +81,16 @@ namespace CoreLibrary.Data.Persistence
                 var serializer = new JsonSerializer();
                 serializer.Serialize(new JsonTextWriter(new StreamWriter(serializationStream)), _dataContext);
             }
+        }
+
+        public void Update(TEntity entity)
+        {
+            _dataContext.Update(entity);
+        }
+
+        public void UpdateAll(IEnumerable<TEntity> entities)
+        {
+            _dataContext.UpdateAll(entities);
         }
 
         /// <summary>
