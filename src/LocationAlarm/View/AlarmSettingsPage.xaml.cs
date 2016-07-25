@@ -1,6 +1,6 @@
 ﻿// The Basic Page item template is documented at http://go.microsoft.com/fwlink/?LinkID=390556
 
-using CoreLibrary.DataModel;
+using CoreLibrary.Data;
 using LocationAlarm.ViewModel;
 using System.Linq;
 using Windows.UI.Xaml.Controls;

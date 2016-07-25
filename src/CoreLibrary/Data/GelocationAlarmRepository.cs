@@ -8,16 +8,16 @@ namespace CoreLibrary.DataModel
 {
     public class GelocationAlarmRepository
     {
-        private readonly ISessionFactory _sessionFactory;
+        private readonly ISessionFactory<GeolocationAlarm> _sessionFactory;
 
-        public GelocationAlarmRepository(ISessionFactory sessionFactory)
+        public GelocationAlarmRepository(ISessionFactory<GeolocationAlarm> sessionFactory)
         {
             _sessionFactory = sessionFactory;
         }
 
         public async Task<int> CreateAsync(GeolocationAlarm alarm)
         {
-            using (var session = await _sessionFactory.OpenSessionAsync<GeolocationAlarm>().ConfigureAwait(false))
+            using (var session = await _sessionFactory.OpenSessionAsync().ConfigureAwait(false))
             {
                 var id = session.Create(alarm);
                 alarm.Id = id;
@@ -27,25 +27,25 @@ namespace CoreLibrary.DataModel
 
         public async Task DeleteAllAsync()
         {
-            using (var session = await _sessionFactory.OpenSessionAsync<GeolocationAlarm>().ConfigureAwait(false))
+            using (var session = await _sessionFactory.OpenSessionAsync().ConfigureAwait(false))
                 session.DeleteAll();
         }
 
         public async Task DeleteAsync(GeolocationAlarm alarm)
         {
-            using (var session = await _sessionFactory.OpenSessionAsync<GeolocationAlarm>().ConfigureAwait(false))
+            using (var session = await _sessionFactory.OpenSessionAsync().ConfigureAwait(false))
                 session.Delete(alarm);
         }
 
         public async Task<IEnumerable<GeolocationAlarm>> ReadAllAsync()
         {
-            using (var session = await _sessionFactory.OpenSessionAsync<GeolocationAlarm>().ConfigureAwait(false))
+            using (var session = await _sessionFactory.OpenSessionAsync().ConfigureAwait(false))
                 return session.ReadAll();
         }
 
         public async Task<GeolocationAlarm> ReadAsync(int index)
         {
-            using (var session = await _sessionFactory.OpenSessionAsync<GeolocationAlarm>().ConfigureAwait(false))
+            using (var session = await _sessionFactory.OpenSessionAsync().ConfigureAwait(false))
                 return session.Read(index);
         }
 
@@ -56,7 +56,7 @@ namespace CoreLibrary.DataModel
 
         public async Task Update(GeolocationAlarm alarm)
         {
-            using (var session = await _sessionFactory.OpenSessionAsync<GeolocationAlarm>().ConfigureAwait(false))
+            using (var session = await _sessionFactory.OpenSessionAsync().ConfigureAwait(false))
                 session.Update(alarm);
         }
     }
