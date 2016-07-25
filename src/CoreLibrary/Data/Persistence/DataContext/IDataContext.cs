@@ -1,7 +1,8 @@
-﻿using CoreLibrary.DataModel;
+﻿using CoreLibrary.Data.Persistence.Common;
+using CoreLibrary.DataModel;
 using System.Collections.Generic;
 
-namespace CoreLibrary.Data.Persistence
+namespace CoreLibrary.Data.Persistence.DataContext
 {
     /// <summary>
     /// Persistent data context 

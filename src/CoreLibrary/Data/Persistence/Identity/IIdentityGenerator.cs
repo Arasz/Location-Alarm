@@ -1,6 +1,6 @@
 ﻿using CoreLibrary.DataModel;
 
-namespace CoreLibrary.Data.Persistence
+namespace CoreLibrary.Data.Persistence.Identity
 {
     /// <summary>
     /// Can assign unique identity to entity 

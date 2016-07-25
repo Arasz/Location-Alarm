@@ -85,19 +85,19 @@
     <Content Include="FodyWeavers.xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Data\Persistence\DataContext.cs" />
+    <Compile Include="Data\Persistence\DataContext\DataContext.cs" />
     <Compile Include="Data\DataModel\WeekDay.cs" />
     <Compile Include="Data\GelocationAlarmRepository.cs" />
     <Compile Include="Data\GeofenceBuilder.cs" />
     <Compile Include="Data\DataModel\GeolocationAlarm.cs" />
     <Compile Include="Data\DataModel\Entity.cs" />
     <Compile Include="Data\DataModel\IEntity.cs" />
-    <Compile Include="Data\Persistence\ICrudable.cs" />
-    <Compile Include="Data\Persistence\IDataContext.cs" />
-    <Compile Include="Data\Persistence\IdentityGenerator.cs" />
-    <Compile Include="Data\Persistence\IIdentityGenerator.cs" />
-    <Compile Include="Data\Persistence\ISelfSerializable.cs" />
-    <Compile Include="Data\Persistence\SerializableDataContext.cs" />
+    <Compile Include="Data\Persistence\Common\ICrudable.cs" />
+    <Compile Include="Data\Persistence\DataContext\IDataContext.cs" />
+    <Compile Include="Data\Persistence\Identity\IdentityGenerator.cs" />
+    <Compile Include="Data\Persistence\Identity\IIdentityGenerator.cs" />
+    <Compile Include="Data\Persistence\Common\ISelfSerializable.cs" />
+    <Compile Include="Data\Persistence\DataContext\SerializableDataContext.cs" />
     <Compile Include="Data\Persistence\Session\ISession.cs" />
     <Compile Include="Data\Persistence\Session\ISessionFactory.cs" />
     <Compile Include="Data\Persistence\Session\Session.cs" />

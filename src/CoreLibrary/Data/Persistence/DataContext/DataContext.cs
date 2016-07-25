@@ -1,9 +1,9 @@
-﻿using CoreLibrary.Data.Persistence;
+﻿using CoreLibrary.Data.Persistence.Identity;
 using CoreLibrary.DataModel;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 
-namespace CoreLibrary.Data
+namespace CoreLibrary.Data.Persistence.DataContext
 {
     /// <summary>
     /// Encapsulates persistent data 

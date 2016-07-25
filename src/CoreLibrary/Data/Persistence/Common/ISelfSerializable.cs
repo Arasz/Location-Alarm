@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 
-namespace CoreLibrary.Data.Persistence
+namespace CoreLibrary.Data.Persistence.Common
 {
     /// <summary>
     /// Can serialize itself 

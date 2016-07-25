@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
 
-namespace CoreLibrary.Data.Persistence
+namespace CoreLibrary.Data.Persistence.Identity
 {
     [DataContract]
     public class IdentityGenerator : IIdentityGenerator

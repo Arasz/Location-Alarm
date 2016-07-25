@@ -1,7 +1,7 @@
 ﻿using CoreLibrary.DataModel;
 using System.Collections.Generic;
 
-namespace CoreLibrary.Data.Persistence
+namespace CoreLibrary.Data.Persistence.Common
 {
     /// <summary>
     /// Defines CRUD operations 

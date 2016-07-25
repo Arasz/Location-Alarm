@@ -1,4 +1,5 @@
-﻿using CoreLibrary.DataModel;
+﻿using CoreLibrary.Data.Persistence.Common;
+using CoreLibrary.DataModel;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -6,7 +7,7 @@ using System.IO;
 using System.Threading.Tasks;
 using Windows.Storage;
 
-namespace CoreLibrary.Data.Persistence
+namespace CoreLibrary.Data.Persistence.DataContext
 {
     /// <summary>
     /// Data context decorator which adds serialization 
