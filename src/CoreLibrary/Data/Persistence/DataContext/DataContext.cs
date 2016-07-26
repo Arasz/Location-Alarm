@@ -1,5 +1,6 @@
 ﻿using CoreLibrary.Data.DataModel.Base;
 using CoreLibrary.Data.Persistence.Identity;
+using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 
@@ -9,17 +10,22 @@ namespace CoreLibrary.Data.Persistence.DataContext
     /// Encapsulates persistent data 
     /// </summary>
     /// <typeparam name="TEntity"></typeparam>
-    [DataContract]
+    [DataContract, JsonObject(MemberSerialization.OptIn)]
     public class DataContext<TEntity> : IDataContext<TEntity>
         where TEntity : class, IEntity
     {
-        [DataMember]
+        [DataMember, JsonProperty]
         private Dictionary<int, TEntity> _entities = new Dictionary<int, TEntity>();
 
         public IEnumerable<TEntity> Entities => _entities.Values;
 
-        [DataMember]
+        [DataMember, JsonProperty]
         public IIdentityGenerator IdentityGenerator { get; set; }
+
+        public DataContext(IIdentityGenerator identityGenerator)
+        {
+            IdentityGenerator = identityGenerator;
+        }
 
         public int Create(TEntity entity)
         {

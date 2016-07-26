@@ -1,24 +1,25 @@
 ﻿using CoreLibrary.Data.DataModel.Base;
+using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
 
 namespace CoreLibrary.Data.Persistence.Identity
 {
-    [DataContract]
+    [DataContract, JsonObject(MemberSerialization.OptIn)]
     public class IdentityGenerator : IIdentityGenerator
     {
-        [DataMember]
+        [DataMember, JsonProperty]
         private int _lastIdentity;
-
-        [DataMember]
-        public Queue<int> IdentityQueue { get; private set; }
 
         public int LastIdentity
         {
             get { return _lastIdentity++; }
             private set { _lastIdentity = value; }
         }
+
+        [DataMember, JsonProperty]
+        private Queue<int> IdentityQueue { get; } = new Queue<int>();
 
         public void AssignUniqueIdentity(IEntity entity)
         {

@@ -23,7 +23,7 @@ namespace CoreLibrary.Data.Persistence.DataContext
 
         public IEnumerable<TEntity> Entities => _dataContext.Entities;
 
-        private string FullDataFileName => nameof(TEntity) + _dataFileExtension;
+        private string FullDataFileName => typeof(TEntity).Name + _dataFileExtension;
 
         private IStorageFile StorageFile { get; set; }
 
@@ -59,7 +59,11 @@ namespace CoreLibrary.Data.Persistence.DataContext
             using (var serializationStream = await StorageFile.OpenStreamForReadAsync().ConfigureAwait(false))
             {
                 var serializer = new JsonSerializer();
-                _dataContext = serializer.Deserialize<DataContext<TEntity>>(new JsonTextReader(new StreamReader(serializationStream)));
+                using (var streamReader = new StreamReader(serializationStream))
+                {
+                    var newDataContext = serializer.Deserialize<DataContext<TEntity>>(new JsonTextReader(streamReader));
+                    _dataContext = newDataContext ?? _dataContext;
+                }
             }
         }
 
@@ -80,7 +84,10 @@ namespace CoreLibrary.Data.Persistence.DataContext
             using (var serializationStream = await StorageFile.OpenStreamForWriteAsync().ConfigureAwait(false))
             {
                 var serializer = new JsonSerializer();
-                serializer.Serialize(new JsonTextWriter(new StreamWriter(serializationStream)), _dataContext);
+                using (var streamWritter = new StreamWriter(serializationStream))
+                {
+                    serializer.Serialize(new JsonTextWriter(streamWritter), _dataContext as DataContext<TEntity>);
+                }
             }
         }
 

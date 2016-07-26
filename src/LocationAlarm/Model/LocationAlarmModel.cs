@@ -7,12 +7,9 @@ namespace LocationAlarm.Model
 {
     public class LocationAlarmModel
     {
-        private readonly ObservableCollection<GeolocationAlarm> _alarms;
-
         private readonly IGeofenceService _geofenceService;
-
         private readonly GelocationAlarmRepository _repository;
-
+        private ObservableCollection<GeolocationAlarm> _alarms;
         public INotifyCollectionChanged GeolocationAlarms => _alarms;
 
         public GeolocationAlarm NewAlarm => new GeolocationAlarm();

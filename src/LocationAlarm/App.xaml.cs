@@ -1,6 +1,7 @@
 ﻿using Autofac;
 using CoreLibrary.Data.Persistence;
 using CoreLibrary.Data.Persistence.DataContext;
+using CoreLibrary.Data.Persistence.Identity;
 using CoreLibrary.DataModel;
 using CoreLibrary.Service;
 using CoreLibrary.Service.Geofencing;
@@ -140,7 +141,7 @@ namespace ArrivalAlarm
                 .OnPreparing(preparingEventArgs =>
                 {
                     preparingEventArgs.Parameters = new[]
-                    {new TypedParameter(typeof (IDataContext<GeolocationAlarm>), new DataContext<GeolocationAlarm>()),};
+                    {new TypedParameter(typeof (IDataContext<GeolocationAlarm>), new DataContext<GeolocationAlarm>(new IdentityGenerator())),};
                 });
 
             builder.RegisterType<SessionFactory<GeolocationAlarm>>()
@@ -160,13 +161,16 @@ namespace ArrivalAlarm
                 .AsSelf();
 
             builder.RegisterType<MapViewModel>()
-                .AsSelf();
+                .AsSelf()
+                .SingleInstance();
 
             builder.RegisterType<MainViewModel>()
-                .AsSelf();
+                .AsSelf()
+                .SingleInstance();
 
             builder.RegisterType<AlarmSettingsViewModel>()
-                .AsSelf();
+                .AsSelf()
+                .SingleInstance();
 
             builder.RegisterType<NavigationService>()
                 .As<INavigationService>()

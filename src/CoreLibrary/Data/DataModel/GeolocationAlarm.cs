@@ -53,7 +53,6 @@ namespace CoreLibrary.DataModel
         [DataMember]
         public bool IsActive { get; set; }
 
-        [DataMember]
         public BitmapImage MapScreen { get; set; }
 
         [DataMember]
