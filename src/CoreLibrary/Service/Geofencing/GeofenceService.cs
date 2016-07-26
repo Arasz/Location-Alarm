@@ -16,18 +16,23 @@ namespace CoreLibrary.Service.Geofencing
         public GeofenceService()
         {
             _geofenceMonitor = GeofenceMonitor.Current;
-
-            _geofenceMonitor.GeofenceStateChanged += GeofenceMonitorOnGeofenceStateChanged;
-            _geofenceMonitor.StatusChanged += GeofenceMonitorOnStatusChanged;
         }
 
         public bool IsGeofenceRegistered(string id) => _geofenceMonitor.Geofences.Any(geofence => geofence.Id == id);
 
         public Geofence ReadGeofence(string id) => _geofenceMonitor.Geofences.FirstOrDefault(geofence => geofence.Id == id);
 
-        public void RegisterGeofence(Geofence geofence) => _geofenceMonitor.Geofences.Add(geofence);
+        public void RegisterGeofence(Geofence geofence)
+        {
+            if (!IsGeofenceRegistered(geofence.Id))
+                _geofenceMonitor.Geofences.Add(geofence);
+        }
 
-        public void RemoveGeofence(Geofence geofence) => _geofenceMonitor.Geofences.Remove(geofence);
+        public void RemoveGeofence(Geofence geofence)
+        {
+            if (IsGeofenceRegistered(geofence.Id))
+                _geofenceMonitor.Geofences.Remove(geofence);
+        }
 
         public void RemoveGeofence(string id)
         {
@@ -47,14 +52,6 @@ namespace CoreLibrary.Service.Geofencing
                 _geofenceMonitor.Geofences.Remove(searchResult);
                 _geofenceMonitor.Geofences.Add(geofence);
             }
-        }
-
-        private void GeofenceMonitorOnGeofenceStateChanged(GeofenceMonitor sender, object args)
-        {
-        }
-
-        private void GeofenceMonitorOnStatusChanged(GeofenceMonitor sender, object args)
-        {
         }
     }
 }
