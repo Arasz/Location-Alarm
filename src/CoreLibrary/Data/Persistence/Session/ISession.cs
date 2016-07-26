@@ -1,5 +1,5 @@
-﻿using CoreLibrary.Data.Persistence.Common;
-using CoreLibrary.DataModel;
+﻿using CoreLibrary.Data.DataModel.Base;
+using CoreLibrary.Data.Persistence.Common;
 using System;
 using System.Threading.Tasks;
 

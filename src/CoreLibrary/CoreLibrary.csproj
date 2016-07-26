@@ -90,8 +90,8 @@
     <Compile Include="Data\GelocationAlarmRepository.cs" />
     <Compile Include="Data\GeofenceBuilder.cs" />
     <Compile Include="Data\DataModel\GeolocationAlarm.cs" />
-    <Compile Include="Data\DataModel\Entity.cs" />
-    <Compile Include="Data\DataModel\IEntity.cs" />
+    <Compile Include="Data\DataModel\Base\Entity.cs" />
+    <Compile Include="Data\DataModel\Base\IEntity.cs" />
     <Compile Include="Data\Persistence\Common\ICrudable.cs" />
     <Compile Include="Data\Persistence\DataContext\IDataContext.cs" />
     <Compile Include="Data\Persistence\Identity\IdentityGenerator.cs" />
@@ -116,6 +116,10 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="Autofac, Version=3.5.0.0, Culture=neutral, PublicKeyToken=17863af14b0044da, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Autofac.3.5.2\lib\portable-net4+sl5+netcore45+wpa81+wp8+MonoAndroid1+MonoTouch1\Autofac.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Equals, Version=1.5.0.0, Culture=neutral, PublicKeyToken=15432f00798e61a4, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Equals.Fody.1.5.0.0\lib\dotnet\Equals.dll</HintPath>
       <Private>False</Private>

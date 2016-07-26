@@ -1,6 +1,6 @@
-﻿using CoreLibrary.Data.Persistence.Common;
+﻿using CoreLibrary.Data.DataModel.Base;
+using CoreLibrary.Data.Persistence.Common;
 using CoreLibrary.Data.Persistence.DataContext;
-using CoreLibrary.DataModel;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
