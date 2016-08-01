@@ -1,63 +1,73 @@
-﻿using CoreLibrary.Data.Persistence;
+﻿using CoreLibrary.Data.DataModel.Session;
 using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
-using System.Threading.Tasks;
 
 namespace CoreLibrary.DataModel
 {
     public class GelocationAlarmRepository
     {
-        private readonly ISessionFactory<GeolocationAlarm> _sessionFactory;
+        private readonly ISessionFactory _sessionFactory;
 
-        public GelocationAlarmRepository(ISessionFactory<GeolocationAlarm> sessionFactory)
+        public GelocationAlarmRepository(ISessionFactory sessionFactory)
         {
             _sessionFactory = sessionFactory;
         }
 
-        public async Task<int> CreateAsync(GeolocationAlarm alarm)
+        public void Delete(GeolocationAlarm alarm)
         {
-            using (var session = await _sessionFactory.OpenSessionAsync().ConfigureAwait(false))
+            using (var session = _sessionFactory.CurrentSession)
             {
-                var id = session.Create(alarm);
-                alarm.Id = id;
-                return id;
+                session.Delete(alarm);
             }
         }
 
-        public async Task DeleteAllAsync()
+        public void DeleteAll()
         {
-            using (var session = await _sessionFactory.OpenSessionAsync().ConfigureAwait(false))
-                session.DeleteAll();
+            using (var session = _sessionFactory.CurrentSession)
+            {
+                session.DeleteAll<GeolocationAlarm>();
+            }
         }
 
-        public async Task DeleteAsync(GeolocationAlarm alarm)
+        public int Insert(GeolocationAlarm alarm)
         {
-            using (var session = await _sessionFactory.OpenSessionAsync().ConfigureAwait(false))
-                session.Delete(alarm);
+            using (var session = _sessionFactory.CurrentSession)
+            {
+                return session.Create(alarm); ;
+            }
         }
 
-        public async Task<IEnumerable<GeolocationAlarm>> ReadAllAsync()
+        public GeolocationAlarm Read(int index)
         {
-            using (var session = await _sessionFactory.OpenSessionAsync().ConfigureAwait(false))
-                return session.ReadAll();
+            using (var session = _sessionFactory.CurrentSession)
+            {
+                return session.Read<GeolocationAlarm>(index);
+            }
         }
 
-        public async Task<GeolocationAlarm> ReadAsync(int index)
+        public IEnumerable<GeolocationAlarm> ReadAll()
         {
-            using (var session = await _sessionFactory.OpenSessionAsync().ConfigureAwait(false))
-                return session.Read(index);
+            using (var session = _sessionFactory.CurrentSession)
+            {
+                return session.ReadAll<GeolocationAlarm>();
+            }
         }
 
-        public async Task<GeolocationAlarm> ReadMatchingAsync(Expression<Func<GeolocationAlarm, bool>> criteria)
+        public IEnumerable<GeolocationAlarm> ReadMatching(Expression<Func<GeolocationAlarm, bool>> criteria)
         {
-            throw new NotImplementedException("Will be implemented in future release");
+            using (var session = _sessionFactory.CurrentSession)
+            {
+                return session.Read(criteria);
+            }
         }
 
-        public async Task Update(GeolocationAlarm alarm)
+        public void Update(GeolocationAlarm alarm)
         {
-            using (var session = await _sessionFactory.OpenSessionAsync().ConfigureAwait(false))
-                session.Update(alarm);
+            using (var session = _sessionFactory.CurrentSession)
+            {
+                session.Update(alarm); ;
+            }
         }
     }
 }

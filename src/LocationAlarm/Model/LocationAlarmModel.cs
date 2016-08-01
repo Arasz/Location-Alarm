@@ -18,20 +18,20 @@ namespace LocationAlarm.Model
         {
             _repository = repository;
             _geofenceService = geofenceService;
-            _alarms = new ObservableCollection<GeolocationAlarm>();
+            _alarms = new ObservableCollection<GeolocationAlarm>(_repository.ReadAll());
         }
 
         public void Delete(GeolocationAlarm alarm)
         {
             _alarms.Remove(alarm);
-            _repository.DeleteAsync(alarm);
+            _repository.Delete(alarm);
             _geofenceService.RemoveGeofence(alarm.Name);
         }
 
         public void SaveAsync(GeolocationAlarm alarm)
         {
             _alarms.Add(alarm);
-            _repository.CreateAsync(alarm);
+            _repository.Insert(alarm);
             _geofenceService.RegisterGeofence(alarm.Geofence);
         }
 
