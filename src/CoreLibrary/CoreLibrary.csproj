@@ -98,7 +98,7 @@
     <Compile Include="Data\Persistence\Identity\IIdentityGenerator.cs" />
     <Compile Include="Data\Persistence\Common\ISelfSerializable.cs" />
     <Compile Include="Data\Persistence\DataContext\Decorators\SerializableDataContext.cs" />
-    <Compile Include="Data\Persistence\Json\Converters\IdentityGeneratorConverter.cs" />
+    <Compile Include="Data\Persistence\Json\Converters\IdentityGeneratorJsonConverter.cs" />
     <Compile Include="Data\Persistence\Session\ISession.cs" />
     <Compile Include="Data\Persistence\Session\ISessionFactory.cs" />
     <Compile Include="Data\Persistence\Session\Session.cs" />

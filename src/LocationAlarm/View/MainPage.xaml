@@ -54,7 +54,7 @@
                           HorizontalScrollBarVisibility="Disabled" VerticalScrollMode="Enabled"
                           IsEnabled="True">
                 <ListView ItemsSource="{Binding AlarmsCollection}" SelectionMode="Single"  ItemTemplate="{StaticResource alarmModelTemplate}"
-                          IsActiveView="True" CanDragItems="True" CanReorderItems="True">
+                          IsActiveView="True" CanDragItems="True" ReorderMode="Enabled">
                     <interactivity:Interaction.Behaviors>
                         <core:EventTriggerBehavior EventName="SelectionChanged">
                             <core:InvokeCommandAction Command="{Binding EditAlarmCommand}" />

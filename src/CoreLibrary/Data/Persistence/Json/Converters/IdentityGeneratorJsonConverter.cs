@@ -4,7 +4,7 @@ using System;
 
 namespace CoreLibrary.Data.Persistence.Json.Converters
 {
-    public class IdentityGeneratorConverter<TGenerator> : JsonConverter
+    public class IdentityGeneratorJsonConverter<TGenerator> : JsonConverter
         where TGenerator : class, IIdentityGenerator, new()
     {
         public override bool CanConvert(Type objectType) => objectType == typeof(TGenerator) || true;

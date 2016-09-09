@@ -20,7 +20,7 @@ namespace CoreLibrary.Data.Persistence.DataContext
 
         public IEnumerable<TEntity> Entities => _entities.Values;
 
-        [DataMember, JsonProperty, JsonConverter(typeof(IdentityGeneratorConverter<IdentityGenerator>))]
+        [DataMember, JsonProperty, JsonConverter(typeof(IdentityGeneratorJsonConverter<IdentityGenerator>))]
         public IIdentityGenerator IdentityGenerator { get; set; }
 
         public DataContext(IIdentityGenerator identityGenerator)
