@@ -29,6 +29,14 @@ namespace LocationAlarm.Model
             _geofenceService.RemoveGeofence(alarm.Name);
         }
 
+        public async Task ReloadDataAsync()
+        {
+            _alarms.Clear();
+            var savedAlarms = await _repository.ReadAllAsync().ConfigureAwait(true);
+            foreach (var geolocationAlarm in savedAlarms)
+                _alarms.Add(geolocationAlarm);
+        }
+
         public async Task SaveAsync(GeolocationAlarm alarm)
         {
             _alarms.Add(alarm);
@@ -36,7 +44,7 @@ namespace LocationAlarm.Model
             _geofenceService.RegisterGeofence(alarm.Geofence);
         }
 
-        public async Task Update(GeolocationAlarm alarm)
+        public async Task UpdateAsync(GeolocationAlarm alarm)
         {
             await _repository.Update(alarm).ConfigureAwait(false);
 

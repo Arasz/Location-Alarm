@@ -55,7 +55,7 @@ namespace LocationAlarm.ViewModel
                     if (_navigationService.Token == Token.AddNew)
                         _locationAlarmModel.SaveAsync(CurrentAlarm);
                     else
-                        _locationAlarmModel.Update(CurrentAlarm);
+                        _locationAlarmModel.UpdateAsync(CurrentAlarm);
                     break;
             }
         }
