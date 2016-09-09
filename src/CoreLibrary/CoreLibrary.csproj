@@ -93,11 +93,11 @@
     <Compile Include="Data\DataModel\Base\Entity.cs" />
     <Compile Include="Data\DataModel\Base\IEntity.cs" />
     <Compile Include="Data\Persistence\Common\ICrudable.cs" />
+    <Compile Include="Data\Persistence\DataContext\Decorators\SerializableDataContext.cs" />
     <Compile Include="Data\Persistence\DataContext\IDataContext.cs" />
     <Compile Include="Data\Persistence\Identity\IdentityGenerator.cs" />
     <Compile Include="Data\Persistence\Identity\IIdentityGenerator.cs" />
     <Compile Include="Data\Persistence\Common\ISelfSerializable.cs" />
-    <Compile Include="Data\Persistence\DataContext\SerializableDataContext.cs" />
     <Compile Include="Data\Persistence\Session\ISession.cs" />
     <Compile Include="Data\Persistence\Session\ISessionFactory.cs" />
     <Compile Include="Data\Persistence\Session\Session.cs" />
@@ -129,6 +129,7 @@
       <Private>True</Private>
     </Reference>
   </ItemGroup>
+  <ItemGroup />
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '12.0' ">
     <VisualStudioVersion>12.0</VisualStudioVersion>
   </PropertyGroup>

@@ -17,11 +17,9 @@ namespace CoreLibrary.Data.Persistence.DataContext.Decorators
         where TEntity : class, IEntity
     {
         private const string _dataFileExtension = @".ds";
-
         private readonly IStorageFolder _storageFolder = ApplicationData.Current.LocalFolder;
-
         private IDataContext<TEntity> _dataContext;
-
+        private object _serializationLock = new object();
         public IEnumerable<TEntity> Entities => _dataContext.Entities;
 
         private string FullDataFileName => typeof(TEntity).Name + _dataFileExtension;
@@ -92,9 +90,16 @@ namespace CoreLibrary.Data.Persistence.DataContext.Decorators
             using (var serializationStream = await StorageFile.OpenStreamForWriteAsync().ConfigureAwait(false))
             {
                 var serializer = new JsonSerializer();
-                using (var streamWritter = new StreamWriter(serializationStream))
+                using (var streamWriter = new StreamWriter(serializationStream))
                 {
-                    serializer.Serialize(new JsonTextWriter(streamWritter), _dataContext as DataContext<TEntity>);
+                    try
+                    {
+                        serializer.Serialize(new JsonTextWriter(streamWriter), _dataContext as DataContext<TEntity>);
+                    }
+                    catch (Exception exception)
+                    {
+                        Debug.WriteLine(exception);
+                    }
                 }
             }
         }

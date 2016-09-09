@@ -18,9 +18,12 @@ namespace LocationAlarm.ViewModel
     public class MainViewModel : ViewModelBaseEx
     {
         private readonly LocationAlarmModel _locationAlarmModel;
+
         public INotifyCollectionChanged AlarmsCollection => _locationAlarmModel.GeolocationAlarms;
 
         public ICommand EditAlarmCommand { get; private set; }
+
+        public ICommand LoadDataCommand { get; private set; }
 
         public int SelectedAlarm { get; set; }
 
@@ -42,7 +45,13 @@ namespace LocationAlarm.ViewModel
         {
         }
 
-        public override void OnNavigatedTo(object parameter)
+        [OnCommand("LoadDataCommand")]
+        public async void LoadDataExcecute()
+        {
+            await _locationAlarmModel.LoadData().ConfigureAwait(true);
+        }
+
+        public override async void OnNavigatedTo(object parameter)
         {
             CurrentAlarm = parameter as GeolocationAlarm;
 
@@ -53,17 +62,17 @@ namespace LocationAlarm.ViewModel
 
                 case nameof(AlarmSettingsPage):
                     if (_navigationService.Token == Token.AddNew)
-                        _locationAlarmModel.SaveAsync(CurrentAlarm);
+                        await _locationAlarmModel.SaveAsync(CurrentAlarm).ConfigureAwait(true);
                     else
-                        _locationAlarmModel.Update(CurrentAlarm);
+                        await _locationAlarmModel.Update(CurrentAlarm).ConfigureAwait(true);
                     break;
             }
         }
 
         [OnCommand("DeleteAlarmCommand")]
-        private void DeleteAlarmExecute(AlarmItemEventArgs eventArgs)
+        private async void DeleteAlarmExecute(AlarmItemEventArgs eventArgs)
         {
-            _locationAlarmModel.DeleteAsync(eventArgs.Source);
+            await _locationAlarmModel.DeleteAsync(eventArgs.Source).ConfigureAwait(false);
         }
 
         private void EditAlarmExecute(SelectionChangedEventArgs itemClickEventArgs)

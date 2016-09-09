@@ -14,6 +14,13 @@
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
     DataContext="{Binding Source={StaticResource Locator}, Path=Main}">
 
+    <interactivity:Interaction.Behaviors>
+        <core:EventTriggerBehavior EventName="Loaded">
+            <core:InvokeCommandAction Command="{Binding LoadDataCommand}">
+            </core:InvokeCommandAction>
+        </core:EventTriggerBehavior>
+    </interactivity:Interaction.Behaviors>
+
     <view:BindablePage.Resources>
         <ResourceDictionary>
             <DataTemplate x:Key="alarmModelTemplate">
