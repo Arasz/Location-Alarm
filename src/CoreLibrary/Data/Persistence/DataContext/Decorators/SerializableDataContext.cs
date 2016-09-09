@@ -8,7 +8,7 @@ using System.IO;
 using System.Threading.Tasks;
 using Windows.Storage;
 
-namespace CoreLibrary.Data.Persistence.DataContext
+namespace CoreLibrary.Data.Persistence.DataContext.Decorators
 {
     /// <summary>
     /// Data context decorator which adds serialization 
