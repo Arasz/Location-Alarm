@@ -63,7 +63,7 @@ namespace LocationAlarm.ViewModel
         [OnCommand("DeleteAlarmCommand")]
         private void DeleteAlarmExecute(AlarmItemEventArgs eventArgs)
         {
-            _locationAlarmModel.Delete(eventArgs.Source);
+            _locationAlarmModel.DeleteAsync(eventArgs.Source);
         }
 
         private void EditAlarmExecute(SelectionChangedEventArgs itemClickEventArgs)

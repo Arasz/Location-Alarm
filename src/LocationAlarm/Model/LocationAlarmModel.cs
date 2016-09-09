@@ -2,6 +2,7 @@
 using CoreLibrary.Service;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using System.Threading.Tasks;
 
 namespace LocationAlarm.Model
 {
@@ -21,23 +22,23 @@ namespace LocationAlarm.Model
             _alarms = new ObservableCollection<GeolocationAlarm>();
         }
 
-        public void Delete(GeolocationAlarm alarm)
+        public async Task DeleteAsync(GeolocationAlarm alarm)
         {
             _alarms.Remove(alarm);
-            _repository.DeleteAsync(alarm);
+            await _repository.DeleteAsync(alarm).ConfigureAwait(false);
             _geofenceService.RemoveGeofence(alarm.Name);
         }
 
-        public void SaveAsync(GeolocationAlarm alarm)
+        public async Task SaveAsync(GeolocationAlarm alarm)
         {
             _alarms.Add(alarm);
-            _repository.CreateAsync(alarm);
+            await _repository.CreateAsync(alarm).ConfigureAwait(false);
             _geofenceService.RegisterGeofence(alarm.Geofence);
         }
 
-        public void Update(GeolocationAlarm alarm)
+        public async Task Update(GeolocationAlarm alarm)
         {
-            _repository.Update(alarm);
+            await _repository.Update(alarm).ConfigureAwait(false);
 
             _geofenceService.ReplaceGeofence(alarm.Name, alarm.Geofence);
         }

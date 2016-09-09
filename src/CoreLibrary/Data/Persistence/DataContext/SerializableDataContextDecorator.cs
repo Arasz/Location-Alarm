@@ -3,6 +3,7 @@ using CoreLibrary.Data.Persistence.Common;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
 using Windows.Storage;
@@ -61,8 +62,15 @@ namespace CoreLibrary.Data.Persistence.DataContext
                 var serializer = new JsonSerializer();
                 using (var streamReader = new StreamReader(serializationStream))
                 {
-                    var newDataContext = serializer.Deserialize<DataContext<TEntity>>(new JsonTextReader(streamReader));
-                    _dataContext = newDataContext ?? _dataContext;
+                    try
+                    {
+                        var newDataContext = serializer.Deserialize<DataContext<TEntity>>(new JsonTextReader(streamReader));
+                        _dataContext = newDataContext ?? _dataContext;
+                    }
+                    catch (Exception exception)
+                    {
+                        Debug.WriteLine(exception.ToString());
+                    }
                 }
             }
         }
