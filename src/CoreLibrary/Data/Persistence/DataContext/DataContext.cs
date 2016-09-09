@@ -1,5 +1,6 @@
 ﻿using CoreLibrary.Data.DataModel.Base;
 using CoreLibrary.Data.Persistence.Identity;
+using CoreLibrary.Data.Persistence.Json.Converters;
 using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
@@ -19,7 +20,7 @@ namespace CoreLibrary.Data.Persistence.DataContext
 
         public IEnumerable<TEntity> Entities => _entities.Values;
 
-        [DataMember, JsonProperty]
+        [DataMember, JsonProperty, JsonConverter(typeof(IdentityGeneratorConverter<IdentityGenerator>))]
         public IIdentityGenerator IdentityGenerator { get; set; }
 
         public DataContext(IIdentityGenerator identityGenerator)
