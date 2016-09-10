@@ -1,7 +1,6 @@
 ﻿using Autofac;
 using CoreLibrary.Data.Persistence;
 using CoreLibrary.Data.Persistence.DataContext;
-using CoreLibrary.Data.Persistence.DataContext.Decorators;
 using CoreLibrary.Data.Persistence.Identity;
 using CoreLibrary.DataModel;
 using CoreLibrary.Service;
@@ -136,7 +135,7 @@ namespace ArrivalAlarm
             builder.RegisterType<GeolocationService>()
                 .As<IGeolocationService>();
 
-            builder.RegisterType<SerializableDataContext<GeolocationAlarm>>()
+            builder.RegisterType<DataContext<GeolocationAlarm>>()
                 .As<IDataContext<GeolocationAlarm>>()
                 .SingleInstance()
                 .OnPreparing(preparingEventArgs =>
