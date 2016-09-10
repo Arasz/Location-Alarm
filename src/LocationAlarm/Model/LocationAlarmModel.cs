@@ -6,11 +6,15 @@ using System.Threading.Tasks;
 
 namespace LocationAlarm.Model
 {
+    /// <summary>
+    /// Application model 
+    /// </summary>
     public class LocationAlarmModel
     {
         private readonly IGeofenceService _geofenceService;
         private readonly GelocationAlarmRepository _repository;
         private ObservableCollection<GeolocationAlarm> _alarms;
+
         public INotifyCollectionChanged GeolocationAlarms => _alarms;
 
         public GeolocationAlarm NewAlarm => new GeolocationAlarm();
