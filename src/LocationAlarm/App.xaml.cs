@@ -1,12 +1,25 @@
 ﻿using Autofac;
+using Autofac.Core.Activators.Reflection;
+using CoreLibrary.Data.DataModel.PersistentModel;
+using CoreLibrary.Data.Persistence.Repository;
+using CoreLibrary.DataModel;
+using CoreLibrary.Service;
+using CoreLibrary.Service.Geofencing;
+using CoreLibrary.Service.Geolocation;
 using GalaSoft.MvvmLight.Threading;
+using GalaSoft.MvvmLight.Views;
+using LocationAlarm.Location.LocationAutosuggestion;
+using LocationAlarm.Model;
+using LocationAlarm.Navigation;
 using LocationAlarm.Utils;
+using LocationAlarm.View;
+using LocationAlarm.ViewModel;
 using System;
 using System.Diagnostics;
-using System.Reflection;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
 using Windows.Globalization;
+using Windows.Storage;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media.Animation;
@@ -22,7 +35,8 @@ namespace ArrivalAlarm
     /// </summary>
     public sealed partial class App : Application
     {
-        private IContainer _container;
+        public static IContainer Container { get; set; }
+
         private TransitionCollection transitions;
 
         /// <summary>
@@ -34,6 +48,7 @@ namespace ArrivalAlarm
             InitializeComponent();
             Suspending += OnSuspending;
             UnhandledException += OnUnhandledException;
+            InitializeIocContainer();
         }
 
         private void OnUnhandledException(object sender, UnhandledExceptionEventArgs unhandledExceptionEventArgs)
@@ -56,7 +71,7 @@ namespace ArrivalAlarm
                 DebugSettings.EnableFrameRateCounter = true;
             }
 #endif
-
+            Resources["Locator"] = Container.Resolve<ViewModelLocator>();
             var rootFrame = Window.Current.Content as Frame;
 
             // Do not repeat app initialization when the Window already has content, just ensure that
@@ -106,8 +121,81 @@ namespace ArrivalAlarm
 
             // Ensure the current window is active
             Window.Current.Activate();
-            //ConfigureContainer();
+
+            //Configure dispatcher
             DispatcherHelper.Initialize();
+        }
+
+        private static void InitializeIocContainer()
+        {
+            var builder = new ContainerBuilder();
+
+            builder.RegisterType<GeofenceService>()
+                .As<IGeofenceService>();
+
+            builder.RegisterInstance(ApplicationData.Current.LocalFolder)
+                .As<IStorageFolder>()
+                .Named<IStorageFolder>("defaultFolder");
+
+            builder.RegisterType<GeolocationService>()
+                .As<IGeolocationService>();
+
+            builder.RegisterType<GenericRepository<Alarm>>()
+                .As<IRepository<Alarm>>()
+                .SingleInstance();
+
+            builder.RegisterType<ScreenshotManager>()
+                .SingleInstance()
+                .AsImplementedInterfaces()
+                .WithParameter(new AutowiringParameter());
+
+            builder.RegisterType<GelocationAlarmRepository>()
+                .AsSelf()
+                .As<IRepository<GeolocationAlarm>>()
+                .SingleInstance();
+
+            builder.RegisterType<AssetsNamesReader>()
+                .As<IAssetsNamesReader>()
+                .SingleInstance();
+
+            builder.RegisterType<LocationAlarmModel>()
+                .AsSelf();
+
+            builder.RegisterType<LocationAutoSuggestion>()
+                .AsSelf();
+
+            builder.RegisterType<MapViewModel>()
+                .AsSelf()
+                .SingleInstance();
+
+            builder.RegisterType<MainViewModel>()
+                .AsSelf()
+                .SingleInstance();
+
+            builder.RegisterType<AlarmSettingsViewModel>()
+                .AsSelf()
+                .SingleInstance();
+
+            builder.RegisterType<NavigationService>()
+                .As<INavigationService>()
+                .AsSelf()
+                .SingleInstance()
+                .OnActivated(activatedEventArgs =>
+                {
+                    var navigationService = activatedEventArgs.Instance;
+                    navigationService.Configure(nameof(MainPage), typeof(MainPage));
+                    navigationService.Configure(nameof(MapPage), typeof(MapPage));
+                    navigationService.Configure(nameof(AlarmSettingsPage), typeof(AlarmSettingsPage));
+                });
+
+            builder.RegisterType<NavigationServiceWithToken>()
+                .AsSelf().SingleInstance();
+
+            builder.RegisterType<ViewModelLocator>()
+                .AsSelf()
+                .SingleInstance();
+
+            Container = builder.Build();
         }
 
         /// <summary>
@@ -135,21 +223,6 @@ namespace ArrivalAlarm
 
             // TODO: Save application state and stop any background activity
             deferral.Complete();
-        }
-
-        private void ConfigureContainer()
-        {
-            var containerBuilder = new ContainerBuilder();
-            var assembly = typeof(App).GetTypeInfo().Assembly;
-            containerBuilder.RegisterAssemblyTypes(assembly)
-                .AsSelf()
-                .AsImplementedInterfaces();
-
-            containerBuilder.RegisterType<AssetsNamesReader>()
-                .SingleInstance()
-                .AsImplementedInterfaces();
-
-            _container = containerBuilder.Build();
         }
     }
 }

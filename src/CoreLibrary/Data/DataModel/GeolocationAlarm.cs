@@ -1,10 +1,12 @@
-﻿using CoreLibrary.StateManagement;
+﻿using CoreLibrary.Data;
+using CoreLibrary.Data.DataModel;
+using CoreLibrary.Data.DataModel.Base;
+using CoreLibrary.StateManagement;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
 using Windows.Devices.Geolocation;
 using Windows.Devices.Geolocation.Geofencing;
-using Windows.UI.Xaml.Media.Imaging;
 
 namespace CoreLibrary.DataModel
 {
@@ -12,24 +14,21 @@ namespace CoreLibrary.DataModel
     /// Location alarm data model 
     /// </summary>
     [DataContract, Equals]
-    public class GeolocationAlarm : Entity, IRestorable<GeolocationAlarm>
+    public class GeolocationAlarm : IEntity, IRestorable<GeolocationAlarm>
     {
         /// <summary>
         /// Days in which alarm is active 
         /// </summary>
-        [DataMember]
         public List<WeekDay> ActiveDays { get; set; }
 
         /// <summary>
         /// Ringtone 
         /// </summary>
-        [DataMember]
         public string AlarmSound { get; set; }
 
         /// <summary>
         /// Type of alarm 
         /// </summary>
-        [DataMember]
         public AlarmType AlarmType { get; set; }
 
         public Geofence Geofence => new GeofenceBuilder()
@@ -42,25 +41,25 @@ namespace CoreLibrary.DataModel
         /// <summary>
         /// Geographic position 
         /// </summary>
-        [DataMember]
         public BasicGeoposition Geoposition { get; set; }
+
+        public int Id { get; set; }
 
         /// <summary>
         /// Alarm state 
         /// </summary>
-        [DataMember]
         public bool IsActive { get; set; }
 
-        [DataMember]
-        public BitmapImage MapScreen { get; set; }
+        /// <summary>
+        /// Path to map screen 
+        /// </summary>
+        public string MapScreenPath { get; set; }
 
-        [DataMember]
         public string Name { get; set; }
 
         /// <summary>
         /// Monitored area radius 
         /// </summary>
-        [DataMember]
         public double Radius { get; set; }
 
         public GeolocationAlarm()
@@ -79,7 +78,7 @@ namespace CoreLibrary.DataModel
             AlarmType = savedState.AlarmType;
             Geoposition = savedState.Geoposition;
             IsActive = savedState.IsActive;
-            MapScreen = savedState.MapScreen;
+            MapScreenPath = savedState.MapScreenPath;
             Name = savedState.Name;
             Radius = savedState.Radius;
         }
@@ -93,16 +92,10 @@ namespace CoreLibrary.DataModel
                 AlarmType = AlarmType,
                 Geoposition = Geoposition,
                 IsActive = IsActive,
-                MapScreen = MapScreen,
+                MapScreenPath = MapScreenPath,
                 Name = Name,
                 Radius = Radius,
             };
         }
-    }
-
-    public enum AlarmType
-    {
-        Notification,
-        Sound,
     }
 }

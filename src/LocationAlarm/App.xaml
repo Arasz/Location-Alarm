@@ -6,7 +6,6 @@
              xmlns:viewModel="using:LocationAlarm.ViewModel">
     <Application.Resources>
         <ResourceDictionary>
-            <viewModel:ViewModelLocator x:Key="Locator" d:IsDataSource="True" />
             <Style x:Name="CommandBarStyle" TargetType="CommandBar">
                 <Setter Property="ClosedDisplayMode" Value="Compact" />
             </Style>

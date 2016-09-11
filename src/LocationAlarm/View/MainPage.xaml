@@ -14,6 +14,12 @@
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
     DataContext="{Binding Source={StaticResource Locator}, Path=Main}">
 
+    <interactivity:Interaction.Behaviors>
+        <core:EventTriggerBehavior EventName="Loaded">
+            <core:InvokeCommandAction Command="{Binding LoadDataCommand}" />
+        </core:EventTriggerBehavior>
+    </interactivity:Interaction.Behaviors>
+
     <view:BindablePage.Resources>
         <ResourceDictionary>
             <DataTemplate x:Key="alarmModelTemplate">
@@ -54,7 +60,7 @@
                           HorizontalScrollBarVisibility="Disabled" VerticalScrollMode="Enabled"
                           IsEnabled="True">
                 <ListView ItemsSource="{Binding AlarmsCollection}" SelectionMode="Single"  ItemTemplate="{StaticResource alarmModelTemplate}"
-                          IsActiveView="True" CanDragItems="True" CanReorderItems="True">
+                          IsActiveView="True" CanDragItems="True" ReorderMode="Enabled">
                     <interactivity:Interaction.Behaviors>
                         <core:EventTriggerBehavior EventName="SelectionChanged">
                             <core:InvokeCommandAction Command="{Binding EditAlarmCommand}" />

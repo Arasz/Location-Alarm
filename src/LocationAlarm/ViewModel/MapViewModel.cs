@@ -15,7 +15,6 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 using Windows.Devices.Geolocation;
 using Windows.Services.Maps;
-using Windows.UI.Xaml.Media.Imaging;
 
 namespace LocationAlarm.ViewModel
 {
@@ -51,10 +50,10 @@ namespace LocationAlarm.ViewModel
 
         public bool IsMapLoaded { get; private set; }
 
-        public BitmapImage MapScreenshot
+        public string MapScreenshotPath
         {
-            get { return CurrentAlarm.MapScreen; }
-            set { CurrentAlarm.MapScreen = value; }
+            get { return CurrentAlarm.MapScreenPath; }
+            set { CurrentAlarm.MapScreenPath = value; }
         }
 
         public double MaxGeocircleRadius { get; } = 5000;
@@ -142,10 +141,10 @@ namespace LocationAlarm.ViewModel
         private async void SaveLocationExecute()
         {
             MessengerInstance.Send(new MessageBase(), Token.TakeScreenshot);
-            MapScreenshot = null;
+            MapScreenshotPath = null;
             await Task.Factory.StartNew(() =>
             {
-                while (MapScreenshot == null)
+                while (MapScreenshotPath == null)
                 {
                 }
             }).ConfigureAwait(true);

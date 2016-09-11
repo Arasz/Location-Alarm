@@ -85,18 +85,29 @@
     <Content Include="FodyWeavers.xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DataModel\DayOfWeek.cs" />
-    <Compile Include="DataModel\GelocationAlarmRepository.cs" />
-    <Compile Include="DataModel\GeofenceBuilder.cs" />
-    <Compile Include="DataModel\GeolocationAlarm.cs" />
-    <Compile Include="DataModel\Entity.cs" />
-    <Compile Include="DataModel\IEntity.cs" />
+    <Compile Include="Data\DataModel\AlarmType.cs" />
+    <Compile Include="Data\DataModel\PersistentModel\Alarm.cs" />
+    <Compile Include="Data\DataModel\WeekDay.cs" />
+    <Compile Include="Data\Persistence\Mapping\AlarmMapper.cs" />
+    <Compile Include="Data\Persistence\Mapping\Configuration.cs" />
+    <Compile Include="Data\Persistence\Mapping\IConfiguration.cs" />
+    <Compile Include="Data\Persistence\Mapping\IMapper.cs" />
+    <Compile Include="Data\Persistence\Mapping\Mapper.cs" />
+    <Compile Include="Data\Persistence\Mapping\SimpleReflectionMapper.cs" />
+    <Compile Include="Data\Persistence\Repository\GelocationAlarmRepository.cs" />
+    <Compile Include="Data\GeofenceBuilder.cs" />
+    <Compile Include="Data\DataModel\GeolocationAlarm.cs" />
+    <Compile Include="Data\DataModel\Base\IEntity.cs" />
+    <Compile Include="Data\Persistence\Repository\GenericRepository.cs" />
+    <Compile Include="Data\Persistence\Repository\IRepository.cs" />
     <Compile Include="Service\Geofencing\GeofenceService.cs" />
     <Compile Include="Service\Geolocation\GeolocationService.cs" />
     <Compile Include="Service\Geofencing\IGeofenceService.cs" />
     <Compile Include="Service\Geolocation\IGeolocationService.cs" />
     <Compile Include="Service\Geolocation\IReverseGeolocationService.cs" />
     <Compile Include="Service\Geolocation\ReadableLocationName.cs" />
+    <Compile Include="Data\Persistence\SQLite\SQLite.cs" />
+    <Compile Include="Data\Persistence\SQLite\SQLiteAsync.cs" />
     <Compile Include="StateManagement\IRestorable.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="StateManagement\StateManager.cs" />
@@ -105,11 +116,24 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="Equals, Version=1.5.0.0, Culture=neutral, PublicKeyToken=15432f00798e61a4, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Equals.Fody.1.5.0.0\lib\dotnet\Equals.dll</HintPath>
-      <Private>False</Private>
+    <Reference Include="AutoMapper, Version=5.0.2.0, Culture=neutral, PublicKeyToken=be96cd2c38ef1005, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\AutoMapper.5.0.2\lib\netstandard1.1\AutoMapper.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Equals, Version=1.6.2.0, Culture=neutral, PublicKeyToken=15432f00798e61a4, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Equals.Fody.1.6.2.0\Lib\dotnet\Equals.dll</HintPath>
+      <Private>True</Private>
     </Reference>
   </ItemGroup>
+  <ItemGroup>
+    <SDKReference Include="Microsoft.VCLibs, version=12.0">
+      <Name>Microsoft Visual C++ 2013 Runtime Package for Windows Phone</Name>
+    </SDKReference>
+    <SDKReference Include="SQLite.WP81, Version=3.13.0">
+      <Name>SQLite for Windows Phone 8.1</Name>
+    </SDKReference>
+  </ItemGroup>
+  <ItemGroup />
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '12.0' ">
     <VisualStudioVersion>12.0</VisualStudioVersion>
   </PropertyGroup>
@@ -119,6 +143,9 @@
   <PropertyGroup>
     <StartupObject />
   </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>false</SignAssembly>
+  </PropertyGroup>
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\WindowsXaml\v$(VisualStudioVersion)\Microsoft.Windows.UI.Xaml.CSharp.targets" />
   <Import Project="..\..\packages\Fody.1.29.4\build\dotnet\Fody.targets" Condition="Exists('..\..\packages\Fody.1.29.4\build\dotnet\Fody.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
@@ -126,9 +153,9 @@
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
     <Error Condition="!Exists('..\..\packages\Fody.1.29.4\build\dotnet\Fody.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Fody.1.29.4\build\dotnet\Fody.targets'))" />
-    <Error Condition="!Exists('..\..\packages\Equals.Fody.1.5.0.0\build\dotnet\Equals.Fody.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Equals.Fody.1.5.0.0\build\dotnet\Equals.Fody.targets'))" />
+    <Error Condition="!Exists('..\..\packages\Equals.Fody.1.6.2.0\build\dotnet\Equals.Fody.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Equals.Fody.1.6.2.0\build\dotnet\Equals.Fody.targets'))" />
   </Target>
-  <Import Project="..\..\packages\Equals.Fody.1.5.0.0\build\dotnet\Equals.Fody.targets" Condition="Exists('..\..\packages\Equals.Fody.1.5.0.0\build\dotnet\Equals.Fody.targets')" />
+  <Import Project="..\..\packages\Equals.Fody.1.6.2.0\build\dotnet\Equals.Fody.targets" Condition="Exists('..\..\packages\Equals.Fody.1.6.2.0\build\dotnet\Equals.Fody.targets')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

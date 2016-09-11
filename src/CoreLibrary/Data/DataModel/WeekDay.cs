@@ -1,17 +1,20 @@
-﻿using System;
+﻿using CoreLibrary.Data.DataModel.Base;
+using System;
 using System.Globalization;
 using System.Linq;
 using System.Runtime.Serialization;
 
-namespace CoreLibrary.DataModel
+namespace CoreLibrary.Data
 {
     [DataContract, Equals]
-    public class WeekDay : Entity
+    public class WeekDay : IEntity
     {
         [DataMember]
         public DayOfWeek Day { get; set; }
 
         public static string[] DayNames => DateTimeFormatInfo.CurrentInfo.DayNames;
+
+        public int Id { get; set; }
 
         [DataMember]
         public string Name { get; }

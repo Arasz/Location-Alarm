@@ -1,22 +1,20 @@
 ﻿using GalaSoft.MvvmLight.Messaging;
 using GalaSoft.MvvmLight.Threading;
 using LocationAlarm.Common;
+using LocationAlarm.Utils;
 using LocationAlarm.View.Map;
 using LocationAlarm.ViewModel;
 using System;
 using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.Devices.Geolocation;
 using Windows.Foundation;
 using Windows.Graphics.Display;
-using Windows.Graphics.Imaging;
-using Windows.Storage.Streams;
+using Windows.Storage;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls.Maps;
 using Windows.UI.Xaml.Controls.Primitives;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
-using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Shapes;
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkID=390556
@@ -26,6 +24,8 @@ namespace LocationAlarm.View
     public sealed partial class MapPage
     {
         private readonly MapCircleDrawer _mapCircleDrawer;
+
+        private readonly ScreenshotManager _screenshotManager;
 
         private readonly MapViewModel _viewModel;
 
@@ -37,6 +37,7 @@ namespace LocationAlarm.View
 
             _viewModel = DataContext as MapViewModel;
             _mapCircleDrawer = new MapCircleDrawer(mapControl);
+            _screenshotManager = new ScreenshotManager(ApplicationData.Current.LocalFolder);
 
             mapControl.Tapped += MapControlOnTapped;
             mapControl.PitchChanged += MapControlOnPitchChanged;
@@ -78,28 +79,11 @@ namespace LocationAlarm.View
             {
                 if (mapControl.RenderSize == new Size(0, 0))
                     return;
-                var dpi = DisplayInformation.GetForCurrentView().LogicalDpi;
 
-                var renderTargetBitmap = new RenderTargetBitmap();
-                await renderTargetBitmap.RenderAsync(mapControl);
-                var pixelBuffer = await renderTargetBitmap.GetPixelsAsync();
-                var randomAccessStream = new InMemoryRandomAccessStream();
+                var path = await _screenshotManager.TakeScreenshotAsync(mapControl, DisplayInformation.GetForCurrentView(), _viewModel.AutoSuggestionLocationQuery)
+                    .ConfigureAwait(true);
 
-                var encoder = await BitmapEncoder.CreateAsync(BitmapEncoder.PngEncoderId, randomAccessStream);
-                encoder.SetPixelData(
-                    BitmapPixelFormat.Bgra8,
-                    BitmapAlphaMode.Ignore,
-                    (uint)renderTargetBitmap.PixelWidth,
-                    (uint)renderTargetBitmap.PixelHeight,
-                    dpi,
-                    dpi,
-                    pixelBuffer.ToArray());
-
-                await encoder.FlushAsync();
-
-                var bitmapImage = new BitmapImage();
-                await bitmapImage.SetSourceAsync(randomAccessStream);
-                _viewModel.MapScreenshot = bitmapImage;
+                _viewModel.MapScreenshotPath = path;
             });
         }
 

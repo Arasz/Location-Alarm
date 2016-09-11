@@ -1,4 +1,4 @@
-﻿namespace CoreLibrary.DataModel
+﻿namespace CoreLibrary.Data.DataModel.Base
 {
     public interface IEntity
     {
