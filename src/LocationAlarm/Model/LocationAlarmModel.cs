@@ -37,7 +37,7 @@ namespace LocationAlarm.Model
         public async Task ReloadDataAsync()
         {
             _alarms.Clear();
-            var savedAlarms = await _repository.ReadAllAsync().ConfigureAwait(true);
+            var savedAlarms = await _repository.GetAllAsync().ConfigureAwait(true);
             foreach (var geolocationAlarm in savedAlarms)
                 _alarms.Add(geolocationAlarm);
         }
@@ -45,13 +45,13 @@ namespace LocationAlarm.Model
         public async Task SaveAsync(GeolocationAlarm alarm)
         {
             _alarms.Add(alarm);
-            await _repository.CreateAsync(alarm).ConfigureAwait(false);
+            await _repository.InsertAsync(alarm).ConfigureAwait(false);
             _geofenceService.RegisterGeofence(alarm.Geofence);
         }
 
         public async Task UpdateAsync(GeolocationAlarm alarm)
         {
-            await _repository.Update(alarm).ConfigureAwait(false);
+            await _repository.UpdateAsync(alarm).ConfigureAwait(false);
 
             _geofenceService.ReplaceGeofence(alarm.Name, alarm.Geofence);
         }
