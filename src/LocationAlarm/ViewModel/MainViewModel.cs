@@ -59,9 +59,9 @@ namespace LocationAlarm.ViewModel
 
                 case nameof(AlarmSettingsPage):
                     if (_navigationService.Token == Token.AddNew)
-                        _locationAlarmModel.SaveAsync(CurrentAlarm).ConfigureAwait(false);
+                        await _locationAlarmModel.SaveAsync(CurrentAlarm).ConfigureAwait(false);
                     else
-                        _locationAlarmModel.UpdateAsync(CurrentAlarm).ConfigureAwait(false);
+                        await _locationAlarmModel.UpdateAsync(CurrentAlarm).ConfigureAwait(false);
                     break;
             }
         }
@@ -75,6 +75,8 @@ namespace LocationAlarm.ViewModel
         private void EditAlarmExecute(SelectionChangedEventArgs itemClickEventArgs)
         {
             CurrentAlarm = itemClickEventArgs.AddedItems.FirstOrDefault() as GeolocationAlarm;
+            if (CurrentAlarm == null)
+                return;
             _navigationService.NavigateTo(nameof(AlarmSettingsPage), CurrentAlarm, Token.None);
         }
     }

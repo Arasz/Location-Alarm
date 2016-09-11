@@ -39,7 +39,9 @@ namespace LocationAlarm.Model
             _alarms.Clear();
             var savedAlarms = await _repository.GetAllAsync().ConfigureAwait(true);
             foreach (var geolocationAlarm in savedAlarms)
+            {
                 _alarms.Add(geolocationAlarm);
+            }
         }
 
         public async Task SaveAsync(GeolocationAlarm alarm)

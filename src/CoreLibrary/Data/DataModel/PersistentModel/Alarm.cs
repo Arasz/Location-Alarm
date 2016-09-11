@@ -62,7 +62,7 @@ namespace CoreLibrary.Data.DataModel.PersistentModel
         /// Path to map screen 
         /// </summary>
         [DataMember]
-        public string MapScreen { get; set; } = "";
+        public string MapScreenPath { get; set; } = "";
 
         /// <summary>
         /// Alarm name 
