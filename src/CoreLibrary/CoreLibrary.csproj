@@ -88,14 +88,11 @@
     <Compile Include="Data\DataModel\AlarmType.cs" />
     <Compile Include="Data\DataModel\PersistentModel\Alarm.cs" />
     <Compile Include="Data\DataModel\WeekDay.cs" />
-    <Compile Include="Data\GelocationAlarmRepository.cs" />
+    <Compile Include="Data\Persistence\Repository\GelocationAlarmRepository.cs" />
     <Compile Include="Data\GeofenceBuilder.cs" />
     <Compile Include="Data\DataModel\GeolocationAlarm.cs" />
-    <Compile Include="Data\DataModel\Base\Entity.cs" />
     <Compile Include="Data\DataModel\Base\IEntity.cs" />
-    <Compile Include="Data\Persistence\Common\ICrudable.cs" />
-    <Compile Include="Data\Persistence\Session\ISession.cs" />
-    <Compile Include="Data\Persistence\Session\ISessionFactory.cs" />
+    <Compile Include="Data\Persistence\Repository\GenericRepository.cs" />
     <Compile Include="Service\Geofencing\GeofenceService.cs" />
     <Compile Include="Service\Geolocation\GeolocationService.cs" />
     <Compile Include="Service\Geofencing\IGeofenceService.cs" />

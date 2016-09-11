@@ -1,5 +1,4 @@
-﻿using CoreLibrary.Data.Persistence;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
@@ -8,7 +7,7 @@ namespace CoreLibrary.DataModel
 {
     public class GelocationAlarmRepository
     {
-        private readonly ISessionFactory<GeolocationAlarm> _sessionFactory;
+        private readonly Async _sessionFactory;
 
         public GelocationAlarmRepository(ISessionFactory<GeolocationAlarm> sessionFactory)
         {
@@ -19,7 +18,7 @@ namespace CoreLibrary.DataModel
         {
             using (var session = await _sessionFactory.OpenSessionAsync().ConfigureAwait(false))
             {
-                var id = session.Create(alarm);
+                var id = session.CreateAsync(alarm);
                 alarm.Id = id;
                 return id;
             }
@@ -28,13 +27,13 @@ namespace CoreLibrary.DataModel
         public async Task DeleteAllAsync()
         {
             using (var session = await _sessionFactory.OpenSessionAsync().ConfigureAwait(false))
-                session.DeleteAll();
+                session.DeleteAllAsync();
         }
 
         public async Task DeleteAsync(GeolocationAlarm alarm)
         {
             using (var session = await _sessionFactory.OpenSessionAsync().ConfigureAwait(false))
-                session.Delete(alarm);
+                session.DeleteAsync(alarm);
         }
 
         public async Task<IEnumerable<GeolocationAlarm>> ReadAllAsync()
@@ -46,7 +45,7 @@ namespace CoreLibrary.DataModel
         public async Task<GeolocationAlarm> ReadAsync(int index)
         {
             using (var session = await _sessionFactory.OpenSessionAsync().ConfigureAwait(false))
-                return session.Read(index);
+                return session.ReadAsync(index);
         }
 
         public async Task<GeolocationAlarm> ReadMatchingAsync(Expression<Func<GeolocationAlarm, bool>> criteria)

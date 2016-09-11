@@ -7,12 +7,14 @@ using System.Runtime.Serialization;
 namespace CoreLibrary.Data
 {
     [DataContract, Equals]
-    public class WeekDay : Entity
+    public class WeekDay : IEntity
     {
         [DataMember]
         public DayOfWeek Day { get; set; }
 
         public static string[] DayNames => DateTimeFormatInfo.CurrentInfo.DayNames;
+
+        public int Id { get; set; }
 
         [DataMember]
         public string Name { get; }

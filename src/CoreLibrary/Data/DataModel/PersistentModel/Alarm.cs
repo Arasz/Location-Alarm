@@ -1,4 +1,5 @@
-﻿using SQLite;
+﻿using CoreLibrary.Data.DataModel.Base;
+using SQLite;
 using System.Runtime.Serialization;
 
 namespace CoreLibrary.Data.DataModel.PersistentModel
@@ -7,7 +8,7 @@ namespace CoreLibrary.Data.DataModel.PersistentModel
     /// Simple data model of alarm 
     /// </summary>
     [DataContract]
-    public class Alarm
+    public class Alarm : IEntity
     {
         /// <summary>
         /// Days in which alarm is active. Each day is separated by , 

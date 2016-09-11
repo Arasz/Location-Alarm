@@ -15,7 +15,7 @@ namespace CoreLibrary.DataModel
     /// Location alarm data model 
     /// </summary>
     [DataContract, Equals]
-    public class GeolocationAlarm : Entity, IRestorable<GeolocationAlarm>
+    public class GeolocationAlarm : IEntity, IRestorable<GeolocationAlarm>
     {
         /// <summary>
         /// Days in which alarm is active 
@@ -47,6 +47,8 @@ namespace CoreLibrary.DataModel
         /// </summary>
         [DataMember]
         public BasicGeoposition Geoposition { get; set; }
+
+        public int Id { get; set; }
 
         /// <summary>
         /// Alarm state 
