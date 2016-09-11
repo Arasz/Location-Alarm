@@ -83,8 +83,16 @@
   <ItemGroup>
     <!-- A reference to the entire .Net Framework and Windows SDK are automatically included -->
     <Content Include="FodyWeavers.xml" />
+    <Content Include="Models\Generated\Database.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>Database.cs</LastGenOutput>
+    </Content>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Data\DataModel\AlarmType.cs" />
+    <Compile Include="Data\DataModel\PersistentModel\Alarm.cs" />
+    <Compile Include="Data\Persistence\Controller\IPersistenceController.cs" />
+    <Compile Include="Data\Persistence\Controller\PersistenceController.cs" />
     <Compile Include="Data\Persistence\DataContext\DataContext.cs" />
     <Compile Include="Data\DataModel\WeekDay.cs" />
     <Compile Include="Data\GelocationAlarmRepository.cs" />
@@ -94,15 +102,24 @@
     <Compile Include="Data\DataModel\Base\IEntity.cs" />
     <Compile Include="Data\Persistence\Common\ICrudable.cs" />
     <Compile Include="Data\Persistence\DataContext\IDataContext.cs" />
+    <Compile Include="Data\Persistence\FIleProvider\DefaultFileProvider.cs" />
+    <Compile Include="Data\Persistence\FIleProvider\IFileProvider.cs" />
     <Compile Include="Data\Persistence\Identity\IdentityGenerator.cs" />
     <Compile Include="Data\Persistence\Identity\IIdentityGenerator.cs" />
-    <Compile Include="Data\Persistence\Common\ISelfSerializable.cs" />
-    <Compile Include="Data\Persistence\DataContext\Decorators\SerializableDataContext.cs" />
     <Compile Include="Data\Persistence\Json\Converters\IdentityGeneratorJsonConverter.cs" />
+    <Compile Include="Data\Persistence\Serializer\DefaultSerializer.cs" />
+    <Compile Include="Data\Persistence\Serializer\ISerializer.cs" />
     <Compile Include="Data\Persistence\Session\ISession.cs" />
     <Compile Include="Data\Persistence\Session\ISessionFactory.cs" />
     <Compile Include="Data\Persistence\Session\Session.cs" />
+    <Compile Include="Data\Persistence\Session\SessionBase.cs" />
     <Compile Include="Data\Persistence\Session\SessionFactory.cs" />
+    <Compile Include="Models\Generated\Database.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Database.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\PetaPoco.cs" />
     <Compile Include="Service\Geofencing\GeofenceService.cs" />
     <Compile Include="Service\Geolocation\GeolocationService.cs" />
     <Compile Include="Service\Geofencing\IGeofenceService.cs" />
@@ -114,6 +131,8 @@
     <Compile Include="StateManagement\StateManager.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Models\Generated\PetaPoco.Core.ttinclude" />
+    <None Include="Models\Generated\PetaPoco.Generator.ttinclude" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
@@ -129,6 +148,11 @@
       <HintPath>..\..\packages\Newtonsoft.Json.9.0.1\lib\portable-net45+wp80+win8+wpa81\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="System.Configuration, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
+    <Reference Include="System.Data, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=AMD64" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Data\Persistence\Operations\" />
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '12.0' ">
     <VisualStudioVersion>12.0</VisualStudioVersion>

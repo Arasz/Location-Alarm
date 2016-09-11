@@ -1,4 +1,5 @@
 ﻿using CoreLibrary.Data;
+using CoreLibrary.Data.DataModel;
 using CoreLibrary.Data.DataModel.Base;
 using CoreLibrary.StateManagement;
 using System.Collections.Generic;
@@ -99,11 +100,5 @@ namespace CoreLibrary.DataModel
                 Radius = Radius,
             };
         }
-    }
-
-    public enum AlarmType
-    {
-        Notification,
-        Sound,
     }
 }

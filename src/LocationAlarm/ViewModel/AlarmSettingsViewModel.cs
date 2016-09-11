@@ -1,5 +1,6 @@
 ﻿using Commander;
 using CoreLibrary.Data;
+using CoreLibrary.Data.DataModel;
 using CoreLibrary.DataModel;
 using CoreLibrary.StateManagement;
 using LocationAlarm.Common;

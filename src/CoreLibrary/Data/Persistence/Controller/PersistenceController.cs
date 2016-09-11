@@ -7,7 +7,7 @@ namespace CoreLibrary.Data.Persistence.Controller
     /// <summary>
     /// Responsible for data context persistence 
     /// </summary>
-    internal class PersistenceController
+    internal class PersistenceController : IPersistenceController
     {
         public IDataContext<IEntity> DataContext { get; private set; }
 
