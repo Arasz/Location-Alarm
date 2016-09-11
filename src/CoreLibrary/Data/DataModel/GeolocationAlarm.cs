@@ -7,7 +7,6 @@ using System.Linq;
 using System.Runtime.Serialization;
 using Windows.Devices.Geolocation;
 using Windows.Devices.Geolocation.Geofencing;
-using Windows.UI.Xaml.Media.Imaging;
 
 namespace CoreLibrary.DataModel
 {
@@ -56,7 +55,10 @@ namespace CoreLibrary.DataModel
         [DataMember]
         public bool IsActive { get; set; }
 
-        public BitmapImage MapScreen { get; set; }
+        /// <summary>
+        /// Path to map screen 
+        /// </summary>
+        public string MapScreenPath { get; set; }
 
         [DataMember]
         public string Name { get; set; }
@@ -83,7 +85,7 @@ namespace CoreLibrary.DataModel
             AlarmType = savedState.AlarmType;
             Geoposition = savedState.Geoposition;
             IsActive = savedState.IsActive;
-            MapScreen = savedState.MapScreen;
+            MapScreenPath = savedState.MapScreenPath;
             Name = savedState.Name;
             Radius = savedState.Radius;
         }
@@ -97,7 +99,7 @@ namespace CoreLibrary.DataModel
                 AlarmType = AlarmType,
                 Geoposition = Geoposition,
                 IsActive = IsActive,
-                MapScreen = MapScreen,
+                MapScreenPath = MapScreenPath,
                 Name = Name,
                 Radius = Radius,
             };

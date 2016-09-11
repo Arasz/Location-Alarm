@@ -1,6 +1,7 @@
 ﻿using Autofac;
 using CoreLibrary.Data.DataModel.PersistentModel;
 using CoreLibrary.Data.Persistence.Repository;
+using CoreLibrary.DataModel;
 using CoreLibrary.Service;
 using CoreLibrary.Service.Geofencing;
 using CoreLibrary.Service.Geolocation;
@@ -133,9 +134,13 @@ namespace ArrivalAlarm
             builder.RegisterType<GeolocationService>()
                 .As<IGeolocationService>();
 
+            builder.RegisterType<GenericRepository<Alarm>>()
+                .As<IRepository<Alarm>>()
+                .SingleInstance();
+
             builder.RegisterType<GelocationAlarmRepository>()
                 .AsSelf()
-                .As<IRepository<Alarm>>()
+                .As<IRepository<GeolocationAlarm>>()
                 .SingleInstance();
 
             builder.RegisterType<AssetsNamesReader>()

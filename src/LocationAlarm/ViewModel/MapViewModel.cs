@@ -53,8 +53,8 @@ namespace LocationAlarm.ViewModel
 
         public BitmapImage MapScreenshot
         {
-            get { return CurrentAlarm.MapScreen; }
-            set { CurrentAlarm.MapScreen = value; }
+            get { return CurrentAlarm.MapScreenPath; }
+            set { CurrentAlarm.MapScreenPath = value; }
         }
 
         public double MaxGeocircleRadius { get; } = 5000;

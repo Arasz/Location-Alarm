@@ -88,6 +88,9 @@
     <Compile Include="Data\DataModel\AlarmType.cs" />
     <Compile Include="Data\DataModel\PersistentModel\Alarm.cs" />
     <Compile Include="Data\DataModel\WeekDay.cs" />
+    <Compile Include="Data\Persistence\Mapping\BasicGeopositionResolver.cs" />
+    <Compile Include="Data\Persistence\Mapping\ActiveDaysResolver.cs" />
+    <Compile Include="Data\Persistence\Mapping\WeekDayConverter.cs" />
     <Compile Include="Data\Persistence\Repository\GelocationAlarmRepository.cs" />
     <Compile Include="Data\GeofenceBuilder.cs" />
     <Compile Include="Data\DataModel\GeolocationAlarm.cs" />
@@ -141,6 +144,7 @@
       <Name>SQLite for Windows Phone 8.1</Name>
     </SDKReference>
   </ItemGroup>
+  <ItemGroup />
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '12.0' ">
     <VisualStudioVersion>12.0</VisualStudioVersion>
   </PropertyGroup>
