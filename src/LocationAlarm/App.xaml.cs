@@ -1,8 +1,6 @@
 ﻿using Autofac;
-using CoreLibrary.Data.Persistence;
-using CoreLibrary.Data.Persistence.DataContext;
-using CoreLibrary.Data.Persistence.Identity;
-using CoreLibrary.DataModel;
+using CoreLibrary.Data.DataModel.PersistentModel;
+using CoreLibrary.Data.Persistence.Repository;
 using CoreLibrary.Service;
 using CoreLibrary.Service.Geofencing;
 using CoreLibrary.Service.Geolocation;
@@ -135,24 +133,14 @@ namespace ArrivalAlarm
             builder.RegisterType<GeolocationService>()
                 .As<IGeolocationService>();
 
-            builder.RegisterType<DataContext<GeolocationAlarm>>()
-                .As<IDataContext<GeolocationAlarm>>()
-                .SingleInstance()
-                .OnPreparing(preparingEventArgs =>
-                {
-                    preparingEventArgs.Parameters = new[]
-                    {new TypedParameter(typeof (IDataContext<GeolocationAlarm>), new DataContext<GeolocationAlarm>(new IdentityGenerator())),};
-                });
-
-            builder.RegisterType<SessionFactory<GeolocationAlarm>>()
-                .As<ISessionFactory<GeolocationAlarm>>();
+            builder.RegisterType<GelocationAlarmRepository>()
+                .AsSelf()
+                .As<IRepository<Alarm>>()
+                .SingleInstance();
 
             builder.RegisterType<AssetsNamesReader>()
                 .As<IAssetsNamesReader>()
                 .SingleInstance();
-
-            builder.RegisterType<GelocationAlarmRepository>()
-                .AsSelf();
 
             builder.RegisterType<LocationAlarmModel>()
                 .AsSelf();

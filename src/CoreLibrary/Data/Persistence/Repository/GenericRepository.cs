@@ -9,8 +9,7 @@ using Windows.Storage;
 
 namespace CoreLibrary.Data.Persistence.Repository
 {
-    public class GenericRepository<TEntity>
-        where TEntity : IEntity, new()
+    public class GenericRepository<TEntity> : IRepository<TEntity> where TEntity : IEntity, new()
     {
         protected SQLiteAsyncConnection _asyncConnection;
 
@@ -35,6 +34,7 @@ namespace CoreLibrary.Data.Persistence.Repository
 
         public GenericRepository()
         {
+            CreateTableAsync();
         }
 
         public async Task DeleteAllAsync() => await AsyncConnection
@@ -44,8 +44,15 @@ namespace CoreLibrary.Data.Persistence.Repository
         public async Task<int> DeleteAsync(TEntity entity) => await AsyncConnection.DeleteAsync(entity)
             .ConfigureAwait(false);
 
+        public void Dispose()
+        {
+            _connection.Dispose();
+            _asyncConnection = null;
+            _connection = null;
+        }
+
         public async Task<IEnumerable<TEntity>> FindAsync(Expression<Func<TEntity, bool>> predicate)
-            => await AsyncConnection.Table<TEntity>()
+                    => await AsyncConnection.Table<TEntity>()
                 .Where(predicate)
                 .ToListAsync()
                 .ConfigureAwait(false);

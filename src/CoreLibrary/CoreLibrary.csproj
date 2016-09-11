@@ -93,6 +93,7 @@
     <Compile Include="Data\DataModel\GeolocationAlarm.cs" />
     <Compile Include="Data\DataModel\Base\IEntity.cs" />
     <Compile Include="Data\Persistence\Repository\GenericRepository.cs" />
+    <Compile Include="Data\Persistence\Repository\IRepository.cs" />
     <Compile Include="Service\Geofencing\GeofenceService.cs" />
     <Compile Include="Service\Geolocation\GeolocationService.cs" />
     <Compile Include="Service\Geofencing\IGeofenceService.cs" />
