@@ -9,7 +9,7 @@ namespace CoreLibrary.Data.Persistence.Controller
     /// </summary>
     internal class PersistenceController
     {
-        public IDataContext<IEntity> DataContext { get; set; }
+        public IDataContext<IEntity> DataContext { get; private set; }
 
         public ISerialize<IEntity> DataContextSerializer { get; set; }
 
