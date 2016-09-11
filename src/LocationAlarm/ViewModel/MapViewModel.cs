@@ -51,11 +51,7 @@ namespace LocationAlarm.ViewModel
 
         public bool IsMapLoaded { get; private set; }
 
-        public BitmapImage MapScreenshot
-        {
-            get { return CurrentAlarm.MapScreenPath; }
-            set { CurrentAlarm.MapScreenPath = value; }
-        }
+        public BitmapImage MapScreenshot { get; set; }
 
         public double MaxGeocircleRadius { get; } = 5000;
 
@@ -95,6 +91,7 @@ namespace LocationAlarm.ViewModel
             IsMapLoaded = false;
             PushpinVisible = false;
 
+            CurrentAlarm.MapScreenPath = MapScreenshot.UriSource.AbsoluteUri;
             MessengerInstance.Unregister<MapLocation>(this, OnSuggestionSelected);
         }
 

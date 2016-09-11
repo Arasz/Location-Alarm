@@ -86,9 +86,11 @@ namespace CoreLibrary.Data.Persistence.Repository
                 cfg.CreateMap<string, WeekDay>()
                     .ConvertUsing<WeekDayConverter>();
 
-                cfg.CreateMap<List<WeekDay>, string>();
+                cfg.CreateMap<List<WeekDay>, string>()
+                    .ConvertUsing<ListConverter>();
 
-                cfg.CreateMap<string, List<WeekDay>>();
+                cfg.CreateMap<string, List<WeekDay>>()
+                    .ConvertUsing<ListConverter>();
 
                 cfg.CreateMap<Alarm, GeolocationAlarm>()
                     .ForMember(alarm => alarm.Geoposition, options => options.ResolveUsing<BasicGeopositionResolver>());

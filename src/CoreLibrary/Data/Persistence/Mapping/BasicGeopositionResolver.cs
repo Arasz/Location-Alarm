@@ -4,7 +4,7 @@ using Windows.Devices.Geolocation;
 
 namespace CoreLibrary.DataModel.Persistence.Mapping
 {
-    public class BasicGeopositionResolver : IValueResolver<Alarm, GeolocationAlarm, BasicGeoposition>
+    internal class BasicGeopositionResolver : IValueResolver<Alarm, GeolocationAlarm, BasicGeoposition>
     {
         public BasicGeoposition Resolve(Alarm source, GeolocationAlarm destination, BasicGeoposition destMember,
             ResolutionContext context)

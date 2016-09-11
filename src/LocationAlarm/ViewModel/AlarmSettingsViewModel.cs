@@ -39,8 +39,8 @@ namespace LocationAlarm.ViewModel
 
         public BitmapImage MapScreen
         {
-            get { return CurrentAlarm.MapScreenPath; }
-            private set { CurrentAlarm.MapScreenPath = value; }
+            get { return new BitmapImage(new Uri(CurrentAlarm.MapScreenPath)); }
+            private set { CurrentAlarm.MapScreenPath = value.UriSource.OriginalString; }
         }
 
         public IEnumerable<string> NotificationSounds { get; private set; } = new List<string> { "default" };

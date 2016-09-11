@@ -19,19 +19,16 @@ namespace CoreLibrary.DataModel
         /// <summary>
         /// Days in which alarm is active 
         /// </summary>
-        [DataMember]
         public List<WeekDay> ActiveDays { get; set; }
 
         /// <summary>
         /// Ringtone 
         /// </summary>
-        [DataMember]
         public string AlarmSound { get; set; }
 
         /// <summary>
         /// Type of alarm 
         /// </summary>
-        [DataMember]
         public AlarmType AlarmType { get; set; }
 
         public Geofence Geofence => new GeofenceBuilder()
@@ -44,7 +41,6 @@ namespace CoreLibrary.DataModel
         /// <summary>
         /// Geographic position 
         /// </summary>
-        [DataMember]
         public BasicGeoposition Geoposition { get; set; }
 
         public int Id { get; set; }
@@ -52,7 +48,6 @@ namespace CoreLibrary.DataModel
         /// <summary>
         /// Alarm state 
         /// </summary>
-        [DataMember]
         public bool IsActive { get; set; }
 
         /// <summary>
@@ -60,13 +55,11 @@ namespace CoreLibrary.DataModel
         /// </summary>
         public string MapScreenPath { get; set; }
 
-        [DataMember]
         public string Name { get; set; }
 
         /// <summary>
         /// Monitored area radius 
         /// </summary>
-        [DataMember]
         public double Radius { get; set; }
 
         public GeolocationAlarm()

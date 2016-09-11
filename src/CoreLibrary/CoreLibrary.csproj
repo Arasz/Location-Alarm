@@ -90,6 +90,7 @@
     <Compile Include="Data\DataModel\WeekDay.cs" />
     <Compile Include="Data\Persistence\Mapping\BasicGeopositionResolver.cs" />
     <Compile Include="Data\Persistence\Mapping\ActiveDaysResolver.cs" />
+    <Compile Include="Data\Persistence\Mapping\ListConverter.cs" />
     <Compile Include="Data\Persistence\Mapping\WeekDayConverter.cs" />
     <Compile Include="Data\Persistence\Repository\GelocationAlarmRepository.cs" />
     <Compile Include="Data\GeofenceBuilder.cs" />
@@ -130,7 +131,6 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="System.Configuration, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
-    <Reference Include="System.Data, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=AMD64" />
     <Reference Include="System.Runtime.InteropServices.RuntimeInformation, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\..\packages\System.Runtime.InteropServices.RuntimeInformation.4.0.0\lib\wpa81\System.Runtime.InteropServices.RuntimeInformation.dll</HintPath>
       <Private>True</Private>
@@ -153,6 +153,9 @@
   </PropertyGroup>
   <PropertyGroup>
     <StartupObject />
+  </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>false</SignAssembly>
   </PropertyGroup>
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\WindowsXaml\v$(VisualStudioVersion)\Microsoft.Windows.UI.Xaml.CSharp.targets" />
   <Import Project="..\..\packages\Fody.1.29.4\build\dotnet\Fody.targets" Condition="Exists('..\..\packages\Fody.1.29.4\build\dotnet\Fody.targets')" />
