@@ -91,7 +91,7 @@ namespace LocationAlarm.ViewModel
             IsMapLoaded = false;
             PushpinVisible = false;
 
-            CurrentAlarm.MapScreenPath = MapScreenshot.UriSource.AbsoluteUri;
+            CurrentAlarm.MapScreenPath = MapScreenshot.UriSource?.AbsoluteUri ?? "";
             MessengerInstance.Unregister<MapLocation>(this, OnSuggestionSelected);
         }
 
