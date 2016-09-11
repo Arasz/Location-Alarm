@@ -1,4 +1,5 @@
 ﻿using Autofac;
+using Autofac.Core.Activators.Reflection;
 using CoreLibrary.Data.DataModel.PersistentModel;
 using CoreLibrary.Data.Persistence.Repository;
 using CoreLibrary.DataModel;
@@ -18,6 +19,7 @@ using System.Diagnostics;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
 using Windows.Globalization;
+using Windows.Storage;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media.Animation;
@@ -131,12 +133,21 @@ namespace ArrivalAlarm
             builder.RegisterType<GeofenceService>()
                 .As<IGeofenceService>();
 
+            builder.RegisterInstance(ApplicationData.Current.LocalFolder)
+                .As<IStorageFolder>()
+                .Named<IStorageFolder>("defaultFolder");
+
             builder.RegisterType<GeolocationService>()
                 .As<IGeolocationService>();
 
             builder.RegisterType<GenericRepository<Alarm>>()
                 .As<IRepository<Alarm>>()
                 .SingleInstance();
+
+            builder.RegisterType<ScreenshotManager>()
+                .SingleInstance()
+                .AsImplementedInterfaces()
+                .WithParameter(new AutowiringParameter());
 
             builder.RegisterType<GelocationAlarmRepository>()
                 .AsSelf()

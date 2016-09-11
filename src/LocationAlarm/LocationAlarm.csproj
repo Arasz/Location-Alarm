@@ -101,6 +101,8 @@
     <Compile Include="Tasks\BackgroundTaskManagerEventArgs.cs" />
     <Compile Include="Utils\AssetsNamesReader.cs" />
     <Compile Include="Utils\IAssetsNamesReader.cs" />
+    <Compile Include="Utils\IScreenshotManager.cs" />
+    <Compile Include="Utils\ScreenshotManager.cs" />
     <Compile Include="ViewModel\AlarmSettingsViewModel.cs" />
     <Compile Include="ViewModel\DataTemplates\DayOfWeekDataTemplate.cs" />
     <Compile Include="ViewModel\ViewModelBaseEx.cs" />

@@ -24,6 +24,7 @@ namespace LocationAlarm.ViewModel
         private readonly IAssetsNamesReader _assetsNamesReader;
         private readonly MediaPlayer _mediaPlayer = BackgroundMediaPlayer.Current;
         private readonly ResourceLoader _resourceLoader;
+        private readonly IScreenshotManager _screenshotManager;
 
         public string AlarmName
         {
@@ -37,11 +38,7 @@ namespace LocationAlarm.ViewModel
         public IEnumerable<WeekDay> DaysOfWeek { get; private set; } = Enum.GetValues(typeof(DayOfWeek))
             .Cast<DayOfWeek>().Select(week => new WeekDay(week)).ToList();
 
-        public BitmapImage MapScreen
-        {
-            get { return new BitmapImage(new Uri(CurrentAlarm.MapScreenPath)); }
-            private set { CurrentAlarm.MapScreenPath = value.UriSource.OriginalString; }
-        }
+        public BitmapImage MapScreen { get; set; }
 
         public IEnumerable<string> NotificationSounds { get; private set; } = new List<string> { "default" };
 
@@ -63,9 +60,11 @@ namespace LocationAlarm.ViewModel
             set { CurrentAlarm.AlarmSound = value; }
         }
 
-        public AlarmSettingsViewModel(NavigationServiceWithToken navigationService, IAssetsNamesReader assetsNamesReader) : base(navigationService)
+        public AlarmSettingsViewModel(NavigationServiceWithToken navigationService, IAssetsNamesReader assetsNamesReader, IScreenshotManager screenshotManager)
+            : base(navigationService)
         {
             _assetsNamesReader = assetsNamesReader;
+            _screenshotManager = screenshotManager;
 
             _resourceLoader = ResourceLoader.GetForCurrentView("Resources");
             CurrentAlarm = new GeolocationAlarm();
@@ -82,6 +81,13 @@ namespace LocationAlarm.ViewModel
         {
             AlarmStateManager.Restore();
             _navigationService.GoBack();
+        }
+
+        [OnCommand("LoadedCommand")]
+        public async void Loaded()
+        {
+            MapScreen = await _screenshotManager.OpenScreenFromPathAsync(CurrentAlarm.MapScreenPath)
+                .ConfigureAwait(true);
         }
 
         public override async void OnNavigatedTo(object parameter)

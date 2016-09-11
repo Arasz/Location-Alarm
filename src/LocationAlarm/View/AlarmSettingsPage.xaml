@@ -13,6 +13,12 @@
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
     DataContext="{Binding Source={StaticResource Locator}, Path=AlarmSettings}">
 
+    <interactivity:Interaction.Behaviors>
+        <core:EventTriggerBehavior EventName="Loaded">
+            <core:InvokeCommandAction Command="{Binding LoadedCommand}" />
+        </core:EventTriggerBehavior>
+    </interactivity:Interaction.Behaviors>
+
     <local:BindablePage.Resources>
         <Style TargetType="Button">
             <Setter Property="BorderThickness" Value="1" />
