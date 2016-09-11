@@ -42,7 +42,13 @@ namespace LocationAlarm.ViewModel
         {
         }
 
-        public override void OnNavigatedTo(object parameter)
+        [OnCommand("LoadDataCommand")]
+        public async void LoadData()
+        {
+            await _locationAlarmModel.ReloadDataAsync().ConfigureAwait(true);
+        }
+
+        public override async void OnNavigatedTo(object parameter)
         {
             CurrentAlarm = parameter as GeolocationAlarm;
 
@@ -53,22 +59,22 @@ namespace LocationAlarm.ViewModel
 
                 case nameof(AlarmSettingsPage):
                     if (_navigationService.Token == Token.AddNew)
-                        _locationAlarmModel.SaveAsync(CurrentAlarm);
+                        _locationAlarmModel.SaveAsync(CurrentAlarm).ConfigureAwait(false);
                     else
-                        _locationAlarmModel.UpdateAsync(CurrentAlarm);
+                        _locationAlarmModel.UpdateAsync(CurrentAlarm).ConfigureAwait(false);
                     break;
             }
         }
 
         [OnCommand("DeleteAlarmCommand")]
-        private void DeleteAlarmExecute(AlarmItemEventArgs eventArgs)
+        private async void DeleteAlarmExecute(AlarmItemEventArgs eventArgs)
         {
-            _locationAlarmModel.DeleteAsync(eventArgs.Source);
+            await _locationAlarmModel.DeleteAsync(eventArgs.Source).ConfigureAwait(false);
         }
 
         private void EditAlarmExecute(SelectionChangedEventArgs itemClickEventArgs)
         {
-            CurrentAlarm = itemClickEventArgs.AddedItems.First() as GeolocationAlarm;
+            CurrentAlarm = itemClickEventArgs.AddedItems.FirstOrDefault() as GeolocationAlarm;
             _navigationService.NavigateTo(nameof(AlarmSettingsPage), CurrentAlarm, Token.None);
         }
     }

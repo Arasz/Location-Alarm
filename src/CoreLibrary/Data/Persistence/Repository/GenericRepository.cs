@@ -30,7 +30,7 @@ namespace CoreLibrary.Data.Persistence.Repository
         /// <summary>
         /// Path to database 
         /// </summary>
-        protected string DatabasePath => Path.Combine(ApplicationData.Current.LocalFolder.Path, $"{nameof(TEntity)}.db");
+        protected string DatabasePath => Path.Combine(ApplicationData.Current.LocalFolder.Path, $"{typeof(TEntity).Name}.db");
 
         public GenericRepository()
         {
@@ -59,7 +59,7 @@ namespace CoreLibrary.Data.Persistence.Repository
 
         public async Task<IEnumerable<TEntity>> GetAllAsync() => await AsyncConnection.Table<TEntity>()
                     .ToListAsync()
-            .ConfigureAwait(false);
+                    .ConfigureAwait(false);
 
         public async Task<TEntity> GetAsync(int id) => await AsyncConnection.GetAsync<TEntity>(id)
                     .ConfigureAwait(false);

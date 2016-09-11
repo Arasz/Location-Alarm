@@ -1,5 +1,6 @@
 ﻿using CoreLibrary.Data.DataModel.PersistentModel;
 using CoreLibrary.DataModel;
+using System.Collections.Generic;
 using System.Linq;
 using Windows.Devices.Geolocation;
 
@@ -9,7 +10,8 @@ namespace CoreLibrary.Data.Persistence.Mapping
     {
         public GeolocationAlarm Map(Alarm source, GeolocationAlarm destination)
         {
-            destination.ActiveDays = source.ActiveDays.Split(',')
+            destination.ActiveDays = string.IsNullOrEmpty(source.ActiveDays) ? new List<WeekDay>() : source.ActiveDays
+                .Split(',')
                 .Select(name => new WeekDay(name))
                 .ToList();
 

@@ -19,7 +19,7 @@ namespace CoreLibrary.Data.Persistence.Mapping
 
             foreach (var sourceProperty in sourceProperties)
             {
-                var destinationProperty = destinationProperties.FirstOrDefault(info => string.Equals(info.Name, sourceProperty.Name, StringComparison.OrdinalIgnoreCase));
+                var destinationProperty = destinationProperties.FirstOrDefault(info => string.Equals(info.Name, sourceProperty.Name, StringComparison.OrdinalIgnoreCase) && info.PropertyType == sourceProperty.PropertyType);
 
                 destinationProperty?.SetValue(destination, sourceProperty.GetValue(source));
             }
