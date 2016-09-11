@@ -83,17 +83,10 @@
   <ItemGroup>
     <!-- A reference to the entire .Net Framework and Windows SDK are automatically included -->
     <Content Include="FodyWeavers.xml" />
-    <Content Include="Models\Generated\Database.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>Database.cs</LastGenOutput>
-    </Content>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Data\DataModel\AlarmType.cs" />
     <Compile Include="Data\DataModel\PersistentModel\Alarm.cs" />
-    <Compile Include="Data\Persistence\Controller\IPersistenceController.cs" />
-    <Compile Include="Data\Persistence\Controller\PersistenceController.cs" />
-    <Compile Include="Data\Persistence\DataContext\DataContext.cs" />
     <Compile Include="Data\DataModel\WeekDay.cs" />
     <Compile Include="Data\GelocationAlarmRepository.cs" />
     <Compile Include="Data\GeofenceBuilder.cs" />
@@ -101,48 +94,31 @@
     <Compile Include="Data\DataModel\Base\Entity.cs" />
     <Compile Include="Data\DataModel\Base\IEntity.cs" />
     <Compile Include="Data\Persistence\Common\ICrudable.cs" />
-    <Compile Include="Data\Persistence\DataContext\IDataContext.cs" />
-    <Compile Include="Data\Persistence\FIleProvider\DefaultFileProvider.cs" />
-    <Compile Include="Data\Persistence\FIleProvider\IFileProvider.cs" />
-    <Compile Include="Data\Persistence\Identity\IdentityGenerator.cs" />
-    <Compile Include="Data\Persistence\Identity\IIdentityGenerator.cs" />
-    <Compile Include="Data\Persistence\Json\Converters\IdentityGeneratorJsonConverter.cs" />
-    <Compile Include="Data\Persistence\Serializer\DefaultSerializer.cs" />
-    <Compile Include="Data\Persistence\Serializer\ISerializer.cs" />
     <Compile Include="Data\Persistence\Session\ISession.cs" />
     <Compile Include="Data\Persistence\Session\ISessionFactory.cs" />
-    <Compile Include="Data\Persistence\Session\Session.cs" />
-    <Compile Include="Data\Persistence\Session\SessionBase.cs" />
-    <Compile Include="Data\Persistence\Session\SessionFactory.cs" />
-    <Compile Include="Models\Generated\Database.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Database.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Models\PetaPoco.cs" />
     <Compile Include="Service\Geofencing\GeofenceService.cs" />
     <Compile Include="Service\Geolocation\GeolocationService.cs" />
     <Compile Include="Service\Geofencing\IGeofenceService.cs" />
     <Compile Include="Service\Geolocation\IGeolocationService.cs" />
     <Compile Include="Service\Geolocation\IReverseGeolocationService.cs" />
     <Compile Include="Service\Geolocation\ReadableLocationName.cs" />
+    <Compile Include="Data\Persistence\SQLite\SQLite.cs" />
+    <Compile Include="Data\Persistence\SQLite\SQLiteAsync.cs" />
     <Compile Include="StateManagement\IRestorable.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="StateManagement\StateManager.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Models\Generated\PetaPoco.Core.ttinclude" />
-    <None Include="Models\Generated\PetaPoco.Generator.ttinclude" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="Autofac, Version=3.5.0.0, Culture=neutral, PublicKeyToken=17863af14b0044da, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Autofac.3.5.2\lib\portable-net4+sl5+netcore45+wpa81+wp8+MonoAndroid1+MonoTouch1\Autofac.dll</HintPath>
+    <Reference Include="Autofac, Version=4.1.0.0, Culture=neutral, PublicKeyToken=17863af14b0044da, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Autofac.4.1.0\lib\netstandard1.1\Autofac.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Equals, Version=1.5.0.0, Culture=neutral, PublicKeyToken=15432f00798e61a4, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Equals.Fody.1.5.0.0\lib\dotnet\Equals.dll</HintPath>
-      <Private>False</Private>
+    <Reference Include="Equals, Version=1.6.2.0, Culture=neutral, PublicKeyToken=15432f00798e61a4, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Equals.Fody.1.6.2.0\Lib\dotnet\Equals.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Newtonsoft.Json.9.0.1\lib\portable-net45+wp80+win8+wpa81\Newtonsoft.Json.dll</HintPath>
@@ -150,9 +126,18 @@
     </Reference>
     <Reference Include="System.Configuration, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="System.Data, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=AMD64" />
+    <Reference Include="System.Runtime.InteropServices.RuntimeInformation, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\System.Runtime.InteropServices.RuntimeInformation.4.0.0\lib\wpa81\System.Runtime.InteropServices.RuntimeInformation.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Data\Persistence\Operations\" />
+    <SDKReference Include="Microsoft.VCLibs, version=12.0">
+      <Name>Microsoft Visual C++ 2013 Runtime Package for Windows Phone</Name>
+    </SDKReference>
+    <SDKReference Include="SQLite.WP81, Version=3.13.0">
+      <Name>SQLite for Windows Phone 8.1</Name>
+    </SDKReference>
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '12.0' ">
     <VisualStudioVersion>12.0</VisualStudioVersion>
@@ -170,9 +155,9 @@
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
     <Error Condition="!Exists('..\..\packages\Fody.1.29.4\build\dotnet\Fody.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Fody.1.29.4\build\dotnet\Fody.targets'))" />
-    <Error Condition="!Exists('..\..\packages\Equals.Fody.1.5.0.0\build\dotnet\Equals.Fody.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Equals.Fody.1.5.0.0\build\dotnet\Equals.Fody.targets'))" />
+    <Error Condition="!Exists('..\..\packages\Equals.Fody.1.6.2.0\build\dotnet\Equals.Fody.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Equals.Fody.1.6.2.0\build\dotnet\Equals.Fody.targets'))" />
   </Target>
-  <Import Project="..\..\packages\Equals.Fody.1.5.0.0\build\dotnet\Equals.Fody.targets" Condition="Exists('..\..\packages\Equals.Fody.1.5.0.0\build\dotnet\Equals.Fody.targets')" />
+  <Import Project="..\..\packages\Equals.Fody.1.6.2.0\build\dotnet\Equals.Fody.targets" Condition="Exists('..\..\packages\Equals.Fody.1.6.2.0\build\dotnet\Equals.Fody.targets')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
