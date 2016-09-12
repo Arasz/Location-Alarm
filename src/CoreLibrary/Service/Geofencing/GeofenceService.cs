@@ -37,9 +37,9 @@ namespace CoreLibrary.Service.Geofencing
         public void RemoveGeofence(string id)
         {
             var geofence = ReadGeofence(id);
-            if (geofence != null) RemoveGeofence(geofence);
-
-            throw new ArgumentException($"Geofence of {id} id isn't registered");
+            if (geofence == null)
+                throw new ArgumentException($"Geofence of {id} id isn't registered");
+            RemoveGeofence(geofence);
         }
 
         public void ReplaceGeofence(string id, Geofence geofence)
