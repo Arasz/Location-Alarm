@@ -18,11 +18,14 @@ namespace LocationAlarm.ViewModel
     public class MainViewModel : ViewModelBaseEx
     {
         private readonly LocationAlarmModel _locationAlarmModel;
+
         public INotifyCollectionChanged AlarmsCollection => _locationAlarmModel.GeolocationAlarms;
 
         public ICommand EditAlarmCommand { get; private set; }
 
         public int SelectedAlarm { get; set; }
+
+        public bool WasDataLoaded { get; private set; }
 
         public MainViewModel(LocationAlarmModel locationAlarmModel, NavigationServiceWithToken navigationService) : base(navigationService)
         {
@@ -45,6 +48,9 @@ namespace LocationAlarm.ViewModel
         [OnCommand("LoadDataCommand")]
         public async void LoadData()
         {
+            if (WasDataLoaded)
+                return;
+            WasDataLoaded = true;
             await _locationAlarmModel.ReloadDataAsync().ConfigureAwait(true);
         }
 

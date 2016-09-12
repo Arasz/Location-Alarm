@@ -2,7 +2,6 @@
 using CoreLibrary.DataModel;
 using CoreLibrary.Service;
 using System.Collections.ObjectModel;
-using System.Collections.Specialized;
 using System.Threading.Tasks;
 
 namespace LocationAlarm.Model
@@ -13,40 +12,38 @@ namespace LocationAlarm.Model
     public class LocationAlarmModel
     {
         private readonly IGeofenceService _geofenceService;
-        private readonly GelocationAlarmRepository _repository;
-        private ObservableCollection<GeolocationAlarm> _alarms;
 
-        public INotifyCollectionChanged GeolocationAlarms => _alarms;
+        private readonly IRepository<GeolocationAlarm> _repository;
+
+        public ObservableCollection<GeolocationAlarm> GeolocationAlarms { get; private set; }
 
         public GeolocationAlarm NewAlarm => new GeolocationAlarm();
 
-        public LocationAlarmModel(GelocationAlarmRepository repository, IGeofenceService geofenceService)
+        public LocationAlarmModel(IRepository<GeolocationAlarm> repository, IGeofenceService geofenceService)
         {
             _repository = repository;
             _geofenceService = geofenceService;
-            _alarms = new ObservableCollection<GeolocationAlarm>();
+            GeolocationAlarms = new ObservableCollection<GeolocationAlarm>();
         }
 
         public async Task DeleteAsync(GeolocationAlarm alarm)
         {
-            _alarms.Remove(alarm);
+            GeolocationAlarms.Remove(alarm);
             await _repository.DeleteAsync(alarm).ConfigureAwait(false);
             _geofenceService.RemoveGeofence(alarm.Name);
         }
 
         public async Task ReloadDataAsync()
         {
-            _alarms.Clear();
+            GeolocationAlarms.Clear();
             var savedAlarms = await _repository.GetAllAsync().ConfigureAwait(true);
             foreach (var geolocationAlarm in savedAlarms)
-            {
-                _alarms.Add(geolocationAlarm);
-            }
+                GeolocationAlarms.Add(geolocationAlarm);
         }
 
         public async Task SaveAsync(GeolocationAlarm alarm)
         {
-            _alarms.Add(alarm);
+            GeolocationAlarms.Add(alarm);
             await _repository.InsertAsync(alarm).ConfigureAwait(false);
             _geofenceService.RegisterGeofence(alarm.Geofence);
         }
