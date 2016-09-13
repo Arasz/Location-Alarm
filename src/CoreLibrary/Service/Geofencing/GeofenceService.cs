@@ -30,8 +30,10 @@ namespace CoreLibrary.Service.Geofencing
 
         public void RemoveGeofence(Geofence geofence)
         {
-            if (IsGeofenceRegistered(geofence.Id))
-                _geofenceMonitor.Geofences.Remove(geofence);
+            if (!IsGeofenceRegistered(geofence.Id))
+                return;
+            var toRemove = ReadGeofence(geofence.Id);
+            _geofenceMonitor.Geofences.Remove(toRemove);
         }
 
         public void RemoveGeofence(string id)

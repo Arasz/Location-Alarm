@@ -48,10 +48,22 @@ namespace LocationAlarm.Model
             _geofenceService.RegisterGeofence(alarm.Geofence);
         }
 
-        public async Task UpdateAsync(GeolocationAlarm alarm)
+        public async Task ToggleAlarmAsync(GeolocationAlarm alarm)
         {
             await _repository.UpdateAsync(alarm).ConfigureAwait(false);
 
+            if (alarm.IsActive)
+                _geofenceService.RegisterGeofence(alarm.Geofence);
+            else
+                _geofenceService.RemoveGeofence(alarm.Geofence);
+        }
+
+        public async Task UpdateAsync(GeolocationAlarm alarm)
+        {
+            if (!GeolocationAlarms.Contains(alarm))
+                return;
+
+            await _repository.UpdateAsync(alarm).ConfigureAwait(false);
             _geofenceService.ReplaceGeofence(alarm.Name, alarm.Geofence);
         }
     }

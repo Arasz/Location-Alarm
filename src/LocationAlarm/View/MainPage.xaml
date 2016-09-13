@@ -29,6 +29,9 @@
                         <core:EventTriggerBehavior EventName="SwypeToDeleteCompleted">
                             <core:InvokeCommandAction Command="{Binding ElementName=LayoutRoot, Path=DataContext.DeleteAlarmCommand}" />
                         </core:EventTriggerBehavior>
+                        <core:EventTriggerBehavior EventName="SwitchToggled">
+                            <core:InvokeCommandAction Command="{Binding ElementName=LayoutRoot, Path=DataContext.AlarmEnabledChangedCommand}" />
+                        </core:EventTriggerBehavior>
                     </interactivity:Interaction.Behaviors>
                 </alarmItem:AlarmItemControl>
             </DataTemplate>
