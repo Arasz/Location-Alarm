@@ -43,7 +43,7 @@ namespace LocationAlarm.Tasks
 
             var registration = backgroundTaskBuilder.Register();
 
-            SubcribeBackgroundTaskEvents(registration);
+            SubscribeBackgroundTaskEvents(registration);
         }
 
         public void UnregisterTask(string taskName)
@@ -82,7 +82,7 @@ namespace LocationAlarm.Tasks
             OnTaskProgress();
         }
 
-        private void SubcribeBackgroundTaskEvents(IBackgroundTaskRegistration registration)
+        private void SubscribeBackgroundTaskEvents(IBackgroundTaskRegistration registration)
         {
             registration.Completed += OnRegisteredTaskCompleted;
             registration.Progress += OnRegisteredTaskProgress;

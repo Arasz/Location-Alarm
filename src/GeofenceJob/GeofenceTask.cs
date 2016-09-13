@@ -1,4 +1,6 @@
-﻿using CoreLibrary.Service;
+﻿using CoreLibrary.Data.DataModel.PersistentModel;
+using CoreLibrary.Data.Persistence.Repository;
+using CoreLibrary.Service;
 using System.Collections.Generic;
 using System.Linq;
 using Windows.ApplicationModel.Background;
@@ -10,6 +12,7 @@ namespace BackgroundTask
 {
     public sealed class GeofenceTask : IGeofenceTask
     {
+        private IRepository<Alarm> _alarmsRepository;
         private GeofenceMonitor _geofenceMonitor;
         private IGeofenceService _geofenceService;
         private ToastNotifier _toastNotifier;
