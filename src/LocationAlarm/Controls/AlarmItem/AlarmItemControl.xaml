@@ -75,8 +75,10 @@
                        VerticalAlignment="Center" Style="{StaticResource AlarmControlTextBlockStyle}" HorizontalAlignment="Stretch" TextWrapping="Wrap" />
         </Grid>
 
-        <ToggleSwitch Grid.Row="2"  Grid.Column="1"  IsOn="{Binding IsActive}" VerticalAlignment="Center"
-                           HorizontalAlignment="Stretch"  OffContent="" OnContent="" />
+        <ToggleSwitch Grid.Row="2"  Grid.Column="1"  IsOn="{Binding IsActive, Mode=TwoWay}"
+                      VerticalAlignment="Center"
+                      HorizontalAlignment="Stretch"  OffContent="" OnContent=""
+                      Toggled="ToggleSwitch_OnToggled" />
 
         <Line Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3"  Stretch="Uniform" Stroke="White" StrokeThickness="1" Height="10" HorizontalAlignment="Stretch"
               VerticalAlignment="Bottom" X1="0" Y1="0" X2="1000" Y2="0"

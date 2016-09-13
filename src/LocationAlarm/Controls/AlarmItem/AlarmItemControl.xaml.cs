@@ -2,7 +2,7 @@
 using System;
 using System.ComponentModel;
 using Windows.Foundation;
-using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 
@@ -10,7 +10,7 @@ using Windows.UI.Xaml.Media;
 
 namespace LocationAlarm.Controls.AlarmItem
 {
-    public sealed partial class AlarmItemControl : UserControl
+    public sealed partial class AlarmItemControl
     {
         private double _deltaXSum = 0;
         private Point _endPosition;
@@ -19,6 +19,8 @@ namespace LocationAlarm.Controls.AlarmItem
         private Point _startPosition;
 
         public event PropertyChangedEventHandler PropertyChanged;
+
+        public event EventHandler<AlarmItemEventArgs> SwitchToggled;
 
         public event EventHandler<AlarmItemEventArgs> SwypeToDeleteCompleted;
 
@@ -63,9 +65,10 @@ namespace LocationAlarm.Controls.AlarmItem
             _startPosition = e.Position;
         }
 
-        private void OnSwypeToDeleteCompleted()
-        {
-            SwypeToDeleteCompleted?.Invoke(this, new AlarmItemEventArgs(DataContext as GeolocationAlarm));
-        }
+        private void OnSwitchToggled(GeolocationAlarm model) => SwitchToggled?.Invoke(this, new AlarmItemEventArgs(model));
+
+        private void OnSwypeToDeleteCompleted() => SwypeToDeleteCompleted?.Invoke(this, new AlarmItemEventArgs(DataContext as GeolocationAlarm));
+
+        private void ToggleSwitch_OnToggled(object sender, RoutedEventArgs e) => OnSwitchToggled(DataContext as GeolocationAlarm);
     }
 }

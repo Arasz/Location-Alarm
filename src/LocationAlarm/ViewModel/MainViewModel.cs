@@ -85,5 +85,12 @@ namespace LocationAlarm.ViewModel
                 return;
             _navigationService.NavigateTo(nameof(AlarmSettingsPage), CurrentAlarm, Token.None);
         }
+
+        [OnCommand("AlarmEnabledChangedCommand")]
+        private async void IsAlarmEnabledChangedCommnad(AlarmItemEventArgs eventArgs)
+        {
+            var alarm = eventArgs.Source;
+            await _locationAlarmModel.ToggleAlarmAsync(alarm).ConfigureAwait(false);
+        }
     }
 }
