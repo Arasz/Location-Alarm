@@ -78,9 +78,9 @@ namespace LocationAlarm.ViewModel
             await _locationAlarmModel.DeleteAsync(eventArgs.Source).ConfigureAwait(false);
         }
 
-        private void EditAlarmExecute(SelectionChangedEventArgs itemClickEventArgs)
+        private void EditAlarmExecute(SelectionChangedEventArgs selectionChangedEventArgs)
         {
-            CurrentAlarm = itemClickEventArgs.AddedItems.FirstOrDefault() as GeolocationAlarm;
+            CurrentAlarm = selectionChangedEventArgs.AddedItems.FirstOrDefault() as GeolocationAlarm;
             if (CurrentAlarm == null)
                 return;
             _navigationService.NavigateTo(nameof(AlarmSettingsPage), CurrentAlarm, Token.None);
