@@ -1,5 +1,4 @@
 ﻿using CoreLibrary.Data.DataModel.PersistentModel;
-using System;
 using System.Collections.Generic;
 using Windows.Devices.Geolocation.Geofencing;
 using Windows.UI.Notifications;
@@ -11,9 +10,9 @@ namespace BackgroundTask.Toast
     internal sealed class AlarmsNotificationService : IAlarmNotificationService
     {
         private readonly ToastNotifier _toastNotifier;
-        private readonly IEnumerable<Tuple<GeofenceStateChangeReport, Alarm>> _triggeredAlarms;
+        private readonly IEnumerable<TriggeredAlarm> _triggeredAlarms;
 
-        public AlarmsNotificationService(ToastNotifier toastNotifier, IEnumerable<Tuple<GeofenceStateChangeReport, Alarm>> triggeredAlarms)
+        public AlarmsNotificationService(ToastNotifier toastNotifier, IEnumerable<TriggeredAlarm> triggeredAlarms)
         {
             _toastNotifier = toastNotifier;
             _triggeredAlarms = triggeredAlarms;
@@ -22,7 +21,7 @@ namespace BackgroundTask.Toast
         public void Notify()
         {
             foreach (var triggeredAlarm in _triggeredAlarms)
-                _toastNotifier.Show(MakeToast(triggeredAlarm.Item1, triggeredAlarm.Item2));
+                _toastNotifier.Show(MakeToast(triggeredAlarm.Report, triggeredAlarm.Alarm));
         }
 
         private ToastNotification MakeToast(GeofenceStateChangeReport report, Alarm alarm)

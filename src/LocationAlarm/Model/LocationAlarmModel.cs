@@ -1,6 +1,8 @@
 ﻿using CoreLibrary.Data.Persistence.Repository;
 using CoreLibrary.DataModel;
 using CoreLibrary.Service;
+using LocationAlarm.Tasks;
+using System;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 
@@ -11,18 +13,20 @@ namespace LocationAlarm.Model
     /// </summary>
     public class LocationAlarmModel
     {
+        private readonly BackgroundTaskManager _backgroundTaskManager;
         private readonly IGeofenceService _geofenceService;
-
         private readonly IRepository<GeolocationAlarm> _repository;
 
         public ObservableCollection<GeolocationAlarm> GeolocationAlarms { get; private set; }
 
         public GeolocationAlarm NewAlarm => new GeolocationAlarm();
 
-        public LocationAlarmModel(IRepository<GeolocationAlarm> repository, IGeofenceService geofenceService)
+        public LocationAlarmModel(IRepository<GeolocationAlarm> repository, IGeofenceService geofenceService, BackgroundTaskManager backgroundTaskManager)
         {
             _repository = repository;
             _geofenceService = geofenceService;
+            _backgroundTaskManager = backgroundTaskManager;
+            backgroundTaskManager.TaskCompleted += BackgroundTaskManagerOnTaskCompleted;
             GeolocationAlarms = new ObservableCollection<GeolocationAlarm>();
         }
 
@@ -65,6 +69,11 @@ namespace LocationAlarm.Model
 
             await _repository.UpdateAsync(alarm).ConfigureAwait(false);
             _geofenceService.ReplaceGeofence(alarm.Name, alarm.Geofence);
+        }
+
+        private async void BackgroundTaskManagerOnTaskCompleted(object sender, EventArgs eventArgs)
+        {
+            await ReloadDataAsync().ConfigureAwait(false);
         }
     }
 }
