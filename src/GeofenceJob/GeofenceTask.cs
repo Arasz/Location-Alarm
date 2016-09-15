@@ -1,11 +1,15 @@
-﻿using CoreLibrary.Data.DataModel.PersistentModel;
+﻿using BackgroundTask.Toast;
+using CoreLibrary.Data;
+using CoreLibrary.Data.DataModel.PersistentModel;
 using CoreLibrary.Data.Persistence.Repository;
 using CoreLibrary.Service;
+using CoreLibrary.Service.Geofencing;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Windows.ApplicationModel.Background;
 using Windows.Devices.Geolocation.Geofencing;
-using Windows.Storage;
 using Windows.UI.Notifications;
 
 namespace BackgroundTask
@@ -13,61 +17,66 @@ namespace BackgroundTask
     public sealed class GeofenceTask : IGeofenceTask
     {
         private IRepository<Alarm> _alarmsRepository;
-        private GeofenceMonitor _geofenceMonitor;
         private IGeofenceService _geofenceService;
         private ToastNotifier _toastNotifier;
 
         public GeofenceTask()
         {
             _toastNotifier = ToastNotificationManager.CreateToastNotifier();
-            _geofenceMonitor = GeofenceMonitor.Current;
+            _geofenceService = new GeofenceService();
+            _alarmsRepository = new GenericRepository<Alarm>();
         }
 
-        public void Run(IBackgroundTaskInstance instance)
+        public async void Run(IBackgroundTaskInstance instance)
         {
-            var reports = _geofenceMonitor.ReadReports();
+            var reports = _geofenceService.GeofenceStateChangeReports;
 
-            var selectedReports = FilterReports(reports);
+            var alarms = await FindActiveAlarmsAsync().ConfigureAwait(false);
 
-            _toastNotifier.Show(CreateToast(selectedReports));
+            var triggeredAlarms = GetTriggeredAlarmsAsync(reports, alarms).ToList();
+
+            var notificationService = new AlarmsNotificationService(_toastNotifier, triggeredAlarms);
+
+            notificationService.Notify();
+
+            await ChangeAlarmsStateAsync(triggeredAlarms.Select(tuple => tuple.Item2)).ConfigureAwait(false);
         }
 
-        private ToastNotification CreateToast(IEnumerable<GeofenceStateChangeReport> selectedReports)
+        private async Task ChangeAlarmsStateAsync(IEnumerable<Alarm> alarms)
         {
-            var selectedReport = selectedReports.First();
+            var alarmsToDisable = alarms.Where(alarm => string.IsNullOrEmpty(alarm.ActiveDays));
+            await _alarmsRepository.UpdateAllAsync(alarmsToDisable).ConfigureAwait(false);
 
-            var toastContent = ToastNotificationManager.GetTemplateContent(ToastTemplateType.ToastText02);
-
-            var TextNodes = toastContent.GetElementsByTagName("text");
-
-            if (selectedReport.NewState == GeofenceState.Entered)
-            {
-                TextNodes[0].AppendChild(toastContent.CreateTextNode("You are pretty close to your room"));
-                TextNodes[1].AppendChild(toastContent.CreateTextNode(selectedReport.Geofence.Id));
-            }
-            else if (selectedReport.NewState == GeofenceState.Exited)
-            {
-                TextNodes[0].AppendChild(toastContent.CreateTextNode("You are pretty close to your room"));
-                TextNodes[1].AppendChild(toastContent.CreateTextNode(selectedReport.Geofence.Id));
-            }
-
-            var settings = ApplicationData.Current.LocalSettings;
-
-            if (settings.Values.ContainsKey("Status"))
-            {
-                settings.Values["Status"] = selectedReport.NewState;
-            }
-            else
-            {
-                settings.Values.Add(new KeyValuePair<string, object>("Status", selectedReport.NewState.ToString()));
-            }
-
-            return new ToastNotification(toastContent);
+            foreach (var alarm in alarmsToDisable)
+                _geofenceService.RemoveGeofence(alarm.Name);
         }
 
-        private IEnumerable<GeofenceStateChangeReport> FilterReports(IEnumerable<GeofenceStateChangeReport> reports)
+        private async Task<IEnumerable<Alarm>> FindActiveAlarmsAsync()
         {
-            return null;
+            var activeAlarms = await _alarmsRepository.FindAsync(alarm => alarm.IsActive).ConfigureAwait(false);
+            return activeAlarms.Where(IsActiveToday);
+        }
+
+        private IEnumerable<Tuple<GeofenceStateChangeReport, Alarm>> GetTriggeredAlarmsAsync(IEnumerable<GeofenceStateChangeReport> reports, IEnumerable<Alarm> alarms)
+        {
+            var activeGeofences = reports
+                .Where(report => report.NewState == GeofenceState.Entered)
+                .Join(alarms, report => report.Geofence.Id,
+                      alarm => alarm.Name,
+                     (report, alarm) => new Tuple<GeofenceStateChangeReport, Alarm>(report, alarm));
+
+            return activeGeofences;
+        }
+
+        private bool IsActiveToday(Alarm alarm)
+        {
+            var activeDays = alarm.ActiveDays;
+            //One time alarm (shot and delete)
+            if (string.IsNullOrEmpty(activeDays))
+                return true;
+
+            var parsedDays = activeDays.Split(',').Select(dayName => new WeekDay(dayName).Day);
+            return parsedDays.Contains(DateTime.Today.DayOfWeek);
         }
     }
 }

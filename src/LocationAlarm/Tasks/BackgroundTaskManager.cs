@@ -13,10 +13,6 @@ namespace LocationAlarm.Tasks
 
         public BackgroundAccessStatus BackgroundAccessStatus { get; private set; }
 
-        public BackgroundTaskManager()
-        {
-        }
-
         public IBackgroundTaskRegistration FetchBackgroundTaskRegistration(string taskName)
             => BackgroundTaskRegistration.AllTasks.Values.FirstOrDefault(registration => registration.Name == taskName);
 

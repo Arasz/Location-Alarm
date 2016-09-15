@@ -89,6 +89,8 @@
     <Compile Include="GeofenceTask.cs" />
     <Compile Include="IGeofenceTask.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Toast\AlarmsNotificationService.cs" />
+    <Compile Include="Toast\IAlarmNotificationService.cs" />
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '12.0' ">
     <VisualStudioVersion>12.0</VisualStudioVersion>
