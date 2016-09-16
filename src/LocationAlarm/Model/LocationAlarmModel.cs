@@ -94,6 +94,7 @@ namespace LocationAlarm.Model
 
         private void ReplaceAlram(GeolocationAlarm replacement, GeolocationAlarm replaced)
         {
+            replacement.Id = replaced.Id;
             var index = GeolocationAlarms.IndexOf(replaced);
             GeolocationAlarms.RemoveAt(index);
             GeolocationAlarms.Insert(index, replacement);
