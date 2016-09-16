@@ -62,7 +62,11 @@ namespace BackgroundTask
 
         private async Task ChangeAlarmsStateAsync(IEnumerable<Alarm> alarms)
         {
-            var alarmsToDisable = alarms.Where(alarm => string.IsNullOrEmpty(alarm.ActiveDays));
+            var alarmsToDisable = alarms.Where(alarm => string.IsNullOrEmpty(alarm.ActiveDays)).ToArray();
+
+            foreach (var alarm in alarmsToDisable)
+                alarm.IsActive = false;
+
             await _alarmsRepository.UpdateAllAsync(alarmsToDisable).ConfigureAwait(false);
         }
 

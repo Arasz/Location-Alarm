@@ -76,7 +76,7 @@ namespace LocationAlarm.Model
         private async void BackgroundTaskManagerOnTaskCompleted(object sender, EventArgs eventArgs)
         {
             await DispatcherHelper.UIDispatcher.RunAsync(CoreDispatcherPriority.Normal,
-                async () => await ReloadDataAsync().ConfigureAwait(false));
+               async () => await ReloadDataAsync().ConfigureAwait(false));
         }
     }
 }
