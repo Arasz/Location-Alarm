@@ -1,8 +1,12 @@
 ﻿using CoreLibrary.Data.Persistence.Repository;
 using CoreLibrary.DataModel;
 using CoreLibrary.Service;
+using GalaSoft.MvvmLight.Threading;
+using LocationAlarm.Tasks;
+using System;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
+using Windows.UI.Core;
 
 namespace LocationAlarm.Model
 {
@@ -11,18 +15,20 @@ namespace LocationAlarm.Model
     /// </summary>
     public class LocationAlarmModel
     {
+        private readonly BackgroundTaskManager _backgroundTaskManager;
         private readonly IGeofenceService _geofenceService;
-
         private readonly IRepository<GeolocationAlarm> _repository;
 
         public ObservableCollection<GeolocationAlarm> GeolocationAlarms { get; private set; }
 
         public GeolocationAlarm NewAlarm => new GeolocationAlarm();
 
-        public LocationAlarmModel(IRepository<GeolocationAlarm> repository, IGeofenceService geofenceService)
+        public LocationAlarmModel(IRepository<GeolocationAlarm> repository, IGeofenceService geofenceService, BackgroundTaskManager backgroundTaskManager)
         {
             _repository = repository;
             _geofenceService = geofenceService;
+            _backgroundTaskManager = backgroundTaskManager;
+            _backgroundTaskManager.TaskCompleted += BackgroundTaskManagerOnTaskCompleted;
             GeolocationAlarms = new ObservableCollection<GeolocationAlarm>();
         }
 
@@ -65,6 +71,12 @@ namespace LocationAlarm.Model
 
             await _repository.UpdateAsync(alarm).ConfigureAwait(false);
             _geofenceService.ReplaceGeofence(alarm.Name, alarm.Geofence);
+        }
+
+        private async void BackgroundTaskManagerOnTaskCompleted(object sender, EventArgs eventArgs)
+        {
+            await DispatcherHelper.UIDispatcher.RunAsync(CoreDispatcherPriority.Normal,
+               async () => await ReloadDataAsync().ConfigureAwait(false));
         }
     }
 }

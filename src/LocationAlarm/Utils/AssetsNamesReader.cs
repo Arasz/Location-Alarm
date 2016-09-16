@@ -13,10 +13,10 @@ namespace LocationAlarm.Utils
 
         public async Task<IEnumerable<string>> ReadAsync(string assetsFolderName)
         {
-            var soundsFolder = await StorageFolder.GetFolderFromPathAsync(AssetsPath + assetsFolderName);
-            var soundsList = await soundsFolder.GetFilesAsync();
+            var storageFolder = await StorageFolder.GetFolderFromPathAsync(AssetsPath + assetsFolderName);
+            var files = await storageFolder.GetFilesAsync();
 
-            return soundsList.Select(file => file.Name).ToList();
+            return files.Select(file => file.Name).ToList();
         }
     }
 }

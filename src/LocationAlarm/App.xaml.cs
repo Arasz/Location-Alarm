@@ -1,5 +1,6 @@
 ﻿using Autofac;
 using Autofac.Core.Activators.Reflection;
+using BackgroundTask;
 using CoreLibrary.Data.DataModel.PersistentModel;
 using CoreLibrary.Data.Persistence.Repository;
 using CoreLibrary.DataModel;
@@ -11,6 +12,7 @@ using GalaSoft.MvvmLight.Views;
 using LocationAlarm.Location.LocationAutosuggestion;
 using LocationAlarm.Model;
 using LocationAlarm.Navigation;
+using LocationAlarm.Tasks;
 using LocationAlarm.Utils;
 using LocationAlarm.View;
 using LocationAlarm.ViewModel;
@@ -124,6 +126,9 @@ namespace ArrivalAlarm
 
             //Configure dispatcher
             DispatcherHelper.Initialize();
+
+            var backgroundTaskManager = Container.Resolve<BackgroundTaskManager>();
+            backgroundTaskManager.RegisterBackgroundTaskAsync(typeof(GeofenceTask));
         }
 
         private static void InitializeIocContainer()
@@ -152,6 +157,10 @@ namespace ArrivalAlarm
             builder.RegisterType<GelocationAlarmRepository>()
                 .AsSelf()
                 .As<IRepository<GeolocationAlarm>>()
+                .SingleInstance();
+
+            builder.RegisterType<BackgroundTaskManager>()
+                .AsSelf()
                 .SingleInstance();
 
             builder.RegisterType<AssetsNamesReader>()

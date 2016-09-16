@@ -9,7 +9,7 @@ namespace LocationAlarm.Tasks
     {
         public event EventHandler TaskCompleted;
 
-        public event EventHandler TaskProgress;
+        public event EventHandler<int> TaskProgress;
 
         public BackgroundAccessStatus BackgroundAccessStatus { get; private set; }
 
@@ -18,12 +18,9 @@ namespace LocationAlarm.Tasks
         }
 
         public IBackgroundTaskRegistration FetchBackgroundTaskRegistration(string taskName)
-            => BackgroundTaskRegistration.AllTasks.Values.FirstOrDefault(registration => registration.Name == taskName);
+                    => BackgroundTaskRegistration.AllTasks.Values.FirstOrDefault(registration => registration.Name == taskName);
 
-        public async Task RegisterBackgroundTaskAsync(Type taskType)
-        {
-            await RegisterBackgroundTaskAsync(taskType.Name, taskType.FullName).ConfigureAwait(false);
-        }
+        public async Task RegisterBackgroundTaskAsync(Type taskType) => await RegisterBackgroundTaskAsync(taskType.Name, taskType.FullName).ConfigureAwait(false);
 
         public async Task RegisterBackgroundTaskAsync(string taskName, string taskEntryPoint)
         {
@@ -55,16 +52,6 @@ namespace LocationAlarm.Tasks
             taskToUnregister?.Unregister(true);
         }
 
-        protected virtual void OnTaskCompleted()
-        {
-            TaskCompleted?.Invoke(this, EventArgs.Empty);
-        }
-
-        protected virtual void OnTaskProgress()
-        {
-            TaskProgress?.Invoke(this, EventArgs.Empty);
-        }
-
         private bool IsTaskRegistered(string taskName)
         {
             var registeredTask = FetchBackgroundTaskRegistration(taskName);
@@ -72,15 +59,13 @@ namespace LocationAlarm.Tasks
             return registeredTask != null;
         }
 
-        private void OnRegisteredTaskCompleted(BackgroundTaskRegistration sender, BackgroundTaskCompletedEventArgs args)
-        {
-            OnTaskCompleted();
-        }
+        private void OnRegisteredTaskCompleted(BackgroundTaskRegistration sender, BackgroundTaskCompletedEventArgs args) => OnTaskCompleted();
 
-        private void OnRegisteredTaskProgress(BackgroundTaskRegistration sender, BackgroundTaskProgressEventArgs args)
-        {
-            OnTaskProgress();
-        }
+        private void OnRegisteredTaskProgress(BackgroundTaskRegistration sender, BackgroundTaskProgressEventArgs args) => OnTaskProgress((int)args.Progress);
+
+        private void OnTaskCompleted() => TaskCompleted?.Invoke(this, EventArgs.Empty);
+
+        private void OnTaskProgress(int progress) => TaskProgress?.Invoke(this, progress);
 
         private void SubscribeBackgroundTaskEvents(IBackgroundTaskRegistration registration)
         {

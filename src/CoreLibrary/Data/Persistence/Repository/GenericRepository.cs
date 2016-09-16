@@ -34,7 +34,7 @@ namespace CoreLibrary.Data.Persistence.Repository
 
         public GenericRepository()
         {
-            CreateTableAsync();
+            CreateTable();
         }
 
         public async Task DeleteAllAsync() => await AsyncConnection
@@ -75,6 +75,8 @@ namespace CoreLibrary.Data.Persistence.Repository
 
         public async Task<int> UpdateAsync(TEntity entity) => await AsyncConnection.UpdateAsync(entity)
             .ConfigureAwait(false);
+
+        protected void CreateTable() => Connection.CreateTable<TEntity>();
 
         /// <summary>
         /// Creates table for <typeparamref name="TEntity"/> 
