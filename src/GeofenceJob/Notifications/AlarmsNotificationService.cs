@@ -1,4 +1,6 @@
-﻿using CoreLibrary.Data.DataModel.PersistentModel;
+﻿using BackgroundTask.Notifications.ToastTemplate;
+using CoreLibrary.Data.DataModel;
+using CoreLibrary.Data.DataModel.PersistentModel;
 using System.Collections.Generic;
 using Windows.Devices.Geolocation.Geofencing;
 using Windows.UI.Notifications;
@@ -26,14 +28,9 @@ namespace BackgroundTask.Toast
 
         private ToastNotification MakeToast(GeofenceStateChangeReport report, Alarm alarm)
         {
-            var toastContent = ToastNotificationManager.GetTemplateContent(ToastTemplateType.ToastText02);
+            var tost = new SimpleToast("You have entered location", alarm.Name, alarm.AlarmType == AlarmType.Sound ? alarm.AlarmSound : null);
 
-            var textNodes = toastContent.GetElementsByTagName("text");
-
-            textNodes[0].AppendChild(toastContent.CreateTextNode("You have entered location "));
-            textNodes[1].AppendChild(toastContent.CreateTextNode(alarm.Name));
-
-            return new ToastNotification(toastContent);
+            return new ToastNotification(tost.ToastBlueprint);
         }
     }
 }

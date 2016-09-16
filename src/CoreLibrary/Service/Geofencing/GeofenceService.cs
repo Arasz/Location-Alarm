@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using Windows.Devices.Geolocation.Geofencing;
 
@@ -40,7 +39,7 @@ namespace CoreLibrary.Service.Geofencing
         {
             var geofence = ReadGeofence(id);
             if (geofence == null)
-                throw new ArgumentException($"Geofence of {id} id isn't registered");
+                return;
             RemoveGeofence(geofence);
         }
 

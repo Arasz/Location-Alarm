@@ -56,8 +56,8 @@ namespace BackgroundTask
 
             await ChangeAlarmsStateAsync(triggeredAlarms.Select(triggeredAlarm => triggeredAlarm.Alarm)).ConfigureAwait(false);
 
-            _deferral.Complete();
             taskInstance.Progress = 100;
+            _deferral.Complete();
         }
 
         private async Task ChangeAlarmsStateAsync(IEnumerable<Alarm> alarms)
