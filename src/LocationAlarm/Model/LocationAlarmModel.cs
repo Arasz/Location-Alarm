@@ -5,6 +5,7 @@ using GalaSoft.MvvmLight.Threading;
 using LocationAlarm.Tasks;
 using System;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Threading.Tasks;
 using Windows.UI.Core;
 
@@ -49,9 +50,14 @@ namespace LocationAlarm.Model
 
         public async Task SaveAsync(GeolocationAlarm alarm)
         {
-            GeolocationAlarms.Add(alarm);
-            await _repository.InsertAsync(alarm).ConfigureAwait(false);
-            _geofenceService.RegisterGeofence(alarm.Geofence);
+            var notUniqueAlarm = GeolocationAlarms.FirstOrDefault(geolocationAlarm => geolocationAlarm.Name == alarm.Name);
+            if (notUniqueAlarm == null)
+                await InsertAsync(alarm).ConfigureAwait(false);
+            else
+            {
+                ReplaceAlram(alarm, notUniqueAlarm);
+                await UpdateAsync(alarm).ConfigureAwait(false);
+            }
         }
 
         public async Task ToggleAlarmAsync(GeolocationAlarm alarm)
@@ -77,6 +83,20 @@ namespace LocationAlarm.Model
         {
             await DispatcherHelper.UIDispatcher.RunAsync(CoreDispatcherPriority.Normal,
                async () => await ReloadDataAsync().ConfigureAwait(false));
+        }
+
+        private async Task InsertAsync(GeolocationAlarm alarm)
+        {
+            GeolocationAlarms.Add(alarm);
+            await _repository.InsertAsync(alarm).ConfigureAwait(false);
+            _geofenceService.RegisterGeofence(alarm.Geofence);
+        }
+
+        private void ReplaceAlram(GeolocationAlarm replacement, GeolocationAlarm replaced)
+        {
+            var index = GeolocationAlarms.IndexOf(replaced);
+            GeolocationAlarms.RemoveAt(index);
+            GeolocationAlarms.Insert(index, replacement);
         }
     }
 }
