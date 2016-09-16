@@ -1,10 +1,12 @@
 ﻿using CoreLibrary.Data.Persistence.Repository;
 using CoreLibrary.DataModel;
 using CoreLibrary.Service;
+using GalaSoft.MvvmLight.Threading;
 using LocationAlarm.Tasks;
 using System;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
+using Windows.UI.Core;
 
 namespace LocationAlarm.Model
 {
@@ -26,7 +28,7 @@ namespace LocationAlarm.Model
             _repository = repository;
             _geofenceService = geofenceService;
             _backgroundTaskManager = backgroundTaskManager;
-            backgroundTaskManager.TaskCompleted += BackgroundTaskManagerOnTaskCompleted;
+            _backgroundTaskManager.TaskCompleted += BackgroundTaskManagerOnTaskCompleted;
             GeolocationAlarms = new ObservableCollection<GeolocationAlarm>();
         }
 
@@ -73,7 +75,8 @@ namespace LocationAlarm.Model
 
         private async void BackgroundTaskManagerOnTaskCompleted(object sender, EventArgs eventArgs)
         {
-            await ReloadDataAsync().ConfigureAwait(false);
+            await DispatcherHelper.UIDispatcher.RunAsync(CoreDispatcherPriority.Normal,
+                async () => await ReloadDataAsync().ConfigureAwait(false));
         }
     }
 }
