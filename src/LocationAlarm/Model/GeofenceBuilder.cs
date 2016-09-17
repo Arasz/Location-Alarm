@@ -123,7 +123,7 @@ namespace LocationAlarm.Model
         {
             _startTime = DateTimeOffset.Now;
             _duration = TimeSpan.FromSeconds(0); // will never expire
-            _dwellTime = TimeSpan.FromSeconds(30); // for test only
+            _dwellTime = TimeSpan.FromSeconds(1); // for test only
             _monitoredStates = MonitoredGeofenceStates.Entered | MonitoredGeofenceStates.Removed;
             return this;
         }

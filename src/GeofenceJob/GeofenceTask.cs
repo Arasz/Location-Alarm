@@ -64,6 +64,9 @@ namespace BackgroundTask
         {
             var alarmsToDisable = alarms.Where(alarm => string.IsNullOrEmpty(alarm.ActiveDays)).ToArray();
 
+            if (!alarmsToDisable.Any())
+                return;
+
             foreach (var alarm in alarmsToDisable)
                 alarm.IsActive = false;
 

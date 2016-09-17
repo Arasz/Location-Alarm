@@ -19,6 +19,11 @@ namespace CoreLibrary.Service
         IReadOnlyList<GeofenceStateChangeReport> GeofenceStateChangeReports { get; }
 
         /// <summary>
+        /// Monitor status 
+        /// </summary>
+        GeofenceMonitorStatus Status { get; }
+
+        /// <summary>
         /// Check if geofence with given id is registered 
         /// </summary>
         bool IsGeofenceRegistered(string id);

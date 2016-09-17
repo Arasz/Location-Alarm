@@ -123,8 +123,8 @@ namespace CoreLibrary.DataModel
         {
             _startTime = DateTimeOffset.Now;
             _duration = TimeSpan.FromSeconds(0); // will never expire
-            _dwellTime = TimeSpan.FromSeconds(30); // for test only
-            _monitoredStates = MonitoredGeofenceStates.Entered | MonitoredGeofenceStates.Removed;
+            _dwellTime = TimeSpan.FromSeconds(60); // for test only
+            _monitoredStates = MonitoredGeofenceStates.Entered;// | MonitoredGeofenceStates.Removed;
             return this;
         }
     }
