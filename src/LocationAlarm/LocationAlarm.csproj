@@ -93,7 +93,7 @@
     <Compile Include="Extensions\BasicGeopositionExtension.cs" />
     <Compile Include="Interceptors\AsyncErrorHandler.cs" />
     <Compile Include="Location\LocationAutosuggestion\LocationAutosuggestion.cs" />
-    <Compile Include="Model\GeofenceBuilder.cs" />
+    <Compile Include="Geofencing\GeofenceBuilder.cs" />
     <Compile Include="Navigation\INavigationServiceWithToken.cs" />
     <Compile Include="Navigation\NavigationServiceWithToken.cs" />
     <Compile Include="Model\LocationAlarmModel.cs" />
