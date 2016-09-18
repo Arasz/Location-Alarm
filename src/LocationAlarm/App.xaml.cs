@@ -9,10 +9,10 @@ using CoreLibrary.Service.Geofencing;
 using CoreLibrary.Service.Geolocation;
 using GalaSoft.MvvmLight.Threading;
 using GalaSoft.MvvmLight.Views;
+using LocationAlarm.BackgroundTask;
 using LocationAlarm.Location.LocationAutosuggestion;
 using LocationAlarm.Model;
 using LocationAlarm.Navigation;
-using LocationAlarm.Tasks;
 using LocationAlarm.Utils;
 using LocationAlarm.View;
 using LocationAlarm.ViewModel;
@@ -40,7 +40,7 @@ namespace ArrivalAlarm
     {
         public static IContainer Container { get; set; }
 
-        private IBackgroundTaskManager _backgroundTaskManager;
+        private BackgroundTaskManager<GeofenceTask> _backgroundTaskManager;
 
         private TransitionCollection transitions;
 
@@ -136,7 +136,7 @@ namespace ArrivalAlarm
         private async Task RegisterBackgroundTaskAsync()
         {
             if (_backgroundTaskManager == null)
-                _backgroundTaskManager = Container.Resolve<IBackgroundTaskManager>();
+                _backgroundTaskManager = Container.Resolve<BackgroundTaskManager<GeofenceTask>>();
 
             await _backgroundTaskManager.RegisterBackgroundTaskAsync().ConfigureAwait(false);
         }
@@ -171,7 +171,6 @@ namespace ArrivalAlarm
 
             builder.RegisterType<BackgroundTaskManager<GeofenceTask>>()
                 .AsSelf()
-                .As<IBackgroundTaskManager>()
                 .SingleInstance();
 
             builder.RegisterType<AssetsNamesReader>()

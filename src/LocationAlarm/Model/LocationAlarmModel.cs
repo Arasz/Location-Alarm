@@ -1,8 +1,9 @@
-﻿using CoreLibrary.Data.Persistence.Repository;
+﻿using BackgroundTask;
+using CoreLibrary.Data.Persistence.Repository;
 using CoreLibrary.DataModel;
 using CoreLibrary.Service;
 using GalaSoft.MvvmLight.Threading;
-using LocationAlarm.Tasks;
+using LocationAlarm.BackgroundTask;
 using System;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -16,7 +17,7 @@ namespace LocationAlarm.Model
     /// </summary>
     public class LocationAlarmModel
     {
-        private readonly IBackgroundTaskManager _backgroundTaskManager;
+        private readonly BackgroundTaskManager<GeofenceTask> _backgroundTaskManager;
         private readonly IGeofenceService _geofenceService;
         private readonly IRepository<GeolocationAlarm> _repository;
 
@@ -24,7 +25,7 @@ namespace LocationAlarm.Model
 
         public GeolocationAlarm NewAlarm => new GeolocationAlarm();
 
-        public LocationAlarmModel(IRepository<GeolocationAlarm> repository, IGeofenceService geofenceService, IBackgroundTaskManager backgroundTaskManager)
+        public LocationAlarmModel(IRepository<GeolocationAlarm> repository, IGeofenceService geofenceService, BackgroundTaskManager<GeofenceTask> backgroundTaskManager)
         {
             _repository = repository;
             _geofenceService = geofenceService;

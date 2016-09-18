@@ -5,7 +5,7 @@ using Windows.ApplicationModel.Background;
 
 namespace LocationAlarm.BackgroundTask
 {
-    public class BackgroundTaskManager<TTask> : IBackgroundTaskManager
+    public class BackgroundTaskManager<TTask>
         where TTask : IBackgroundTask
     {
         private IBackgroundTaskRegistration _registeredTask;
