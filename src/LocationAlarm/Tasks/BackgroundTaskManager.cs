@@ -7,11 +7,15 @@ namespace LocationAlarm.Tasks
 {
     public class BackgroundTaskManager
     {
+        private IBackgroundTaskRegistration _registeredTask;
+
         public event EventHandler TaskCompleted;
 
         public event EventHandler<int> TaskProgress;
 
         public BackgroundAccessStatus BackgroundAccessStatus { get; private set; }
+
+        private IBackgroundTaskRegistration RegisteredTask => _registeredTask;
 
         public BackgroundTaskManager()
         {
@@ -26,7 +30,13 @@ namespace LocationAlarm.Tasks
         {
             BackgroundAccessStatus = await BackgroundExecutionManager.RequestAccessAsync();
 
-            if (IsTaskRegistered(taskName)) return;
+            if (IsTaskRegistered(taskName, out _registeredTask))
+            {
+                SubscribeBackgroundTaskEvents(_registeredTask);
+                return;
+            }
+
+            var allTasks = BackgroundTaskRegistration.AllTasks.ToDictionary(pair => pair.Key, pair => pair.Value);
 
             var backgroundTaskBuilder = new BackgroundTaskBuilder()
             {
@@ -38,9 +48,9 @@ namespace LocationAlarm.Tasks
 
             backgroundTaskBuilder.SetTrigger(locationTrigger);
 
-            var registration = backgroundTaskBuilder.Register();
+            _registeredTask = backgroundTaskBuilder.Register();
 
-            SubscribeBackgroundTaskEvents(registration);
+            SubscribeBackgroundTaskEvents(_registeredTask);
         }
 
         public void UnregisterTask(string taskName)
@@ -52,9 +62,9 @@ namespace LocationAlarm.Tasks
             taskToUnregister?.Unregister(true);
         }
 
-        private bool IsTaskRegistered(string taskName)
+        private bool IsTaskRegistered(string taskName, out IBackgroundTaskRegistration registeredTask)
         {
-            var registeredTask = FetchBackgroundTaskRegistration(taskName);
+            registeredTask = FetchBackgroundTaskRegistration(taskName);
 
             return registeredTask != null;
         }
