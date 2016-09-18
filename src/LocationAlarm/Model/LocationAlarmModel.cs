@@ -45,7 +45,11 @@ namespace LocationAlarm.Model
             GeolocationAlarms.Clear();
             var savedAlarms = await _repository.GetAllAsync().ConfigureAwait(true);
             foreach (var geolocationAlarm in savedAlarms)
+            {
                 GeolocationAlarms.Add(geolocationAlarm);
+                if (geolocationAlarm.IsActive && !_geofenceService.IsGeofenceRegistered(geolocationAlarm.Name))
+                    _geofenceService.RegisterGeofence(geolocationAlarm.Geofence);
+            }
         }
 
         public async Task SaveAsync(GeolocationAlarm alarm)

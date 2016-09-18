@@ -34,7 +34,8 @@ namespace CoreLibrary.Service
         Geofence ReadGeofence(string id);
 
         /// <summary>
-        /// Register geofence 
+        /// Register geofence. If geofence with the same id is registered - replaces old gefoence
+        /// with given
         /// </summary>
         /// <param name="geofence"></param>
         void RegisterGeofence(Geofence geofence);
