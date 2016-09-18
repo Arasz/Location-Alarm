@@ -55,9 +55,8 @@ namespace LocationAlarm.Tasks
 
         public void UnregisterTask(string taskName)
         {
-            if (!IsTaskRegistered(taskName)) return;
-
-            var taskToUnregister = FetchBackgroundTaskRegistration(taskName);
+            var taskToUnregister = default(IBackgroundTaskRegistration);
+            if (!IsTaskRegistered(taskName, out taskToUnregister)) return;
 
             taskToUnregister?.Unregister(true);
         }

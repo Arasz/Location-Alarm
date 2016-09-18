@@ -27,7 +27,6 @@
       <Extensions>
         <Extension Category="windows.backgroundTasks" EntryPoint="BackgroundTask.GeofenceTask">
           <BackgroundTasks>
-            <Task Type="pushNotification" />
             <m2:Task Type="location" />
           </BackgroundTasks>
         </Extension>
