@@ -16,7 +16,7 @@ namespace LocationAlarm.Model
     /// </summary>
     public class LocationAlarmModel
     {
-        private readonly BackgroundTaskManager _backgroundTaskManager;
+        private readonly IBackgroundTaskManager _backgroundTaskManager;
         private readonly IGeofenceService _geofenceService;
         private readonly IRepository<GeolocationAlarm> _repository;
 
@@ -24,7 +24,7 @@ namespace LocationAlarm.Model
 
         public GeolocationAlarm NewAlarm => new GeolocationAlarm();
 
-        public LocationAlarmModel(IRepository<GeolocationAlarm> repository, IGeofenceService geofenceService, BackgroundTaskManager backgroundTaskManager)
+        public LocationAlarmModel(IRepository<GeolocationAlarm> repository, IGeofenceService geofenceService, IBackgroundTaskManager backgroundTaskManager)
         {
             _repository = repository;
             _geofenceService = geofenceService;

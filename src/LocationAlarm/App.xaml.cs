@@ -40,7 +40,7 @@ namespace ArrivalAlarm
     {
         public static IContainer Container { get; set; }
 
-        private BackgroundTaskManager _backgroundTaskManager;
+        private IBackgroundTaskManager _backgroundTaskManager;
 
         private TransitionCollection transitions;
 
@@ -136,9 +136,9 @@ namespace ArrivalAlarm
         private async Task RegisterBackgroundTaskAsync()
         {
             if (_backgroundTaskManager == null)
-                _backgroundTaskManager = Container.Resolve<BackgroundTaskManager>();
+                _backgroundTaskManager = Container.Resolve<IBackgroundTaskManager>();
 
-            await _backgroundTaskManager.RegisterBackgroundTaskAsync(typeof(GeofenceTask)).ConfigureAwait(false);
+            await _backgroundTaskManager.RegisterBackgroundTaskAsync().ConfigureAwait(false);
         }
 
         private static void InitializeIocContainer()
@@ -169,8 +169,9 @@ namespace ArrivalAlarm
                 .As<IRepository<GeolocationAlarm>>()
                 .SingleInstance();
 
-            builder.RegisterType<BackgroundTaskManager>()
+            builder.RegisterType<BackgroundTaskManager<GeofenceTask>>()
                 .AsSelf()
+                .As<IBackgroundTaskManager>()
                 .SingleInstance();
 
             builder.RegisterType<AssetsNamesReader>()
