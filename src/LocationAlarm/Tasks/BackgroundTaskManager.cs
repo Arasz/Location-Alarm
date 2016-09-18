@@ -16,11 +16,11 @@ namespace LocationAlarm.BackgroundTask
 
         public BackgroundAccessStatus BackgroundAccessStatus { get; private set; }
 
-        public IBackgroundTaskRegistration RegisteredTask => _registeredTask ?? (_registeredTask = BackgroundTaskRegistration.AllTasks.Values
-            .FirstOrDefault(registration => registration.Name == typeof(TTask).Name));
+        public bool IsTaskRegistered => BackgroundTaskRegistration.AllTasks.Values
+            .Any(taskRegistration => taskRegistration.Name == typeof(TTask).Name);
 
-        private bool IsTaskRegistered => BackgroundTaskRegistration.AllTasks.Values
-            .Any(taskRegistration => taskRegistration.Name == typeof(Task).Name);
+        public IBackgroundTaskRegistration RegisteredTask => _registeredTask ?? (_registeredTask = BackgroundTaskRegistration.AllTasks.Values
+                    .FirstOrDefault(registration => registration.Name == typeof(TTask).Name));
 
         public async Task RegisterBackgroundTaskAsync() => await RegisterBackgroundTaskAsync(typeof(TTask)).ConfigureAwait(false);
 
