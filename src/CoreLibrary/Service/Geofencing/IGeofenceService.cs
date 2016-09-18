@@ -19,6 +19,11 @@ namespace CoreLibrary.Service
         IReadOnlyList<GeofenceStateChangeReport> GeofenceStateChangeReports { get; }
 
         /// <summary>
+        /// Monitor status 
+        /// </summary>
+        GeofenceMonitorStatus Status { get; }
+
+        /// <summary>
         /// Check if geofence with given id is registered 
         /// </summary>
         bool IsGeofenceRegistered(string id);
@@ -29,7 +34,8 @@ namespace CoreLibrary.Service
         Geofence ReadGeofence(string id);
 
         /// <summary>
-        /// Register geofence 
+        /// Register geofence. If geofence with the same id is registered - replaces old gefoence
+        /// with given
         /// </summary>
         /// <param name="geofence"></param>
         void RegisterGeofence(Geofence geofence);

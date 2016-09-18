@@ -44,7 +44,7 @@ namespace CoreLibrary.Data.DataModel.PersistentModel
         /// Alarm state 
         /// </summary>
         [DataMember]
-        public bool IsActive { get; set; }
+        public bool IsActive { get; set; } = true;
 
         /// <summary>
         /// The latitude of the geographic position. 
@@ -62,13 +62,13 @@ namespace CoreLibrary.Data.DataModel.PersistentModel
         /// Path to map screen 
         /// </summary>
         [DataMember]
-        public string MapScreenPath { get; set; } = "";
+        public string MapScreenPath { get; set; }
 
         /// <summary>
         /// Alarm name 
         /// </summary>
-        [DataMember]
-        public string Name { get; set; } = "default alarm";
+        [DataMember, Unique]
+        public string Name { get; set; }
 
         /// <summary>
         /// Monitored area radius 

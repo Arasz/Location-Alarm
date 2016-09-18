@@ -18,6 +18,7 @@ using LocationAlarm.View;
 using LocationAlarm.ViewModel;
 using System;
 using System.Diagnostics;
+using System.Threading.Tasks;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
 using Windows.Globalization;
@@ -38,6 +39,8 @@ namespace ArrivalAlarm
     public sealed partial class App : Application
     {
         public static IContainer Container { get; set; }
+
+        private BackgroundTaskManager _backgroundTaskManager;
 
         private TransitionCollection transitions;
 
@@ -127,8 +130,15 @@ namespace ArrivalAlarm
             //Configure dispatcher
             DispatcherHelper.Initialize();
 
-            var backgroundTaskManager = Container.Resolve<BackgroundTaskManager>();
-            backgroundTaskManager.RegisterBackgroundTaskAsync(typeof(GeofenceTask));
+            RegisterBackgroundTaskAsync();
+        }
+
+        private async Task RegisterBackgroundTaskAsync()
+        {
+            if (_backgroundTaskManager == null)
+                _backgroundTaskManager = Container.Resolve<BackgroundTaskManager>();
+
+            await _backgroundTaskManager.RegisterBackgroundTaskAsync(typeof(GeofenceTask)).ConfigureAwait(false);
         }
 
         private static void InitializeIocContainer()

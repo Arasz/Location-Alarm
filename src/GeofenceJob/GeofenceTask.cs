@@ -19,6 +19,7 @@ namespace BackgroundTask
         private IRepository<Alarm> _alarmsRepository;
         private BackgroundTaskDeferral _deferral;
         private IGeofenceService _geofenceService;
+        private IBackgroundTaskInstance _taskInstance;
         private ToastNotifier _toastNotifier;
 
         public GeofenceTask()
@@ -30,39 +31,32 @@ namespace BackgroundTask
 
         public async void Run(IBackgroundTaskInstance taskInstance)
         {
-            _deferral = taskInstance.GetDeferral();
-
-            taskInstance.Progress = 0;
+            _taskInstance = taskInstance;
+            _deferral = _taskInstance.GetDeferral();
 
             var reports = _geofenceService.GeofenceStateChangeReports;
 
-            taskInstance.Progress = 10;
-
             var alarms = await FindActiveAlarmsAsync().ConfigureAwait(false);
-
-            taskInstance.Progress = 30;
 
             var triggeredAlarms = GetTriggeredAlarmsAsync(reports, alarms).ToList();
 
-            taskInstance.Progress = 60;
-
             var notificationService = new AlarmsNotificationService(_toastNotifier, triggeredAlarms);
-
-            taskInstance.Progress = 70;
 
             notificationService.Notify();
 
-            taskInstance.Progress = 80;
+            await DisableAlarmsAsync(triggeredAlarms.Select(triggeredAlarm => triggeredAlarm.Alarm)).ConfigureAwait(false);
 
-            await ChangeAlarmsStateAsync(triggeredAlarms.Select(triggeredAlarm => triggeredAlarm.Alarm)).ConfigureAwait(false);
+            await ReregisterGeofences(triggeredAlarms).ConfigureAwait(false);
 
-            taskInstance.Progress = 100;
             _deferral.Complete();
         }
 
-        private async Task ChangeAlarmsStateAsync(IEnumerable<Alarm> alarms)
+        private async Task DisableAlarmsAsync(IEnumerable<Alarm> alarms)
         {
             var alarmsToDisable = alarms.Where(alarm => string.IsNullOrEmpty(alarm.ActiveDays)).ToArray();
+
+            if (!alarmsToDisable.Any())
+                return;
 
             foreach (var alarm in alarmsToDisable)
                 alarm.IsActive = false;
@@ -96,6 +90,16 @@ namespace BackgroundTask
 
             var parsedDays = activeDays.Split(',').Select(dayName => new WeekDay(dayName).Day);
             return parsedDays.Contains(DateTime.Today.DayOfWeek);
+        }
+
+        private async Task ReregisterGeofences(List<TriggeredAlarm> triggeredAlarms)
+        {
+            var geofences = triggeredAlarms
+                .Where(alarm => !string.IsNullOrEmpty(alarm.Alarm.ActiveDays))
+                .Select(alarm => alarm.Report.Geofence);
+
+            foreach (var geofence in geofences)
+                _geofenceService.ReplaceGeofence(geofence.Id, geofence);
         }
     }
 }

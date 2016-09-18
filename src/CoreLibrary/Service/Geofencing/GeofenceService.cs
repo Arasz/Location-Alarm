@@ -8,13 +8,19 @@ namespace CoreLibrary.Service.Geofencing
     {
         private readonly GeofenceMonitor _geofenceMonitor;
 
-        public IEnumerable<Geofence> AllActiveGeofences => _geofenceMonitor.Geofences.AsEnumerable();
+        public IEnumerable<Geofence> AllActiveGeofences => _geofenceMonitor.Geofences.ToList();
 
-        public IReadOnlyList<GeofenceStateChangeReport> GeofenceStateChangeReports => _geofenceMonitor.ReadReports();
+        public IReadOnlyList<GeofenceStateChangeReport> GeofenceStateChangeReports => _geofenceMonitor.ReadReports().ToList();
+
+        public GeofenceMonitorStatus Status => _geofenceMonitor.Status;
 
         public GeofenceService()
         {
             _geofenceMonitor = GeofenceMonitor.Current;
+            _geofenceMonitor.StatusChanged += (sender, args) =>
+            {
+                var status = Status;
+            };
         }
 
         public bool IsGeofenceRegistered(string id) => _geofenceMonitor.Geofences.Any(geofence => geofence.Id == id);
@@ -25,22 +31,18 @@ namespace CoreLibrary.Service.Geofencing
         {
             if (!IsGeofenceRegistered(geofence.Id))
                 _geofenceMonitor.Geofences.Add(geofence);
+            else
+                ReplaceGeofence(geofence.Id, geofence);
         }
 
-        public void RemoveGeofence(Geofence geofence)
-        {
-            if (!IsGeofenceRegistered(geofence.Id))
-                return;
-            var toRemove = ReadGeofence(geofence.Id);
-            _geofenceMonitor.Geofences.Remove(toRemove);
-        }
+        public void RemoveGeofence(Geofence geofence) => RemoveGeofence(geofence.Id);
 
         public void RemoveGeofence(string id)
         {
-            var geofence = ReadGeofence(id);
-            if (geofence == null)
+            if (!IsGeofenceRegistered(id))
                 return;
-            RemoveGeofence(geofence);
+            var toRemove = ReadGeofence(id);
+            _geofenceMonitor.Geofences.Remove(toRemove);
         }
 
         public void ReplaceGeofence(string id, Geofence geofence)

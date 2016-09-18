@@ -48,7 +48,7 @@ namespace CoreLibrary.DataModel
         /// <summary>
         /// Alarm state 
         /// </summary>
-        public bool IsActive { get; set; }
+        public bool IsActive { get; set; } = true;
 
         /// <summary>
         /// Path to map screen 
