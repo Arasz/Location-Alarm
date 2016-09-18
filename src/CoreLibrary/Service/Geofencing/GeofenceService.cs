@@ -10,7 +10,7 @@ namespace CoreLibrary.Service.Geofencing
 
         public IEnumerable<Geofence> AllActiveGeofences => _geofenceMonitor.Geofences.ToList();
 
-        public IReadOnlyList<GeofenceStateChangeReport> GeofenceStateChangeReports => _geofenceMonitor.ReadReports();
+        public IReadOnlyList<GeofenceStateChangeReport> GeofenceStateChangeReports => _geofenceMonitor.ReadReports().ToList();
 
         public GeofenceMonitorStatus Status => _geofenceMonitor.Status;
 
