@@ -23,6 +23,7 @@ namespace LocationAlarm.ViewModel
         private readonly LocationAutoSuggestion _autoSuggestion;
         private readonly IGeolocationService _geolocationService;
 
+        private volatile Alarm _model;
         public BasicGeoposition ActualLocation { get; set; }
 
         public string AlarmName { get; set; }
@@ -68,12 +69,7 @@ namespace LocationAlarm.ViewModel
             SuggestionChosenCommand = _autoSuggestion.SuggestionChosenCommand;
         }
 
-        public override void GoBack()
-        {
-            //_selectedAlarm = _navigationService.LastPageKey == nameof(AlarmSettingsPage) ? _monitoredAreaCopy : _monitoredArea;
-            //AlarmStateManager.Restore();
-            _navigationService.GoBack();
-        }
+        public override void GoBack() => _navigationService.GoBack();
 
         public override void OnNavigatedFrom(object parameter)
         {
@@ -85,8 +81,8 @@ namespace LocationAlarm.ViewModel
 
         public override async void OnNavigatedTo(object parameter)
         {
-            Model = parameter as Alarm;
-            InitializeFromModelAsync(parameter as Alarm).Wait();
+            _model = (parameter as Alarm);
+            InitializeViewModel(_model);
 
             MessengerInstance.Register<MapLocation>(this, OnSuggestionSelected);
 
@@ -95,15 +91,29 @@ namespace LocationAlarm.ViewModel
             await UpdateUserLocationAsync().ConfigureAwait(false);
         }
 
-        protected override Task<Alarm> CreateModelAsync()
+        protected override void InitializeViewModel(Alarm dataSource)
+        {
+            AlarmName = dataSource.Name;
+            AutoSuggestionLocationQuery = AlarmName;
+            GeocircleRadius = dataSource.Radius;
+            ActualLocation = new BasicGeoposition
+            {
+                Altitude = dataSource.Altitude,
+                Longitude = dataSource.Longitude,
+                Latitude = dataSource.Latitude
+            };
+            MapScreenshotPath = dataSource.MapScreenPath;
+        }
+
+        protected override Alarm SaveDataToModel(Alarm prototype)
         {
             var newModel = new Alarm
             {
-                Id = Model.Id,
-                AlarmSound = Model.AlarmSound,
-                AlarmType = Model.AlarmType,
-                IsActive = Model.IsActive,
-                ActiveDays = Model.ActiveDays,
+                Id = prototype.Id,
+                AlarmSound = prototype.AlarmSound,
+                AlarmType = prototype.AlarmType,
+                IsActive = prototype.IsActive,
+                ActiveDays = prototype.ActiveDays,
 
                 Name = AlarmName,
                 Altitude = ActualLocation.Altitude,
@@ -112,22 +122,7 @@ namespace LocationAlarm.ViewModel
                 MapScreenPath = MapScreenshotPath,
                 Radius = GeocircleRadius,
             };
-            return Task.FromResult(newModel);
-        }
-
-        protected override Task InitializeFromModelAsync(Alarm model)
-        {
-            AlarmName = model.Name;
-            AutoSuggestionLocationQuery = AlarmName;
-            GeocircleRadius = model.Radius;
-            ActualLocation = new BasicGeoposition
-            {
-                Altitude = model.Altitude,
-                Longitude = model.Longitude,
-                Latitude = model.Latitude
-            };
-            MapScreenshotPath = model.MapScreenPath;
-            return Task.FromResult(1);
+            return newModel;
         }
 
         /// <summary>
@@ -162,15 +157,14 @@ namespace LocationAlarm.ViewModel
         {
             MessengerInstance.Send(new MessageBase(), Token.TakeScreenshot);
             MapScreenshotPath = null;
-            await Task.Factory.StartNew(() =>
+            await Task.Run(() =>
             {
                 while (MapScreenshotPath == null)
                 {
                 }
             }).ConfigureAwait(true);
 
-            var model = await CreateModelAsync().ConfigureAwait(true);
-            _navigationService.NavigateTo(nameof(AlarmSettingsPage), model);
+            _navigationService.NavigateTo(nameof(AlarmSettingsPage), SaveDataToModel(_model));
         }
 
         [OnCommand("FindMeCommand")]

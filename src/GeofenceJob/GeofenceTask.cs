@@ -46,6 +46,8 @@ namespace BackgroundTask
 
             await DisableAlarmsAsync(triggeredAlarms.Select(triggeredAlarm => triggeredAlarm.Alarm)).ConfigureAwait(false);
 
+            await ReregisterGeofences(triggeredAlarms).ConfigureAwait(false);
+
             _deferral.Complete();
         }
 

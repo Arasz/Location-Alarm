@@ -70,9 +70,6 @@ namespace CoreLibrary.Data.DataModel.PersistentModel
         [DataMember]
         public double Radius { get; set; } = 500;
 
-        public override IEntity Clone()
-        {
-            return base.Clone();
-        }
+        public Alarm Clone() => MemberwiseClone() as Alarm;
     }
 }

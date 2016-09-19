@@ -1,5 +1,4 @@
-﻿using CoreLibrary.StateManagement;
-using GalaSoft.MvvmLight;
+﻿using GalaSoft.MvvmLight;
 using LocationAlarm.Navigation;
 using System.Threading.Tasks;
 
@@ -9,10 +8,6 @@ namespace LocationAlarm.ViewModel
         where TModel : new()
     {
         protected readonly NavigationServiceWithToken _navigationService;
-
-        protected StateManager<TModel> AlarmStateManager { get; set; }
-
-        protected TModel Model { get; set; }
 
         protected ViewModelBaseEx(NavigationServiceWithToken navigationService)
         {
@@ -32,12 +27,14 @@ namespace LocationAlarm.ViewModel
         {
         }
 
-        protected virtual Task<TModel> CreateModelAsync()
+        protected virtual void InitializeViewModel(TModel dataSource)
         {
-            Model = new TModel();
-            return Task.FromResult(Model);
         }
 
-        protected virtual Task InitializeFromModelAsync(TModel model) => default(Task);
+        protected virtual Task InitializeViewModelAsync(TModel dataSource) => Task.Run(() => InitializeViewModel(dataSource));
+
+        protected virtual TModel SaveDataToModel(TModel prototype) => new TModel();
+
+        protected virtual Task SaveDataToModelAsync(TModel prototype) => Task.Run(() => SaveDataToModel(prototype));
     }
 }

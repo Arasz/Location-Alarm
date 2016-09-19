@@ -30,11 +30,7 @@ namespace LocationAlarm.ViewModel
         }
 
         [OnCommand("AddNewAlarmCommand")]
-        public void AddNewAlarm()
-        {
-            CreateModelAsync().Wait();
-            _navigationService.NavigateTo(nameof(MapPage), Model, Token.AddNew);
-        }
+        public void AddNewAlarm() => _navigationService.NavigateTo(nameof(MapPage), new Alarm(), Token.AddNew);
 
         public override void GoBack()
         {
@@ -49,13 +45,9 @@ namespace LocationAlarm.ViewModel
             await _alarmsManager.ReloadDataAsync().ConfigureAwait(false);
         }
 
-        public override void OnNavigatedTo(object parameter)
-        {
-            ChoseAction(parameter as Alarm).Wait();
-;
-        }
+        public override void OnNavigatedTo(object parameter) => ChoseActionAsync(parameter as Alarm).Wait();
 
-        private async Task ChoseAction(Alarm model)
+        private async Task ChoseActionAsync(Alarm model)
         {
             switch (_navigationService.LastPageKey)
             {
@@ -72,10 +64,7 @@ namespace LocationAlarm.ViewModel
         }
 
         [OnCommand("DeleteAlarmCommand")]
-        private async void DeleteAlarmExecute(AlarmItemEventArgs eventArgs)
-        {
-            await _alarmsManager.DeleteAsync(eventArgs.Source).ConfigureAwait(false);
-        }
+        private async void DeleteAlarmExecute(AlarmItemEventArgs eventArgs) => await _alarmsManager.DeleteAsync(eventArgs.Source).ConfigureAwait(false);
 
         [OnCommand("EditAlarmCommand")]
         private void EditAlarmExecute(SelectionChangedEventArgs selectionChangedEventArgs)
@@ -86,7 +75,7 @@ namespace LocationAlarm.ViewModel
         }
 
         [OnCommand("AlarmEnabledChangedCommand")]
-        private async void IsAlarmEnabledChangedCommnad(AlarmItemEventArgs eventArgs)
+        private async void ToggleAlarm(AlarmItemEventArgs eventArgs)
         {
             var alarm = eventArgs.Source;
             if (alarm != null)

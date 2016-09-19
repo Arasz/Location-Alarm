@@ -13,13 +13,5 @@ namespace CoreLibrary.Data.DataModel.Base
         /// </summary>
         [PrimaryKey, AutoIncrement]
         public int Id { get; set; }
-
-        public virtual IEntity Clone()
-        {
-            return new Entity
-            {
-                Id = Id,
-            };
-        }
     }
 }
