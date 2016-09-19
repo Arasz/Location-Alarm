@@ -1,10 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 
-namespace LocationAlarm.Utils
+namespace CoreLibrary.Utils
 {
     public class SystemSounds
     {
+        public static readonly string DefaultSoundUri = "ms-winsoundevent:Notification.Default";
+
         private static Dictionary<string, string> _sounds = new Dictionary<string, string>
         {
             ["Default"] = "ms-winsoundevent:Notification.Default",

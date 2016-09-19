@@ -7,8 +7,8 @@ namespace CoreLibrary.Data.DataModel.PersistentModel
     /// <summary>
     /// Simple data model of alarm 
     /// </summary>
-    [DataContract]
-    public class Alarm : IEntity
+    [DataContract, Equals]
+    public class Alarm : Entity
     {
         /// <summary>
         /// Days in which alarm is active. Each day is separated by , 
@@ -33,12 +33,6 @@ namespace CoreLibrary.Data.DataModel.PersistentModel
         /// </summary>
         [DataMember]
         public double Altitude { get; set; }
-
-        /// <summary>
-        /// Entity id 
-        /// </summary>
-        [PrimaryKey, AutoIncrement]
-        public int Id { get; set; }
 
         /// <summary>
         /// Alarm state 
@@ -68,12 +62,17 @@ namespace CoreLibrary.Data.DataModel.PersistentModel
         /// Alarm name 
         /// </summary>
         [DataMember, Unique]
-        public string Name { get; set; }
+        public string Name { get; set; } = "";
 
         /// <summary>
         /// Monitored area radius 
         /// </summary>
         [DataMember]
         public double Radius { get; set; } = 500;
+
+        public override IEntity Clone()
+        {
+            return base.Clone();
+        }
     }
 }

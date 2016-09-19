@@ -97,11 +97,6 @@
     <Compile Include="Navigation\NavigationServiceWithToken.cs" />
     <Compile Include="Model\LocationAlarmModel.cs" />
     <Compile Include="Tasks\BackgroundTaskManager.cs" />
-    <Compile Include="Utils\AssetsNamesReader.cs" />
-    <Compile Include="Utils\IAssetsNamesReader.cs" />
-    <Compile Include="Utils\IScreenshotManager.cs" />
-    <Compile Include="Utils\ScreenshotManager.cs" />
-    <Compile Include="Utils\SystemSounds.cs" />
     <Compile Include="ViewModel\AlarmSettingsViewModel.cs" />
     <Compile Include="ViewModel\DataTemplates\DayOfWeekDataTemplate.cs" />
     <Compile Include="ViewModel\ViewModelBaseEx.cs" />

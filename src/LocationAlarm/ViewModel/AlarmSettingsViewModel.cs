@@ -1,7 +1,8 @@
 ﻿using Commander;
 using CoreLibrary.Data.DataModel.PersistentModel;
+using CoreLibrary.Utils;
+using CoreLibrary.Utils.ScreenshotManager;
 using LocationAlarm.Navigation;
-using LocationAlarm.Utils;
 using LocationAlarm.View;
 using PropertyChanged;
 using System;

@@ -16,11 +16,11 @@ namespace BackgroundTask
 {
     public sealed class GeofenceTask : IBackgroundTask
     {
-        private IRepository<Alarm> _alarmsRepository;
+        private readonly IRepository<Alarm> _alarmsRepository;
+        private readonly IGeofenceService _geofenceService;
+        private readonly ToastNotifier _toastNotifier;
         private BackgroundTaskDeferral _deferral;
-        private IGeofenceService _geofenceService;
         private IBackgroundTaskInstance _taskInstance;
-        private ToastNotifier _toastNotifier;
 
         public GeofenceTask()
         {

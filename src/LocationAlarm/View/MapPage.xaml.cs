@@ -1,7 +1,7 @@
-﻿using GalaSoft.MvvmLight.Messaging;
+﻿using CoreLibrary.Utils.ScreenshotManager;
+using GalaSoft.MvvmLight.Messaging;
 using GalaSoft.MvvmLight.Threading;
 using LocationAlarm.Common;
-using LocationAlarm.Utils;
 using LocationAlarm.View.Map;
 using LocationAlarm.ViewModel;
 using System;
