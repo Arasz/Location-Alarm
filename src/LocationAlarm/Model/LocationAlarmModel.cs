@@ -23,6 +23,10 @@ namespace LocationAlarm.Model
         private readonly IGeofenceService _geofenceService;
         private readonly IRepository<Alarm> _repository;
 
+        private readonly object syncRoot = new object();
+
+        private volatile bool _isDataReloading;
+
         public ObservableCollection<Alarm> GeolocationAlarms { get; private set; }
 
         public LocationAlarmModel(IRepository<Alarm> repository, IGeofenceService geofenceService, BackgroundTaskManager<GeofenceTask> backgroundTaskManager, GeofenceBuilder builder)
@@ -44,14 +48,25 @@ namespace LocationAlarm.Model
 
         public async Task ReloadDataAsync()
         {
-            GeolocationAlarms.Clear();
+            lock (syncRoot)
+            {
+                if (_isDataReloading)
+                    return;
+                _isDataReloading = true;
+            }
+
             var savedAlarms = await _repository.GetAllAsync().ConfigureAwait(true);
+
+            GeolocationAlarms.Clear();
             foreach (var geolocationAlarm in savedAlarms)
             {
                 GeolocationAlarms.Add(geolocationAlarm);
                 if (geolocationAlarm.IsActive && !_geofenceService.IsGeofenceRegistered(geolocationAlarm.Name))
                     _geofenceService.RegisterGeofence(_builder.BuildFromAlarm(geolocationAlarm));
             }
+
+            lock (syncRoot)
+                _isDataReloading = false;
         }
 
         public async Task SaveAsync(Alarm alarm)
