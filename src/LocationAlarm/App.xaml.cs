@@ -4,6 +4,7 @@ using BackgroundTask;
 using CoreLibrary.Data.DataModel.PersistentModel;
 using CoreLibrary.Data.Geofencing;
 using CoreLibrary.Data.Persistence.Repository;
+using CoreLibrary.Logger;
 using CoreLibrary.Service;
 using CoreLibrary.Service.Geofencing;
 using CoreLibrary.Service.Geolocation;
@@ -45,6 +46,8 @@ namespace ArrivalAlarm
 
         private TransitionCollection transitions;
 
+        private ILogger _logger;
+
         /// <summary>
         /// Initializes the singleton application object. This is the first line of authored code
         /// executed, and as such is the logical equivalent of main() or WinMain().
@@ -59,8 +62,9 @@ namespace ArrivalAlarm
 
         private void OnUnhandledException(object sender, UnhandledExceptionEventArgs unhandledExceptionEventArgs)
         {
-            Debug.WriteLine($"Message: {unhandledExceptionEventArgs.Message}");
-            Debug.WriteLine($"Stack trace: {unhandledExceptionEventArgs.Exception.StackTrace}");
+            unhandledExceptionEventArgs.Handled = true;
+            _logger.LogExceptionAsync($"Unhandled exception: {unhandledExceptionEventArgs.Message}",
+                unhandledExceptionEventArgs.Exception);
         }
 
         /// <summary>
@@ -78,6 +82,9 @@ namespace ArrivalAlarm
             }
 #endif
             Resources["Locator"] = Container.Resolve<ViewModelLocator>();
+
+            _logger = Container.Resolve<ILogger>();
+
             var rootFrame = Window.Current.Content as Frame;
 
             // Do not repeat app initialization when the Window already has content, just ensure that
@@ -148,6 +155,12 @@ namespace ArrivalAlarm
 
             builder.RegisterType<GeofenceService>()
                 .As<IGeofenceService>();
+
+            builder.RegisterType<GenericRepository<Log>>()
+                .As<IRepository<Log>>();
+
+            builder.RegisterType<DatabseLogger>()
+                .AsImplementedInterfaces();
 
             builder.RegisterType<GeofenceBuilder>()
                 .AsSelf();

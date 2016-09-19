@@ -91,7 +91,6 @@
     <Compile Include="Converters\GeopositionToGeopointConverter.cs" />
     <Compile Include="Converters\SliderValueConverter.cs" />
     <Compile Include="Extensions\BasicGeopositionExtension.cs" />
-    <Compile Include="Interceptors\AsyncErrorHandler.cs" />
     <Compile Include="Location\LocationAutosuggestion\LocationAutosuggestion.cs" />
     <Compile Include="Model\LocationAlarmModel.cs" />
     <Compile Include="Navigation\INavigationServiceWithToken.cs" />
