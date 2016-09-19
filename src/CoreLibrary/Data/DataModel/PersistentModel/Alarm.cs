@@ -7,7 +7,7 @@ namespace CoreLibrary.Data.DataModel.PersistentModel
     /// <summary>
     /// Simple data model of alarm 
     /// </summary>
-    [DataContract, Equals]
+    [DataContract]
     public class Alarm : Entity
     {
         /// <summary>
@@ -20,7 +20,7 @@ namespace CoreLibrary.Data.DataModel.PersistentModel
         /// Alarm sound name 
         /// </summary>
         [DataMember]
-        public string AlarmSound { get; set; } = "default";
+        public string AlarmSound { get; set; } = "ms-winsoundevent:Notification.Default";
 
         /// <summary>
         /// Type of alarm 

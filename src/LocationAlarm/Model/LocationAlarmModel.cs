@@ -81,6 +81,7 @@ namespace LocationAlarm.Model
             if (!GeolocationAlarms.Contains(alarm))
                 return;
 
+            ReplaceAlarm(alarm);
             await _repository.UpdateAsync(alarm).ConfigureAwait(false);
             _geofenceService.ReplaceGeofence(alarm.Name, _builder.BuildFromAlarm(alarm));
         }
@@ -96,6 +97,12 @@ namespace LocationAlarm.Model
             GeolocationAlarms.Add(alarm);
             await _repository.InsertAsync(alarm).ConfigureAwait(false);
             _geofenceService.RegisterGeofence(_builder.BuildFromAlarm(alarm));
+        }
+
+        private void ReplaceAlarm(Alarm replacement)
+        {
+            var replaced = GeolocationAlarms.First(alarm => alarm.Id == replacement.Id);
+            ReplaceAlram(replacement, replaced);
         }
 
         private void ReplaceAlram(Alarm replacement, Alarm replaced)

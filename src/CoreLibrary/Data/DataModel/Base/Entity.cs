@@ -5,6 +5,7 @@ namespace CoreLibrary.Data.DataModel.Base
     /// <summary>
     /// Base class for all persistent objects 
     /// </summary>
+    [Equals]
     public class Entity : IEntity
     {
         /// <summary>

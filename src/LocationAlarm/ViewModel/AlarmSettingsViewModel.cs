@@ -49,9 +49,9 @@ namespace LocationAlarm.ViewModel
         }
 
         [OnCommand("EditLocationCommand")]
-        public async void EditLocation()
+        public void EditLocation()
         {
-            var model = await CreateModelAsync().ConfigureAwait(true);
+            var model = CreateModelAsync().Result;
             _navigationService.NavigateTo(nameof(MapPage), model);
         }
 
@@ -63,16 +63,15 @@ namespace LocationAlarm.ViewModel
         [OnCommand("LoadedCommand")]
         public async void Loaded()
         {
-            MapScreen = await _screenshotManager.OpenScreenFromPathAsync(Model.MapScreenPath)
-                .ConfigureAwait(true);
+            //MapScreen = await _screenshotManager.OpenScreenFromPathAsync(Model.MapScreenPath)
+            //    .ConfigureAwait(false);
         }
 
         public override async void OnNavigatedTo(object parameter)
         {
             Model = parameter as Alarm;
 
-            await InitializeFromModelAsync(Model)
-                .ConfigureAwait(true);
+            await InitializeFromModelAsync(parameter as Alarm).ConfigureAwait(false);
         }
 
         [OnCommand("PlaySoundCommand")]
@@ -85,9 +84,9 @@ namespace LocationAlarm.ViewModel
         }
 
         [OnCommand("SaveSettingsCommand")]
-        public async void OnSaveAlarmSettings()
+        public void OnSaveAlarmSettings()
         {
-            var model = await CreateModelAsync().ConfigureAwait(true);
+            var model = CreateModelAsync().Result;
             _navigationService.NavigateTo(nameof(MainPage), model);
         }
 
@@ -95,7 +94,7 @@ namespace LocationAlarm.ViewModel
         {
             var newModel = new Alarm
             {
-                ActiveDays = ParseActiveDays(),
+                ActiveDays = ParseSelectedDays(),
                 AlarmSound = SystemSounds.NameToUriMap[SelectedNotificationSound],
                 AlarmType = SelectedAlarmType,
 
@@ -117,6 +116,7 @@ namespace LocationAlarm.ViewModel
             MapScreen = await _screenshotManager.OpenScreenFromPathAsync(model.MapScreenPath)
                 .ConfigureAwait(true);
             SelectedNotificationSound = SystemSounds.TrimPrefix(model.AlarmSound);
+            SelectedDays = ParseActiveDays(model.ActiveDays);
         }
 
         private void MediaPlayerOnMediaFailed(MediaPlayer sender, MediaPlayerFailedEventArgs args)
@@ -124,6 +124,8 @@ namespace LocationAlarm.ViewModel
             var ars = args.ErrorMessage;
         }
 
-        private string ParseActiveDays() => SelectedDays.Aggregate("", (accu, name) => accu += $"{name},").TrimEnd(',');
+        private List<string> ParseActiveDays(string activeDays) => string.IsNullOrEmpty(activeDays) ? new List<string>() : activeDays.Split(',').ToList();
+
+        private string ParseSelectedDays() => SelectedDays.Aggregate("", (accu, name) => accu += $"{name},").TrimEnd(',');
     }
 }

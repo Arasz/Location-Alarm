@@ -86,7 +86,7 @@ namespace LocationAlarm.ViewModel
         public override async void OnNavigatedTo(object parameter)
         {
             Model = parameter as Alarm;
-            await InitializeFromModelAsync(Model).ConfigureAwait(true);
+            InitializeFromModelAsync(parameter as Alarm).Wait();
 
             MessengerInstance.Register<MapLocation>(this, OnSuggestionSelected);
 

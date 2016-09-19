@@ -177,22 +177,20 @@ namespace ArrivalAlarm
                 .SingleInstance();
 
             builder.RegisterType<LocationAlarmModel>()
-                .AsSelf();
+                .AsSelf()
+                .SingleInstance();
 
             builder.RegisterType<LocationAutoSuggestion>()
                 .AsSelf();
 
             builder.RegisterType<MapViewModel>()
-                .AsSelf()
-                .SingleInstance();
+                .AsSelf();
 
             builder.RegisterType<MainViewModel>()
-                .AsSelf()
-                .SingleInstance();
+                .AsSelf();
 
             builder.RegisterType<AlarmSettingsViewModel>()
-                .AsSelf()
-                .SingleInstance();
+                .AsSelf();
 
             builder.RegisterType<NavigationService>()
                 .As<INavigationService>()

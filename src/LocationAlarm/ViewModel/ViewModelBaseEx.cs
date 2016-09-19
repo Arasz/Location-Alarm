@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 namespace LocationAlarm.ViewModel
 {
     public abstract class ViewModelBaseEx<TModel> : ViewModelBase, INavigable
+        where TModel : new()
     {
         protected readonly NavigationServiceWithToken _navigationService;
 
@@ -31,8 +32,12 @@ namespace LocationAlarm.ViewModel
         {
         }
 
-        protected abstract Task<TModel> CreateModelAsync();
+        protected virtual Task<TModel> CreateModelAsync()
+        {
+            Model = new TModel();
+            return Task.FromResult(Model);
+        }
 
-        protected abstract Task InitializeFromModelAsync(TModel model);
+        protected virtual Task InitializeFromModelAsync(TModel model) => default(Task);
     }
 }
