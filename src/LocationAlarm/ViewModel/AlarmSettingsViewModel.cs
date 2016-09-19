@@ -1,6 +1,5 @@
 ﻿using Commander;
 using CoreLibrary.Data.DataModel.PersistentModel;
-using LocationAlarm.Common;
 using LocationAlarm.Navigation;
 using LocationAlarm.Utils;
 using LocationAlarm.View;
@@ -20,6 +19,7 @@ namespace LocationAlarm.ViewModel
     public class AlarmSettingsViewModel : ViewModelBaseEx<Alarm>
     {
         private readonly IScreenshotManager _screenshotManager;
+
         public string AlarmName { get; set; }
 
         public IEnumerable<AlarmType> AlarmTypes { get; private set; } = Enum.GetValues(typeof(AlarmType))
@@ -29,7 +29,7 @@ namespace LocationAlarm.ViewModel
 
         public BitmapImage MapScreen { get; set; }
 
-        public IEnumerable<string> NotificationSounds { get; private set; } = SystemSounds.Names;
+        public IEnumerable<string> NotificationSounds { get; } = SystemSounds.Names;
 
         public AlarmType SelectedAlarmType { get; set; }
 
@@ -45,7 +45,6 @@ namespace LocationAlarm.ViewModel
             _screenshotManager = screenshotManager;
 
             ResourceLoader.GetForCurrentView("Resources");
-            InitializeViewModel();
         }
 
         [OnCommand("EditLocationCommand")]
@@ -73,9 +72,6 @@ namespace LocationAlarm.ViewModel
 
             await InitializeFromModelAsync(Model)
                 .ConfigureAwait(true);
-
-            if (_navigationService.Token == Token.AddNew)
-                InitializeViewModel();
         }
 
         [OnCommand("PlaySoundCommand")]
@@ -119,11 +115,7 @@ namespace LocationAlarm.ViewModel
             AlarmName = model.Name;
             MapScreen = await _screenshotManager.OpenScreenFromPathAsync(model.MapScreenPath)
                 .ConfigureAwait(true);
-        }
-
-        private void InitializeViewModel()
-        {
-            SelectedNotificationSound = NotificationSounds.First();
+            SelectedNotificationSound = SystemSounds.TrimPrefix(model.AlarmSound);
         }
 
         private void MediaPlayerOnMediaFailed(MediaPlayer sender, MediaPlayerFailedEventArgs args)

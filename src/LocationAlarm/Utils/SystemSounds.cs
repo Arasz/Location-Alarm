@@ -17,5 +17,7 @@ namespace LocationAlarm.Utils
         public static IList<string> Names => _sounds.Keys.ToList();
 
         public static IDictionary<string, string> NameToUriMap => _sounds;
+
+        public static string TrimPrefix(string soundUri) => soundUri.Replace("ms-winsoundevent:Notification.", "");
     }
 }
