@@ -1,19 +1,19 @@
-﻿using CoreLibrary.DataModel;
-using CoreLibrary.StateManagement;
+﻿using CoreLibrary.StateManagement;
 using GalaSoft.MvvmLight;
 using LocationAlarm.Navigation;
+using System.Threading.Tasks;
 
 namespace LocationAlarm.ViewModel
 {
-    public class ViewModelBaseEx : ViewModelBase, INavigable
+    public abstract class ViewModelBaseEx<TModel> : ViewModelBase, INavigable
     {
         protected readonly NavigationServiceWithToken _navigationService;
 
-        protected StateManager<GeolocationAlarm> AlarmStateManager { get; set; }
+        protected StateManager<TModel> AlarmStateManager { get; set; }
 
-        protected GeolocationAlarm CurrentAlarm { get; set; }
+        protected TModel Model { get; set; }
 
-        public ViewModelBaseEx(NavigationServiceWithToken navigationService)
+        protected ViewModelBaseEx(NavigationServiceWithToken navigationService)
         {
             _navigationService = navigationService;
         }
@@ -30,5 +30,9 @@ namespace LocationAlarm.ViewModel
         public virtual void OnNavigatedTo(object parameter)
         {
         }
+
+        protected abstract Task<TModel> CreateModelAsync();
+
+        protected abstract Task InitializeFromModelAsync(TModel model);
     }
 }

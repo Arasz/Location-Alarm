@@ -85,18 +85,9 @@
     <Content Include="FodyWeavers.xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Data\DataModel\AlarmType.cs" />
+    <Compile Include="Data\DataModel\PersistentModel\AlarmType.cs" />
     <Compile Include="Data\DataModel\PersistentModel\Alarm.cs" />
-    <Compile Include="Data\DataModel\WeekDay.cs" />
-    <Compile Include="Data\Persistence\Mapping\AlarmMapper.cs" />
-    <Compile Include="Data\Persistence\Mapping\Configuration.cs" />
-    <Compile Include="Data\Persistence\Mapping\IConfiguration.cs" />
-    <Compile Include="Data\Persistence\Mapping\IMapper.cs" />
-    <Compile Include="Data\Persistence\Mapping\Mapper.cs" />
-    <Compile Include="Data\Persistence\Mapping\SimpleReflectionMapper.cs" />
-    <Compile Include="Data\Persistence\Repository\GelocationAlarmRepository.cs" />
-    <Compile Include="Data\GeofenceBuilder.cs" />
-    <Compile Include="Data\DataModel\GeolocationAlarm.cs" />
+    <Compile Include="Data\Geofencing\GeofenceBuilder.cs" />
     <Compile Include="Data\DataModel\Base\IEntity.cs" />
     <Compile Include="Data\Persistence\Repository\GenericRepository.cs" />
     <Compile Include="Data\Persistence\Repository\IRepository.cs" />

@@ -3,7 +3,7 @@ using System;
 using Windows.Devices.Geolocation;
 using Windows.Devices.Geolocation.Geofencing;
 
-namespace LocationAlarm.Geofencing
+namespace CoreLibrary.Data.Geofencing
 {
     public class GeofenceBuilder
     {
@@ -47,7 +47,7 @@ namespace LocationAlarm.Geofencing
         {
         }
 
-        public GeofenceBuilder(Windows.Devices.Geolocation.Geofencing.Geofence prototype)
+        public GeofenceBuilder(Geofence prototype)
         {
             SetRequiredId(prototype.Id);
             ThenSetGeocircle(prototype.Geoshape);
@@ -57,7 +57,7 @@ namespace LocationAlarm.Geofencing
                 UseOnlyOnce();
         }
 
-        public Windows.Devices.Geolocation.Geofencing.Geofence Build()
+        public Geofence Build()
         {
             if (_monitoredStates == null)
                 return new Windows.Devices.Geolocation.Geofencing.Geofence(_id, _geoshape);
@@ -69,7 +69,7 @@ namespace LocationAlarm.Geofencing
             return new Windows.Devices.Geolocation.Geofencing.Geofence(_id, _geoshape, _monitoredStates.Value, _singleUse, _dwellTime.Value, _startTime.Value, _duration.Value);
         }
 
-        public Windows.Devices.Geolocation.Geofencing.Geofence BuildFromAlarm(Alarm alarm)
+        public Geofence BuildFromAlarm(Alarm alarm)
         {
             var geoposition = new BasicGeoposition
             {
@@ -79,7 +79,7 @@ namespace LocationAlarm.Geofencing
             };
             var dwellTime = TimeSpan.FromSeconds(1);
             var geoshape = new Geocircle(geoposition, alarm.Radius);
-            return new Geofence(alarm.Id.ToString(), geoshape, MonitoredGeofenceStates.Entered,
+            return new Geofence(alarm.Name, geoshape, MonitoredGeofenceStates.Entered,
                 string.IsNullOrEmpty(alarm.ActiveDays), dwellTime);
         }
 

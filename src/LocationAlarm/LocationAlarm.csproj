@@ -93,7 +93,6 @@
     <Compile Include="Extensions\BasicGeopositionExtension.cs" />
     <Compile Include="Interceptors\AsyncErrorHandler.cs" />
     <Compile Include="Location\LocationAutosuggestion\LocationAutosuggestion.cs" />
-    <Compile Include="Geofencing\GeofenceBuilder.cs" />
     <Compile Include="Navigation\INavigationServiceWithToken.cs" />
     <Compile Include="Navigation\NavigationServiceWithToken.cs" />
     <Compile Include="Model\LocationAlarmModel.cs" />
@@ -102,6 +101,7 @@
     <Compile Include="Utils\IAssetsNamesReader.cs" />
     <Compile Include="Utils\IScreenshotManager.cs" />
     <Compile Include="Utils\ScreenshotManager.cs" />
+    <Compile Include="Utils\SystemSounds.cs" />
     <Compile Include="ViewModel\AlarmSettingsViewModel.cs" />
     <Compile Include="ViewModel\DataTemplates\DayOfWeekDataTemplate.cs" />
     <Compile Include="ViewModel\ViewModelBaseEx.cs" />

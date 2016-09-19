@@ -17,10 +17,6 @@ namespace CoreLibrary.Service.Geofencing
         public GeofenceService()
         {
             _geofenceMonitor = GeofenceMonitor.Current;
-            _geofenceMonitor.StatusChanged += (sender, args) =>
-            {
-                var status = Status;
-            };
         }
 
         public bool IsGeofenceRegistered(string id) => _geofenceMonitor.Geofences.Any(geofence => geofence.Id == id);

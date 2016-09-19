@@ -2,8 +2,8 @@
 using Autofac.Core.Activators.Reflection;
 using BackgroundTask;
 using CoreLibrary.Data.DataModel.PersistentModel;
+using CoreLibrary.Data.Geofencing;
 using CoreLibrary.Data.Persistence.Repository;
-using CoreLibrary.DataModel;
 using CoreLibrary.Service;
 using CoreLibrary.Service.Geofencing;
 using CoreLibrary.Service.Geolocation;
@@ -148,6 +148,9 @@ namespace ArrivalAlarm
             builder.RegisterType<GeofenceService>()
                 .As<IGeofenceService>();
 
+            builder.RegisterType<GeofenceBuilder>()
+                .AsSelf();
+
             builder.RegisterInstance(ApplicationData.Current.LocalFolder)
                 .As<IStorageFolder>()
                 .Named<IStorageFolder>("defaultFolder");
@@ -163,11 +166,6 @@ namespace ArrivalAlarm
                 .SingleInstance()
                 .AsImplementedInterfaces()
                 .WithParameter(new AutowiringParameter());
-
-            builder.RegisterType<GelocationAlarmRepository>()
-                .AsSelf()
-                .As<IRepository<GeolocationAlarm>>()
-                .SingleInstance();
 
             builder.RegisterType<BackgroundTaskManager<GeofenceTask>>()
                 .AsSelf()

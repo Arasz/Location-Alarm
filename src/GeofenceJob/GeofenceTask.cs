@@ -1,11 +1,11 @@
 ﻿using BackgroundTask.Toast;
-using CoreLibrary.Data;
 using CoreLibrary.Data.DataModel.PersistentModel;
 using CoreLibrary.Data.Persistence.Repository;
 using CoreLibrary.Service;
 using CoreLibrary.Service.Geofencing;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using Windows.ApplicationModel.Background;
@@ -46,8 +46,6 @@ namespace BackgroundTask
 
             await DisableAlarmsAsync(triggeredAlarms.Select(triggeredAlarm => triggeredAlarm.Alarm)).ConfigureAwait(false);
 
-            await ReregisterGeofences(triggeredAlarms).ConfigureAwait(false);
-
             _deferral.Complete();
         }
 
@@ -75,7 +73,7 @@ namespace BackgroundTask
             var activeGeofences = reports
                 .Where(report => report.NewState == GeofenceState.Entered)
                 .Join(alarms, report => report.Geofence.Id,
-                      alarm => alarm.Name,
+                      alarm => alarm.Name.ToString(),
                      (report, alarm) => new TriggeredAlarm(report, alarm));
 
             return activeGeofences;
@@ -88,8 +86,8 @@ namespace BackgroundTask
             if (string.IsNullOrEmpty(activeDays))
                 return true;
 
-            var parsedDays = activeDays.Split(',').Select(dayName => new WeekDay(dayName).Day);
-            return parsedDays.Contains(DateTime.Today.DayOfWeek);
+            var parsedDays = activeDays.Split(',');
+            return parsedDays.Contains(DateTimeFormatInfo.CurrentInfo.GetDayName(DateTime.Today.DayOfWeek));
         }
 
         private async Task ReregisterGeofences(List<TriggeredAlarm> triggeredAlarms)

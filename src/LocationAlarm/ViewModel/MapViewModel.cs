@@ -1,7 +1,6 @@
 ﻿using Commander;
-using CoreLibrary.DataModel;
+using CoreLibrary.Data.DataModel.PersistentModel;
 using CoreLibrary.Service.Geolocation;
-using CoreLibrary.StateManagement;
 using GalaSoft.MvvmLight.Messaging;
 using LocationAlarm.Common;
 using LocationAlarm.Extensions;
@@ -19,16 +18,14 @@ using Windows.Services.Maps;
 namespace LocationAlarm.ViewModel
 {
     [ImplementPropertyChanged]
-    public class MapViewModel : ViewModelBaseEx
+    public class MapViewModel : ViewModelBaseEx<Alarm>
     {
         private readonly LocationAutoSuggestion _autoSuggestion;
         private readonly IGeolocationService _geolocationService;
 
-        public BasicGeoposition ActualLocation
-        {
-            get { return CurrentAlarm.Geoposition; }
-            private set { CurrentAlarm.Geoposition = value; }
-        }
+        public BasicGeoposition ActualLocation { get; set; }
+
+        public string AlarmName { get; set; }
 
         public string AutoSuggestionLocationQuery
         {
@@ -42,19 +39,11 @@ namespace LocationAlarm.ViewModel
             }
         }
 
-        public double GeocircleRadius
-        {
-            get { return CurrentAlarm.Radius; }
-            set { CurrentAlarm.Radius = value; }
-        }
+        public double GeocircleRadius { get; set; }
 
         public bool IsMapLoaded { get; private set; }
 
-        public string MapScreenshotPath
-        {
-            get { return CurrentAlarm.MapScreenPath; }
-            set { CurrentAlarm.MapScreenPath = value; }
-        }
+        public string MapScreenshotPath { get; set; }
 
         public double MaxGeocircleRadius { get; } = 5000;
 
@@ -68,10 +57,7 @@ namespace LocationAlarm.ViewModel
 
         public ICommand TextChangeCommand { get; private set; }
 
-        public double ZoomLevel
-        {
-            get; private set;
-        }
+        public double ZoomLevel { get; private set; }
 
         public MapViewModel(NavigationServiceWithToken navigationService, IGeolocationService geolocationService) : base(navigationService)
         {
@@ -85,7 +71,7 @@ namespace LocationAlarm.ViewModel
         public override void GoBack()
         {
             //_selectedAlarm = _navigationService.LastPageKey == nameof(AlarmSettingsPage) ? _monitoredAreaCopy : _monitoredArea;
-            AlarmStateManager.Restore();
+            //AlarmStateManager.Restore();
             _navigationService.GoBack();
         }
 
@@ -99,15 +85,49 @@ namespace LocationAlarm.ViewModel
 
         public override async void OnNavigatedTo(object parameter)
         {
-            CurrentAlarm = parameter as GeolocationAlarm;
-            AlarmStateManager = new StateManager<GeolocationAlarm>(CurrentAlarm);
-            AlarmStateManager.Save();
+            Model = parameter as Alarm;
+            await InitializeFromModelAsync(Model).ConfigureAwait(true);
 
             MessengerInstance.Register<MapLocation>(this, OnSuggestionSelected);
 
             IsMapLoaded = false;
 
             await UpdateUserLocationAsync().ConfigureAwait(false);
+        }
+
+        protected override Task<Alarm> CreateModelAsync()
+        {
+            var newModel = new Alarm
+            {
+                Id = Model.Id,
+                AlarmSound = Model.AlarmSound,
+                AlarmType = Model.AlarmType,
+                IsActive = Model.IsActive,
+                ActiveDays = Model.ActiveDays,
+
+                Name = AlarmName,
+                Altitude = ActualLocation.Altitude,
+                Latitude = ActualLocation.Latitude,
+                Longitude = ActualLocation.Longitude,
+                MapScreenPath = MapScreenshotPath,
+                Radius = GeocircleRadius,
+            };
+            return Task.FromResult(newModel);
+        }
+
+        protected override Task InitializeFromModelAsync(Alarm model)
+        {
+            AlarmName = model.Name;
+            AutoSuggestionLocationQuery = AlarmName;
+            GeocircleRadius = model.Radius;
+            ActualLocation = new BasicGeoposition
+            {
+                Altitude = model.Altitude,
+                Longitude = model.Longitude,
+                Latitude = model.Latitude
+            };
+            MapScreenshotPath = model.MapScreenPath;
+            return Task.FromResult(1);
         }
 
         /// <summary>
@@ -149,7 +169,8 @@ namespace LocationAlarm.ViewModel
                 }
             }).ConfigureAwait(true);
 
-            _navigationService.NavigateTo(nameof(AlarmSettingsPage), CurrentAlarm);
+            var model = await CreateModelAsync().ConfigureAwait(true);
+            _navigationService.NavigateTo(nameof(AlarmSettingsPage), model);
         }
 
         [OnCommand("FindMeCommand")]
@@ -162,10 +183,10 @@ namespace LocationAlarm.ViewModel
             var locationData = await FetchGeolocationDataFromServiceAsync(fetchActualLocation)
                 .ConfigureAwait(true);
 
-            CurrentAlarm.Name = locationData.Item2.ToString();
+            AlarmName = locationData.Item2.ToString();
 
             ActualLocation = locationData.Item1; // UI
-            AutoSuggestionLocationQuery = CurrentAlarm.Name; // UI
+            AutoSuggestionLocationQuery = AlarmName; // UI
             ZoomLevel = 12; // UI
             PushpinVisible = true; // UI
             IsMapLoaded = true; //UI

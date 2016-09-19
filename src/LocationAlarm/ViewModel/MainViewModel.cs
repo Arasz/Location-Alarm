@@ -1,5 +1,5 @@
 using Commander;
-using CoreLibrary.DataModel;
+using CoreLibrary.Data.DataModel.PersistentModel;
 using GalaSoft.MvvmLight.Command;
 using LocationAlarm.Common;
 using LocationAlarm.Controls.AlarmItem;
@@ -9,13 +9,14 @@ using LocationAlarm.View;
 using PropertyChanged;
 using System.Collections.Specialized;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows.Input;
 using Windows.UI.Xaml.Controls;
 
 namespace LocationAlarm.ViewModel
 {
     [ImplementPropertyChanged]
-    public class MainViewModel : ViewModelBaseEx
+    public class MainViewModel : ViewModelBaseEx<Alarm>
     {
         private readonly LocationAlarmModel _locationAlarmModel;
 
@@ -35,10 +36,10 @@ namespace LocationAlarm.ViewModel
         }
 
         [OnCommand("AddNewAlarmCommand")]
-        public void AddNewAlarm()
+        public async void AddNewAlarm()
         {
-            CurrentAlarm = _locationAlarmModel.NewAlarm;
-            _navigationService.NavigateTo(nameof(MapPage), CurrentAlarm, Token.AddNew);
+            Model = await CreateModelAsync().ConfigureAwait(true);
+            _navigationService.NavigateTo(nameof(MapPage), Model, Token.AddNew);
         }
 
         public override void GoBack()
@@ -56,7 +57,7 @@ namespace LocationAlarm.ViewModel
 
         public override async void OnNavigatedTo(object parameter)
         {
-            CurrentAlarm = parameter as GeolocationAlarm;
+            Model = parameter as Alarm;
 
             switch (_navigationService.LastPageKey)
             {
@@ -65,11 +66,18 @@ namespace LocationAlarm.ViewModel
 
                 case nameof(AlarmSettingsPage):
                     if (_navigationService.Token == Token.AddNew)
-                        await _locationAlarmModel.SaveAsync(CurrentAlarm).ConfigureAwait(false);
+                        await _locationAlarmModel.SaveAsync(Model).ConfigureAwait(false);
                     else
-                        await _locationAlarmModel.UpdateAsync(CurrentAlarm).ConfigureAwait(false);
+                        await _locationAlarmModel.UpdateAsync(Model).ConfigureAwait(false);
                     break;
             }
+        }
+
+        protected override Task<Alarm> CreateModelAsync() => Task.FromResult(new Alarm());
+
+        protected override Task InitializeFromModelAsync(Alarm model)
+        {
+            throw new System.NotImplementedException();
         }
 
         [OnCommand("DeleteAlarmCommand")]
@@ -80,17 +88,17 @@ namespace LocationAlarm.ViewModel
 
         private void EditAlarmExecute(SelectionChangedEventArgs selectionChangedEventArgs)
         {
-            CurrentAlarm = selectionChangedEventArgs.AddedItems.FirstOrDefault() as GeolocationAlarm;
-            if (CurrentAlarm == null)
-                return;
-            _navigationService.NavigateTo(nameof(AlarmSettingsPage), CurrentAlarm, Token.None);
+            var selectedModel = selectionChangedEventArgs.AddedItems.FirstOrDefault() as Alarm;
+            if (selectedModel != null)
+                _navigationService.NavigateTo(nameof(AlarmSettingsPage), selectedModel, Token.None);
         }
 
         [OnCommand("AlarmEnabledChangedCommand")]
         private async void IsAlarmEnabledChangedCommnad(AlarmItemEventArgs eventArgs)
         {
             var alarm = eventArgs.Source;
-            await _locationAlarmModel.ToggleAlarmAsync(alarm).ConfigureAwait(false);
+            if (alarm != null)
+                await _locationAlarmModel.ToggleAlarmAsync(alarm).ConfigureAwait(false);
         }
     }
 }
