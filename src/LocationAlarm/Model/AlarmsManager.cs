@@ -14,9 +14,9 @@ using Windows.UI.Core;
 namespace LocationAlarm.Model
 {
     /// <summary>
-    /// Application model 
+    /// Manages alarms collection 
     /// </summary>
-    public class LocationAlarmModel
+    public class AlarmsManager
     {
         private readonly BackgroundTaskManager<GeofenceTask> _backgroundTaskManager;
         private readonly GeofenceBuilder _builder;
@@ -25,7 +25,7 @@ namespace LocationAlarm.Model
 
         public ObservableCollection<Alarm> GeolocationAlarms { get; private set; }
 
-        public LocationAlarmModel(IRepository<Alarm> repository, IGeofenceService geofenceService, BackgroundTaskManager<GeofenceTask> backgroundTaskManager, GeofenceBuilder builder)
+        public AlarmsManager(IRepository<Alarm> repository, IGeofenceService geofenceService, BackgroundTaskManager<GeofenceTask> backgroundTaskManager, GeofenceBuilder builder)
         {
             _repository = repository;
             _geofenceService = geofenceService;
@@ -42,7 +42,7 @@ namespace LocationAlarm.Model
             _geofenceService.RemoveGeofence(alarm.Name);
         }
 
-        public async Task ReloadDataAsync()
+        public async Task ReloadAsync()
         {
             GeolocationAlarms.Clear();
             var savedAlarms = await _repository.GetAllAsync().ConfigureAwait(true);
@@ -61,7 +61,7 @@ namespace LocationAlarm.Model
                 await InsertAsync(alarm).ConfigureAwait(false);
             else
             {
-                ReplaceAlram(alarm, notUniqueAlarm);
+                ReplaceAlarm(alarm, notUniqueAlarm);
                 await UpdateAsync(alarm).ConfigureAwait(false);
             }
         }
@@ -88,7 +88,7 @@ namespace LocationAlarm.Model
         private async void BackgroundTaskManagerOnTaskCompleted(object sender, EventArgs eventArgs)
         {
             await DispatcherHelper.UIDispatcher.RunAsync(CoreDispatcherPriority.Normal,
-               async () => await ReloadDataAsync().ConfigureAwait(false));
+               async () => await ReloadAsync().ConfigureAwait(false));
         }
 
         private async Task InsertAsync(Alarm alarm)
@@ -98,7 +98,7 @@ namespace LocationAlarm.Model
             _geofenceService.RegisterGeofence(_builder.BuildFromAlarm(alarm));
         }
 
-        private void ReplaceAlram(Alarm replacement, Alarm replaced)
+        private void ReplaceAlarm(Alarm replacement, Alarm replaced)
         {
             replacement.Id = replaced.Id;
             var index = GeolocationAlarms.IndexOf(replaced);

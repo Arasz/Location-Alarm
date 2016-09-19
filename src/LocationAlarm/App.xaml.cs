@@ -176,7 +176,7 @@ namespace ArrivalAlarm
                 .As<IAssetsNamesReader>()
                 .SingleInstance();
 
-            builder.RegisterType<LocationAlarmModel>()
+            builder.RegisterType<AlarmsManager>()
                 .AsSelf();
 
             builder.RegisterType<LocationAutoSuggestion>()

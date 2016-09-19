@@ -85,6 +85,11 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controllers\BaseController.cs" />
+    <Compile Include="Controllers\GenericController.cs" />
+    <Compile Include="Controllers\MainController.cs" />
+    <Compile Include="Controllers\MapController.cs" />
+    <Compile Include="Controllers\SettingsController.cs" />
     <Compile Include="Controls\AlarmItem\AlarmItemEventArgs.cs" />
     <Compile Include="Controls\AlarmItem\MetersToKilometersConverter.cs" />
     <Compile Include="Converters\AlarmTypeConverter.cs" />
@@ -93,9 +98,12 @@
     <Compile Include="Extensions\BasicGeopositionExtension.cs" />
     <Compile Include="Interceptors\AsyncErrorHandler.cs" />
     <Compile Include="Location\LocationAutosuggestion\LocationAutosuggestion.cs" />
+    <Compile Include="Navigation\Bundle\Bundle.cs" />
     <Compile Include="Navigation\INavigationServiceWithToken.cs" />
     <Compile Include="Navigation\NavigationServiceWithToken.cs" />
-    <Compile Include="Model\LocationAlarmModel.cs" />
+    <Compile Include="Model\AlarmsManager.cs" />
+    <Compile Include="Navigation\NavigationService\INavigationService.cs" />
+    <Compile Include="Navigation\NavigationService\NavigationService.cs" />
     <Compile Include="Tasks\BackgroundTaskManager.cs" />
     <Compile Include="ViewModel\AlarmSettingsViewModel.cs" />
     <Compile Include="ViewModel\DataTemplates\DayOfWeekDataTemplate.cs" />
