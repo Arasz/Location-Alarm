@@ -16,19 +16,37 @@ namespace CoreLibrary.Data.Persistence.Repository
     {
         AsyncTableQuery<TEntity> CustomQuery { get; }
 
+        int Delete(TEntity entity);
+
+        void DeleteAll();
+
         Task DeleteAllAsync();
 
         Task<int> DeleteAsync(TEntity entity);
 
+        IEnumerable<TEntity> Find(Expression<Func<TEntity, bool>> predicate);
+
         Task<IEnumerable<TEntity>> FindAsync(Expression<Func<TEntity, bool>> predicate);
+
+        TEntity Get(int id);
+
+        IEnumerable<TEntity> GetAll();
 
         Task<IEnumerable<TEntity>> GetAllAsync();
 
         Task<TEntity> GetAsync(int id);
 
+        int Insert(TEntity entity);
+
+        int InsertAll(IEnumerable<TEntity> entities);
+
         Task<int> InsertAllAsync(IEnumerable<TEntity> entities);
 
         Task<int> InsertAsync(TEntity entity);
+
+        int Update(TEntity entity);
+
+        int UpdateAll(IEnumerable<TEntity> entities);
 
         Task<int> UpdateAllAsync(IEnumerable<TEntity> entities);
 

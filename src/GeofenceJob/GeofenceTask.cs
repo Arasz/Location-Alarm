@@ -1,6 +1,7 @@
 ﻿using BackgroundTask.Toast;
 using CoreLibrary.Data.DataModel.PersistentModel;
 using CoreLibrary.Data.Persistence.Repository;
+using CoreLibrary.Extensions;
 using CoreLibrary.Logger;
 using CoreLibrary.Service;
 using CoreLibrary.Service.Geofencing;
@@ -55,11 +56,11 @@ namespace BackgroundTask
 
                 ChangeFiredState(triggeredAlarms);
 
-                DisableAlarms(triggeredAlarms.Select(triggeredAlarm => triggeredAlarm.Alarm).ToList());
+                DisableAlarms(qualifiedToNotification.Select(alarm => alarm.Alarm).ToList());
 
                 await UpdateAlarms().ConfigureAwait(false);
 
-                await ReregisterGeofences(triggeredAlarms).ConfigureAwait(false);
+                RefreshGeofences(triggeredAlarms);
             }
             catch (Exception exception)
             {
@@ -69,8 +70,10 @@ namespace BackgroundTask
             _deferral.Complete();
         }
 
-        private static List<TriggeredAlarm> AlarmsQualifiedToNotification(IList<TriggeredAlarm> triggeredAlarms)
-            => triggeredAlarms.Where(alarm => !alarm.Alarm.Fired && alarm.Report.NewState == GeofenceState.Entered).ToList();
+        private static List<TriggeredAlarm> AlarmsQualifiedToNotification(IList<TriggeredAlarm> triggeredAlarms) => triggeredAlarms
+            .Where(alarm => !alarm.Alarm.Fired && alarm.Report.NewState == GeofenceState.Entered)
+            .Distinct(new TriggeredAlarmEqualityComparer())
+            .ToList();
 
         private void ChangeFiredState(IList<TriggeredAlarm> triggeredAlarms)
         {
@@ -135,7 +138,7 @@ namespace BackgroundTask
             return parsedDays.Contains(DateTimeFormatInfo.CurrentInfo.GetDayName(DateTime.Today.DayOfWeek));
         }
 
-        private async Task ReregisterGeofences(IList<TriggeredAlarm> triggeredAlarms)
+        private void RefreshGeofences(IList<TriggeredAlarm> triggeredAlarms)
         {
             var geofences = triggeredAlarms
                 .Where(alarm => !string.IsNullOrEmpty(alarm.Alarm.ActiveDays))

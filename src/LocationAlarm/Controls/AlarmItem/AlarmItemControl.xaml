@@ -79,7 +79,9 @@
                       HorizontalAlignment="Stretch"  OffContent="" OnContent=""
                       Toggled="ToggleSwitch_OnToggled" />
 
-        <Line Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3"  Stretch="Uniform" Stroke="White" StrokeThickness="1" Height="10" HorizontalAlignment="Stretch"
+        <Line Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2"  Stretch="Uniform"
+              Stroke="{Binding Path=Fired, Converter={StaticResource BooleanToColorConverter}}"
+              StrokeThickness="1" Height="10" HorizontalAlignment="Stretch"
               VerticalAlignment="Bottom" X1="0" Y1="0" X2="1000" Y2="0"
               Visibility="Visible" />
     </Grid>

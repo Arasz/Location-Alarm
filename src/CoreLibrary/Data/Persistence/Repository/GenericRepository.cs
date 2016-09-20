@@ -3,6 +3,7 @@ using SQLite;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Windows.Storage;
@@ -37,6 +38,10 @@ namespace CoreLibrary.Data.Persistence.Repository
             CreateTable();
         }
 
+        public int Delete(TEntity entity) => Connection.Delete(entity);
+
+        public void DeleteAll() => Connection.DeleteAll<TEntity>();
+
         public async Task DeleteAllAsync() => await AsyncConnection
             .RunInTransactionAsync(connection => connection.DeleteAll<TEntity>())
             .ConfigureAwait(false);
@@ -51,11 +56,17 @@ namespace CoreLibrary.Data.Persistence.Repository
             _connection = null;
         }
 
+        public IEnumerable<TEntity> Find(Expression<Func<TEntity, bool>> predicate) => Connection.Table<TEntity>().Where(predicate);
+
         public async Task<IEnumerable<TEntity>> FindAsync(Expression<Func<TEntity, bool>> predicate)
                     => await AsyncConnection.Table<TEntity>()
                 .Where(predicate)
                 .ToListAsync()
                 .ConfigureAwait(false);
+
+        public TEntity Get(int id) => Connection.Get<TEntity>(id);
+
+        public IEnumerable<TEntity> GetAll() => Connection.Table<TEntity>().ToList();
 
         public async Task<IEnumerable<TEntity>> GetAllAsync() => await AsyncConnection.Table<TEntity>()
                     .ToListAsync()
@@ -64,11 +75,19 @@ namespace CoreLibrary.Data.Persistence.Repository
         public async Task<TEntity> GetAsync(int id) => await AsyncConnection.GetAsync<TEntity>(id)
                     .ConfigureAwait(false);
 
+        public int Insert(TEntity entity) => Connection.Insert(entity);
+
+        public int InsertAll(IEnumerable<TEntity> entities) => Connection.InsertAll(entities);
+
         public async Task<int> InsertAllAsync(IEnumerable<TEntity> entities) => await AsyncConnection.InsertAllAsync(entities)
                     .ConfigureAwait(false);
 
         public async Task<int> InsertAsync(TEntity entity) => await AsyncConnection.InsertAsync(entity)
             .ConfigureAwait(false);
+
+        public int Update(TEntity entity) => Connection.Update(entity);
+
+        public int UpdateAll(IEnumerable<TEntity> entities) => Connection.UpdateAll(entities);
 
         public async Task<int> UpdateAllAsync(IEnumerable<TEntity> entities) => await AsyncConnection.UpdateAllAsync(entities)
             .ConfigureAwait(false);

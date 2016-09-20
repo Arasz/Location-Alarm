@@ -83,12 +83,14 @@ namespace LocationAlarm.Model
 
         public async Task ToggleAlarmAsync(Alarm alarm)
         {
-            await _repository.UpdateAsync(alarm).ConfigureAwait(false);
-
             if (alarm.IsActive)
                 _geofenceService.RegisterGeofence(_builder.BuildFromAlarm(alarm));
             else
+            {
+                alarm.Fired = false;
                 _geofenceService.RemoveGeofence(alarm.Name);
+            }
+            await _repository.UpdateAsync(alarm).ConfigureAwait(false);
         }
 
         public async Task UpdateAsync(Alarm alarm)

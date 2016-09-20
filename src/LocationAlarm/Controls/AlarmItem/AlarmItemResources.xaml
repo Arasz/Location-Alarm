@@ -6,6 +6,7 @@
 
     <converters:DayNameConverter x:Name="DayNameConverter" />
     <local:MetersToKilometersConverter x:Name="MetersToKilometersConverter" />
+    <converters:BooleanToBrushConverter x:Name="BooleanToColorConverter" />
     <Style TargetType="TextBlock" x:Name="AlarmControlTextBlockStyle">
         <Setter Property="FontSize" Value="16" />
     </Style>
