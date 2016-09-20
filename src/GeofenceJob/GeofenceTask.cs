@@ -11,6 +11,7 @@ using System.Globalization;
 using System.Linq;
 using Windows.ApplicationModel.Background;
 using Windows.Devices.Geolocation.Geofencing;
+using Windows.Storage;
 using Windows.UI.Notifications;
 
 namespace BackgroundTask
@@ -22,6 +23,8 @@ namespace BackgroundTask
         private readonly ToastNotifier _toastNotifier;
         private HashSet<Alarm> _alarmsToUpdate;
         private ILogger _logger;
+
+        private static ApplicationDataContainer Settings => ApplicationData.Current.LocalSettings;
 
         public GeofenceTask()
         {
@@ -142,8 +145,10 @@ namespace BackgroundTask
 
         private void UpdateAlarms()
         {
-            if (_alarmsToUpdate.Any())
-                _alarmsRepository.UpdateAll(_alarmsToUpdate.ToList());
+            if (!_alarmsToUpdate.Any())
+                return;
+            Settings.Values["WasUpdated"] = true;
+            _alarmsRepository.UpdateAll(_alarmsToUpdate.ToList());
         }
     }
 }

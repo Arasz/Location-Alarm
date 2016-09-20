@@ -7,7 +7,7 @@ namespace CoreLibrary.Data.DataModel.PersistentModel
     /// <summary>
     /// Simple data model of alarm 
     /// </summary>
-    [DataContract]
+    [DataContract, ToString]
     public class Alarm : Entity
     {
         /// <summary>

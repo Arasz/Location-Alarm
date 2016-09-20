@@ -9,6 +9,7 @@ using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
+using Windows.Storage;
 using Windows.UI.Core;
 
 namespace LocationAlarm.Model
@@ -28,6 +29,11 @@ namespace LocationAlarm.Model
         private volatile bool _isDataReloading;
 
         public ObservableCollection<Alarm> GeolocationAlarms { get; }
+
+        private static ApplicationDataContainer Settings
+        {
+            get { return ApplicationData.Current.LocalSettings; }
+        }
 
         public LocationAlarmModel(IRepository<Alarm> repository, IGeofenceService geofenceService, BackgroundTaskManager<GeofenceTask> backgroundTaskManager, GeofenceBuilder builder)
         {
@@ -105,8 +111,11 @@ namespace LocationAlarm.Model
 
         private async void BackgroundTaskManagerOnTaskCompleted(object sender, EventArgs eventArgs)
         {
-            await DispatcherHelper.UIDispatcher.RunAsync(CoreDispatcherPriority.Normal,
-               async () => await ReloadDataAsync().ConfigureAwait(false));
+            if (Settings.Values.ContainsKey("WasUpdated") && (bool)Settings.Values["WasUpdated"])
+            {
+                await DispatcherHelper.UIDispatcher.RunAsync(CoreDispatcherPriority.Normal,
+                    async () => await ReloadDataAsync().ConfigureAwait(false));
+            }
         }
 
         private async Task InsertAsync(Alarm alarm)
