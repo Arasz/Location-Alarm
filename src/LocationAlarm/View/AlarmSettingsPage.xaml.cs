@@ -1,7 +1,7 @@
 ﻿// The Basic Page item template is documented at http://go.microsoft.com/fwlink/?LinkID=390556
 
-using CoreLibrary.Data;
 using LocationAlarm.ViewModel;
+using System.Globalization;
 using System.Linq;
 using Windows.UI.Xaml.Controls;
 
@@ -20,7 +20,9 @@ namespace LocationAlarm.View
         private void FlyoutBase_OnClosed(object sender, object e)
         {
             var flyout = RepeatSettingsButton.Flyout as ListPickerFlyout;
-            _viewModel.SelectedDays = flyout.SelectedItems.Cast<WeekDay>().ToList();
+            var sortedDays = DateTimeFormatInfo.CurrentInfo.DayNames;
+            var selectedDays = flyout.SelectedItems.Cast<string>().ToList();
+            _viewModel.SelectedDays = sortedDays.Where(day => selectedDays.Contains(day)).ToList();
         }
 
         private void FlyoutBase_OnOpening(object sender, object e)
@@ -29,7 +31,7 @@ namespace LocationAlarm.View
             flyout.SelectedItems.Clear();
             var source = _viewModel.DaysOfWeek;
 
-            _viewModel.SelectedDays.ForEach(weekDay => flyout.SelectedItems.Add(source.First(day => day.Name == weekDay.Name)));
+            _viewModel.SelectedDays.ForEach(weekDay => flyout.SelectedItems.Add(source.First(day => day == weekDay)));
         }
     }
 }

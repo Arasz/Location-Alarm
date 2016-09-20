@@ -1,5 +1,4 @@
-﻿using CoreLibrary.Data;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using Windows.ApplicationModel.Resources;
@@ -14,22 +13,43 @@ namespace LocationAlarm.Converters
 
         public object Convert(object value, Type targetType, object parameter, string language)
         {
-            if (null == value) return value;
-            var activeDays = (IEnumerable<WeekDay>)value;
+            return targetType == typeof(string) ? ConvertString(value as string) : ConvertList(value as IEnumerable<string>);
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, string language)
+        {
+            throw new NotImplementedException();
+        }
+
+        private string ConvertList(IEnumerable<string> list)
+        {
+            var activeDays = (list).ToList();
+
             if (!activeDays.Any())
                 return _repeatOnceString;
 
             if (activeDays.Count() == 7)
                 return _everydayString;
 
-            return activeDays.OrderBy(day => day.Day).Select(day => day.ShortName)
-                    .Aggregate("", (aggregator, day) => aggregator += $"{day}, ")
-                    .Trim(' ', ',');
+            return activeDays
+                .Select(day => day.Substring(0, 3))
+                .Aggregate("", (aggregator, day) => aggregator += $"{day}, ")
+                .Trim(' ', ',');
         }
 
-        public object ConvertBack(object value, Type targetType, object parameter, string language)
+        private string ConvertString(string value)
         {
-            throw new NotImplementedException();
+            if (string.IsNullOrEmpty(value))
+                return _repeatOnceString;
+
+            var days = value.Split(',');
+
+            if (days.Length == 7)
+                return _everydayString;
+
+            return days.Select(day => $"{day.Substring(0, 3)},")
+                .Aggregate("", (accu, day) => accu += day)
+                .TrimEnd(',');
         }
     }
 }

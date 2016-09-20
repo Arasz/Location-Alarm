@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Windows.Storage;
 
-namespace LocationAlarm.Utils
+namespace CoreLibrary.Utils.AssetsReader
 {
     public class AssetsNamesReader : IAssetsNamesReader
     {

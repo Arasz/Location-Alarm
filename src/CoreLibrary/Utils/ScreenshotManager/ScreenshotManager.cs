@@ -8,7 +8,7 @@ using Windows.Storage;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Media.Imaging;
 
-namespace LocationAlarm.Utils
+namespace CoreLibrary.Utils.ScreenshotManager
 {
     public class ScreenshotManager : IScreenshotManager
     {

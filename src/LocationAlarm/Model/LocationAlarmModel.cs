@@ -1,8 +1,10 @@
-﻿using CoreLibrary.Data.Persistence.Repository;
-using CoreLibrary.DataModel;
+﻿using BackgroundTask;
+using CoreLibrary.Data.DataModel.PersistentModel;
+using CoreLibrary.Data.Geofencing;
+using CoreLibrary.Data.Persistence.Repository;
 using CoreLibrary.Service;
 using GalaSoft.MvvmLight.Threading;
-using LocationAlarm.Tasks;
+using LocationAlarm.BackgroundTask;
 using System;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -16,24 +18,28 @@ namespace LocationAlarm.Model
     /// </summary>
     public class LocationAlarmModel
     {
-        private readonly BackgroundTaskManager _backgroundTaskManager;
+        private readonly BackgroundTaskManager<GeofenceTask> _backgroundTaskManager;
+        private readonly GeofenceBuilder _builder;
         private readonly IGeofenceService _geofenceService;
-        private readonly IRepository<GeolocationAlarm> _repository;
+        private readonly IRepository<Alarm> _repository;
 
-        public ObservableCollection<GeolocationAlarm> GeolocationAlarms { get; private set; }
+        private readonly object syncRoot = new object();
 
-        public GeolocationAlarm NewAlarm => new GeolocationAlarm();
+        private volatile bool _isDataReloading;
 
-        public LocationAlarmModel(IRepository<GeolocationAlarm> repository, IGeofenceService geofenceService, BackgroundTaskManager backgroundTaskManager)
+        public ObservableCollection<Alarm> GeolocationAlarms { get; }
+
+        public LocationAlarmModel(IRepository<Alarm> repository, IGeofenceService geofenceService, BackgroundTaskManager<GeofenceTask> backgroundTaskManager, GeofenceBuilder builder)
         {
             _repository = repository;
             _geofenceService = geofenceService;
             _backgroundTaskManager = backgroundTaskManager;
+            _builder = builder;
             _backgroundTaskManager.TaskCompleted += BackgroundTaskManagerOnTaskCompleted;
-            GeolocationAlarms = new ObservableCollection<GeolocationAlarm>();
+            GeolocationAlarms = new ObservableCollection<Alarm>();
         }
 
-        public async Task DeleteAsync(GeolocationAlarm alarm)
+        public async Task DeleteAsync(Alarm alarm)
         {
             GeolocationAlarms.Remove(alarm);
             await _repository.DeleteAsync(alarm).ConfigureAwait(false);
@@ -42,17 +48,28 @@ namespace LocationAlarm.Model
 
         public async Task ReloadDataAsync()
         {
-            GeolocationAlarms.Clear();
+            lock (syncRoot)
+            {
+                if (_isDataReloading)
+                    return;
+                _isDataReloading = true;
+            }
+
             var savedAlarms = await _repository.GetAllAsync().ConfigureAwait(true);
+
+            GeolocationAlarms.Clear();
             foreach (var geolocationAlarm in savedAlarms)
             {
                 GeolocationAlarms.Add(geolocationAlarm);
                 if (geolocationAlarm.IsActive && !_geofenceService.IsGeofenceRegistered(geolocationAlarm.Name))
-                    _geofenceService.RegisterGeofence(geolocationAlarm.Geofence);
+                    _geofenceService.RegisterGeofence(_builder.BuildFromAlarm(geolocationAlarm));
             }
+
+            lock (syncRoot)
+                _isDataReloading = false;
         }
 
-        public async Task SaveAsync(GeolocationAlarm alarm)
+        public async Task SaveAsync(Alarm alarm)
         {
             var notUniqueAlarm = GeolocationAlarms.FirstOrDefault(geolocationAlarm => geolocationAlarm.Name == alarm.Name);
             if (notUniqueAlarm == null)
@@ -64,23 +81,26 @@ namespace LocationAlarm.Model
             }
         }
 
-        public async Task ToggleAlarmAsync(GeolocationAlarm alarm)
+        public async Task ToggleAlarmAsync(Alarm alarm)
         {
-            await _repository.UpdateAsync(alarm).ConfigureAwait(false);
-
             if (alarm.IsActive)
-                _geofenceService.RegisterGeofence(alarm.Geofence);
+                _geofenceService.RegisterGeofence(_builder.BuildFromAlarm(alarm));
             else
-                _geofenceService.RemoveGeofence(alarm.Geofence);
+                _geofenceService.RemoveGeofence(alarm.Name);
+
+            // alarm.Fired = false;
+
+            await _repository.UpdateAsync(alarm).ConfigureAwait(false);
         }
 
-        public async Task UpdateAsync(GeolocationAlarm alarm)
+        public async Task UpdateAsync(Alarm alarm)
         {
             if (!GeolocationAlarms.Contains(alarm))
                 return;
 
+            ReplaceAlarm(alarm);
             await _repository.UpdateAsync(alarm).ConfigureAwait(false);
-            _geofenceService.ReplaceGeofence(alarm.Name, alarm.Geofence);
+            _geofenceService.ReplaceGeofence(alarm.Name, _builder.BuildFromAlarm(alarm));
         }
 
         private async void BackgroundTaskManagerOnTaskCompleted(object sender, EventArgs eventArgs)
@@ -89,14 +109,20 @@ namespace LocationAlarm.Model
                async () => await ReloadDataAsync().ConfigureAwait(false));
         }
 
-        private async Task InsertAsync(GeolocationAlarm alarm)
+        private async Task InsertAsync(Alarm alarm)
         {
             GeolocationAlarms.Add(alarm);
             await _repository.InsertAsync(alarm).ConfigureAwait(false);
-            _geofenceService.RegisterGeofence(alarm.Geofence);
+            _geofenceService.RegisterGeofence(_builder.BuildFromAlarm(alarm));
         }
 
-        private void ReplaceAlram(GeolocationAlarm replacement, GeolocationAlarm replaced)
+        private void ReplaceAlarm(Alarm replacement)
+        {
+            var replaced = GeolocationAlarms.First(alarm => alarm.Id == replacement.Id);
+            ReplaceAlram(replacement, replaced);
+        }
+
+        private void ReplaceAlram(Alarm replacement, Alarm replaced)
         {
             replacement.Id = replaced.Id;
             var index = GeolocationAlarms.IndexOf(replaced);

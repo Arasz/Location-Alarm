@@ -93,15 +93,7 @@
     <Compile Include="Notifications\IAlarmNotificationService.cs" />
     <Compile Include="Notifications\ToastTemplate\SimpleToast.cs" />
     <Compile Include="TriggeredAlarm.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Reference Include="LinqEx, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\LinqEx.1.0.3\lib\LinqEx.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
+    <Compile Include="TriggeredAlarmEqualityComparer.cs" />
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '12.0' ">
     <VisualStudioVersion>12.0</VisualStudioVersion>

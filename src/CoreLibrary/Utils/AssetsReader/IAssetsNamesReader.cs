@@ -1,8 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace LocationAlarm.Utils
+namespace CoreLibrary.Utils.AssetsReader
 {
+    /// <summary>
+    /// Can read assets name from given assets path 
+    /// </summary>
     public interface IAssetsNamesReader
     {
         /// <summary>

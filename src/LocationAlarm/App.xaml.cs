@@ -2,18 +2,20 @@
 using Autofac.Core.Activators.Reflection;
 using BackgroundTask;
 using CoreLibrary.Data.DataModel.PersistentModel;
+using CoreLibrary.Data.Geofencing;
 using CoreLibrary.Data.Persistence.Repository;
-using CoreLibrary.DataModel;
+using CoreLibrary.Logger;
 using CoreLibrary.Service;
 using CoreLibrary.Service.Geofencing;
 using CoreLibrary.Service.Geolocation;
+using CoreLibrary.Utils.AssetsReader;
+using CoreLibrary.Utils.ScreenshotManager;
 using GalaSoft.MvvmLight.Threading;
 using GalaSoft.MvvmLight.Views;
+using LocationAlarm.BackgroundTask;
 using LocationAlarm.Location.LocationAutosuggestion;
 using LocationAlarm.Model;
 using LocationAlarm.Navigation;
-using LocationAlarm.Tasks;
-using LocationAlarm.Utils;
 using LocationAlarm.View;
 using LocationAlarm.ViewModel;
 using System;
@@ -40,9 +42,13 @@ namespace ArrivalAlarm
     {
         public static IContainer Container { get; set; }
 
-        private BackgroundTaskManager _backgroundTaskManager;
+        private BackgroundTaskManager<GeofenceTask> _backgroundTaskManager;
 
         private TransitionCollection transitions;
+
+        private ILogger _logger;
+
+        private IGeolocationService _geolocationService;
 
         /// <summary>
         /// Initializes the singleton application object. This is the first line of authored code
@@ -58,8 +64,9 @@ namespace ArrivalAlarm
 
         private void OnUnhandledException(object sender, UnhandledExceptionEventArgs unhandledExceptionEventArgs)
         {
-            Debug.WriteLine($"Message: {unhandledExceptionEventArgs.Message}");
-            Debug.WriteLine($"Stack trace: {unhandledExceptionEventArgs.Exception.StackTrace}");
+            //unhandledExceptionEventArgs.Handled = true;
+            _logger.LogException($"Unhandled exception: {unhandledExceptionEventArgs.Message}",
+                unhandledExceptionEventArgs.Exception);
         }
 
         /// <summary>
@@ -77,6 +84,9 @@ namespace ArrivalAlarm
             }
 #endif
             Resources["Locator"] = Container.Resolve<ViewModelLocator>();
+
+            _logger = Container.Resolve<ILogger>();
+
             var rootFrame = Window.Current.Content as Frame;
 
             // Do not repeat app initialization when the Window already has content, just ensure that
@@ -131,14 +141,19 @@ namespace ArrivalAlarm
             DispatcherHelper.Initialize();
 
             RegisterBackgroundTaskAsync();
+
+            AskAboutLocationPermision();
         }
+
+        private async Task AskAboutLocationPermision() => await _geolocationService.GetActualPositionAsync().ConfigureAwait(false);
 
         private async Task RegisterBackgroundTaskAsync()
         {
             if (_backgroundTaskManager == null)
-                _backgroundTaskManager = Container.Resolve<BackgroundTaskManager>();
+                _backgroundTaskManager = Container.Resolve<BackgroundTaskManager<GeofenceTask>>();
 
-            await _backgroundTaskManager.RegisterBackgroundTaskAsync(typeof(GeofenceTask)).ConfigureAwait(false);
+            if (!_backgroundTaskManager.IsTaskRegistered)
+                await _backgroundTaskManager.RegisterBackgroundTaskAsync().ConfigureAwait(false);
         }
 
         private static void InitializeIocContainer()
@@ -147,6 +162,15 @@ namespace ArrivalAlarm
 
             builder.RegisterType<GeofenceService>()
                 .As<IGeofenceService>();
+
+            builder.RegisterType<GenericRepository<Log>>()
+                .As<IRepository<Log>>();
+
+            builder.RegisterType<DatabseLogger>()
+                .AsImplementedInterfaces();
+
+            builder.RegisterType<GeofenceBuilder>()
+                .AsSelf();
 
             builder.RegisterInstance(ApplicationData.Current.LocalFolder)
                 .As<IStorageFolder>()
@@ -164,12 +188,7 @@ namespace ArrivalAlarm
                 .AsImplementedInterfaces()
                 .WithParameter(new AutowiringParameter());
 
-            builder.RegisterType<GelocationAlarmRepository>()
-                .AsSelf()
-                .As<IRepository<GeolocationAlarm>>()
-                .SingleInstance();
-
-            builder.RegisterType<BackgroundTaskManager>()
+            builder.RegisterType<BackgroundTaskManager<GeofenceTask>>()
                 .AsSelf()
                 .SingleInstance();
 
@@ -178,22 +197,20 @@ namespace ArrivalAlarm
                 .SingleInstance();
 
             builder.RegisterType<LocationAlarmModel>()
-                .AsSelf();
+                .AsSelf()
+                .SingleInstance();
 
             builder.RegisterType<LocationAutoSuggestion>()
                 .AsSelf();
 
             builder.RegisterType<MapViewModel>()
-                .AsSelf()
-                .SingleInstance();
+                .AsSelf();
 
             builder.RegisterType<MainViewModel>()
-                .AsSelf()
-                .SingleInstance();
+                .AsSelf();
 
             builder.RegisterType<AlarmSettingsViewModel>()
-                .AsSelf()
-                .SingleInstance();
+                .AsSelf();
 
             builder.RegisterType<NavigationService>()
                 .As<INavigationService>()

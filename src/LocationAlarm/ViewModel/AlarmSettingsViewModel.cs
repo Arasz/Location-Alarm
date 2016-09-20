@@ -1,15 +1,13 @@
 ﻿using Commander;
-using CoreLibrary.Data;
-using CoreLibrary.Data.DataModel;
-using CoreLibrary.DataModel;
-using CoreLibrary.StateManagement;
-using LocationAlarm.Common;
+using CoreLibrary.Data.DataModel.PersistentModel;
+using CoreLibrary.Utils;
+using CoreLibrary.Utils.ScreenshotManager;
 using LocationAlarm.Navigation;
-using LocationAlarm.Utils;
 using LocationAlarm.View;
 using PropertyChanged;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using Windows.ApplicationModel.Resources;
@@ -19,114 +17,93 @@ using Windows.UI.Xaml.Media.Imaging;
 namespace LocationAlarm.ViewModel
 {
     [ImplementPropertyChanged]
-    public class AlarmSettingsViewModel : ViewModelBaseEx
+    public class AlarmSettingsViewModel : ViewModelBaseEx<Alarm>
     {
-        private readonly IAssetsNamesReader _assetsNamesReader;
-        private readonly MediaPlayer _mediaPlayer = BackgroundMediaPlayer.Current;
-        private readonly ResourceLoader _resourceLoader;
         private readonly IScreenshotManager _screenshotManager;
 
-        public string AlarmName
-        {
-            get { return CurrentAlarm.Name; }
-            set { CurrentAlarm.Name = value; }
-        }
+        private volatile Alarm _model;
+
+        public string AlarmName { get; set; }
 
         public IEnumerable<AlarmType> AlarmTypes { get; private set; } = Enum.GetValues(typeof(AlarmType))
             .Cast<AlarmType>().ToList();
 
-        public IEnumerable<WeekDay> DaysOfWeek { get; private set; } = Enum.GetValues(typeof(DayOfWeek))
-            .Cast<DayOfWeek>().Select(week => new WeekDay(week)).ToList();
+        public IEnumerable<string> DaysOfWeek { get; private set; } = DateTimeFormatInfo.CurrentInfo.DayNames;
 
         public BitmapImage MapScreen { get; set; }
 
-        public IEnumerable<string> NotificationSounds { get; private set; } = new List<string> { "default" };
+        public IEnumerable<string> NotificationSounds { get; } = SystemSounds.Names;
 
-        public AlarmType SelectedAlarmType
-        {
-            get { return CurrentAlarm.AlarmType; }
-            set { CurrentAlarm.AlarmType = value; }
-        }
+        public AlarmType SelectedAlarmType { get; set; }
 
-        public List<WeekDay> SelectedDays
-        {
-            get { return CurrentAlarm.ActiveDays; }
-            set { CurrentAlarm.ActiveDays = value; }
-        }
+        public List<string> SelectedDays { get; set; } = new List<string>();
 
-        public string SelectedNotificationSound
-        {
-            get { return CurrentAlarm.AlarmSound; }
-            set { CurrentAlarm.AlarmSound = value; }
-        }
+        public string SelectedNotificationSound { get; set; }
 
-        public AlarmSettingsViewModel(NavigationServiceWithToken navigationService, IAssetsNamesReader assetsNamesReader, IScreenshotManager screenshotManager)
+        private MediaPlayer _mediaPlayer => BackgroundMediaPlayer.Current;
+
+        public AlarmSettingsViewModel(NavigationServiceWithToken navigationService, IScreenshotManager screenshotManager)
             : base(navigationService)
         {
-            _assetsNamesReader = assetsNamesReader;
             _screenshotManager = screenshotManager;
 
-            _resourceLoader = ResourceLoader.GetForCurrentView("Resources");
-            CurrentAlarm = new GeolocationAlarm();
-            InitializeAlaram();
+            ResourceLoader.GetForCurrentView("Resources");
         }
 
         [OnCommand("EditLocationCommand")]
-        public void EditLocation()
-        {
-            _navigationService.NavigateTo(nameof(MapPage), CurrentAlarm);
-        }
+        public void EditLocation() => _navigationService.NavigateTo(nameof(MapPage), SaveDataToModel(_model));
 
-        public override void GoBack()
-        {
-            AlarmStateManager.Restore();
-            _navigationService.GoBack();
-        }
-
-        [OnCommand("LoadedCommand")]
-        public async void Loaded()
-        {
-            MapScreen = await _screenshotManager.OpenScreenFromPathAsync(CurrentAlarm.MapScreenPath)
-                .ConfigureAwait(true);
-        }
+        public override void GoBack() => _navigationService.GoBack();
 
         public override async void OnNavigatedTo(object parameter)
         {
-            CurrentAlarm = parameter as GeolocationAlarm;
-            AlarmStateManager = new StateManager<GeolocationAlarm>(CurrentAlarm);
-            AlarmStateManager.Save();
+            _model = parameter as Alarm;
 
-            if (NotificationSounds.Count() <= 1)
-                await InitializeSoundFileNamesAsync().ConfigureAwait(true);
-            if (_navigationService.Token == Token.AddNew)
-                InitializeAlaram();
+            await InitializeViewModelAsync(_model).ConfigureAwait(false);
         }
 
         [OnCommand("PlaySoundCommand")]
         public void OnPlaySound(string soundName)
         {
-            _mediaPlayer.SetUriSource(new Uri(_resourceLoader.GetString("SoundFileAppendix") + soundName + ".mp3"));
+            var uri = new Uri(SystemSounds.NameToUriMap[soundName], UriKind.RelativeOrAbsolute);
+            _mediaPlayer.SetUriSource(uri);
             _mediaPlayer.Play();
         }
 
         [OnCommand("SaveSettingsCommand")]
-        public void OnSaveAlarmSettings()
+        public void OnSaveAlarmSettings() => _navigationService.NavigateTo(nameof(MainPage), SaveDataToModel(_model));
+
+        protected override async Task InitializeViewModelAsync(Alarm dataSource)
         {
-            _navigationService.NavigateTo(nameof(MainPage), CurrentAlarm);
+            AlarmName = dataSource.Name;
+            MapScreen = await _screenshotManager.OpenScreenFromPathAsync(dataSource.MapScreenPath)
+                .ConfigureAwait(true);
+            SelectedNotificationSound = SystemSounds.TrimPrefix(dataSource.AlarmSound);
+            SelectedDays = ParseActiveDays(dataSource.ActiveDays);
         }
 
-        private void InitializeAlaram()
+        protected override Alarm SaveDataToModel(Alarm prototype)
         {
-            SelectedNotificationSound = NotificationSounds.First();
+            var newModel = new Alarm
+            {
+                ActiveDays = ParseSelectedDays(),
+                AlarmSound = SystemSounds.NameToUriMap[SelectedNotificationSound],
+                AlarmType = SelectedAlarmType,
+
+                Id = prototype.Id,
+                Name = prototype.Name,
+                IsActive = prototype.IsActive,
+                MapScreenPath = prototype.MapScreenPath,
+                Radius = prototype.Radius,
+                Latitude = prototype.Latitude,
+                Longitude = prototype.Longitude,
+                Altitude = prototype.Altitude
+            };
+            return newModel;
         }
 
-        private async Task InitializeSoundFileNamesAsync()
-        {
-            var notificationSounds = await _assetsNamesReader
-                .ReadAsync("Sounds").ConfigureAwait(true);
+        private List<string> ParseActiveDays(string activeDays) => string.IsNullOrEmpty(activeDays) ? new List<string>() : activeDays.Split(',').ToList();
 
-            NotificationSounds = notificationSounds
-                .Select(s => s.Replace(".mp3", ""));
-        }
+        private string ParseSelectedDays() => SelectedDays.Aggregate("", (accu, name) => accu += $"{name},").TrimEnd(',');
     }
 }

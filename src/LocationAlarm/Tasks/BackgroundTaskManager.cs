@@ -3,9 +3,10 @@ using System.Linq;
 using System.Threading.Tasks;
 using Windows.ApplicationModel.Background;
 
-namespace LocationAlarm.Tasks
+namespace LocationAlarm.BackgroundTask
 {
-    public class BackgroundTaskManager
+    public class BackgroundTaskManager<TTask>
+        where TTask : IBackgroundTask
     {
         private IBackgroundTaskRegistration _registeredTask;
 
@@ -15,28 +16,42 @@ namespace LocationAlarm.Tasks
 
         public BackgroundAccessStatus BackgroundAccessStatus { get; private set; }
 
-        private IBackgroundTaskRegistration RegisteredTask => _registeredTask;
+        public bool IsTaskRegistered => BackgroundTaskRegistration.AllTasks.Values
+            .Any(taskRegistration => taskRegistration.Name == typeof(TTask).Name);
 
-        public BackgroundTaskManager()
+        public IBackgroundTaskRegistration RegisteredTask => _registeredTask ?? (_registeredTask = BackgroundTaskRegistration.AllTasks.Values
+                    .FirstOrDefault(registration => registration.Name == typeof(TTask).Name));
+
+        public async Task RegisterBackgroundTaskAsync() => await RegisterBackgroundTaskAsync(typeof(TTask)).ConfigureAwait(false);
+
+        public void UnregisterTask()
         {
+            if (!IsTaskRegistered)
+                return;
+            var taskToUnregister = RegisteredTask;
+            taskToUnregister?.Unregister(true);
+            _registeredTask = null;
         }
 
-        public IBackgroundTaskRegistration FetchBackgroundTaskRegistration(string taskName)
-                    => BackgroundTaskRegistration.AllTasks.Values.FirstOrDefault(registration => registration.Name == taskName);
+        private void OnRegisteredTaskCompleted(BackgroundTaskRegistration sender, BackgroundTaskCompletedEventArgs args) => OnTaskCompleted();
 
-        public async Task RegisterBackgroundTaskAsync(Type taskType) => await RegisterBackgroundTaskAsync(taskType.Name, taskType.FullName).ConfigureAwait(false);
+        private void OnRegisteredTaskProgress(BackgroundTaskRegistration sender, BackgroundTaskProgressEventArgs args) => OnTaskProgress((int)args.Progress);
 
-        public async Task RegisterBackgroundTaskAsync(string taskName, string taskEntryPoint)
+        private void OnTaskCompleted() => TaskCompleted?.Invoke(this, EventArgs.Empty);
+
+        private void OnTaskProgress(int progress) => TaskProgress?.Invoke(this, progress);
+
+        private async Task RegisterBackgroundTaskAsync(Type taskType) => await RegisterBackgroundTaskAsync(taskType.Name, taskType.FullName).ConfigureAwait(false);
+
+        private async Task RegisterBackgroundTaskAsync(string taskName, string taskEntryPoint)
         {
             BackgroundAccessStatus = await BackgroundExecutionManager.RequestAccessAsync();
 
-            if (IsTaskRegistered(taskName, out _registeredTask))
+            if (IsTaskRegistered)
             {
-                SubscribeBackgroundTaskEvents(_registeredTask);
+                SubscribeBackgroundTaskEvents(RegisteredTask);
                 return;
             }
-
-            var allTasks = BackgroundTaskRegistration.AllTasks.ToDictionary(pair => pair.Key, pair => pair.Value);
 
             var backgroundTaskBuilder = new BackgroundTaskBuilder()
             {
@@ -48,33 +63,10 @@ namespace LocationAlarm.Tasks
 
             backgroundTaskBuilder.SetTrigger(locationTrigger);
 
-            _registeredTask = backgroundTaskBuilder.Register();
+            backgroundTaskBuilder.Register();
 
-            SubscribeBackgroundTaskEvents(_registeredTask);
+            SubscribeBackgroundTaskEvents(RegisteredTask);
         }
-
-        public void UnregisterTask(string taskName)
-        {
-            var taskToUnregister = default(IBackgroundTaskRegistration);
-            if (!IsTaskRegistered(taskName, out taskToUnregister)) return;
-
-            taskToUnregister?.Unregister(true);
-        }
-
-        private bool IsTaskRegistered(string taskName, out IBackgroundTaskRegistration registeredTask)
-        {
-            registeredTask = FetchBackgroundTaskRegistration(taskName);
-
-            return registeredTask != null;
-        }
-
-        private void OnRegisteredTaskCompleted(BackgroundTaskRegistration sender, BackgroundTaskCompletedEventArgs args) => OnTaskCompleted();
-
-        private void OnRegisteredTaskProgress(BackgroundTaskRegistration sender, BackgroundTaskProgressEventArgs args) => OnTaskProgress((int)args.Progress);
-
-        private void OnTaskCompleted() => TaskCompleted?.Invoke(this, EventArgs.Empty);
-
-        private void OnTaskProgress(int progress) => TaskProgress?.Invoke(this, progress);
 
         private void SubscribeBackgroundTaskEvents(IBackgroundTaskRegistration registration)
         {

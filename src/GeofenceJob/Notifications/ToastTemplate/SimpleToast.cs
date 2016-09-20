@@ -52,7 +52,7 @@ namespace BackgroundTask.Notifications.ToastTemplate
             toastString.AppendLine("</visual>");
 
             if (!string.IsNullOrEmpty(Sound))
-                toastString.AppendLine($"<audio src=\"ms-appx:///Assets/Sounds/{Sound}.mp3\" loop=\"true\"/>");
+                toastString.AppendLine($"<audio src=\"{Sound}\"/>");
 
             toastString.AppendLine("</toast>");
             return toastString.ToString();

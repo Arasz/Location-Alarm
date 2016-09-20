@@ -1,8 +1,9 @@
-﻿using System;
+﻿using CoreLibrary.Data.DataModel.PersistentModel;
+using System;
 using Windows.Devices.Geolocation;
 using Windows.Devices.Geolocation.Geofencing;
 
-namespace LocationAlarm.Model
+namespace CoreLibrary.Data.Geofencing
 {
     public class GeofenceBuilder
     {
@@ -66,6 +67,20 @@ namespace LocationAlarm.Model
                 return new Geofence(_id, _geoshape, _monitoredStates.Value, _singleUse, _dwellTime.Value);
 
             return new Geofence(_id, _geoshape, _monitoredStates.Value, _singleUse, _dwellTime.Value, _startTime.Value, _duration.Value);
+        }
+
+        public Geofence BuildFromAlarm(Alarm alarm)
+        {
+            var geoposition = new BasicGeoposition
+            {
+                Latitude = alarm.Latitude,
+                Longitude = alarm.Longitude,
+                Altitude = alarm.Altitude
+            };
+            var dwellTime = TimeSpan.FromSeconds(1);
+            var geoshape = new Geocircle(geoposition, alarm.Radius);
+            return new Geofence(alarm.Name, geoshape, MonitoredGeofenceStates.Entered | MonitoredGeofenceStates.Exited,
+                string.IsNullOrEmpty(alarm.ActiveDays), dwellTime);
         }
 
         public GeofenceBuilder ConfigureMonitoredStates(MonitoredGeofenceStates states)

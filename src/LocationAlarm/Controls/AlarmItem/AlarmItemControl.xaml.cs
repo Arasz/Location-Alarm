@@ -1,4 +1,4 @@
-﻿using CoreLibrary.DataModel;
+﻿using CoreLibrary.Data.DataModel.PersistentModel;
 using System;
 using System.ComponentModel;
 using Windows.Foundation;
@@ -65,10 +65,10 @@ namespace LocationAlarm.Controls.AlarmItem
             _startPosition = e.Position;
         }
 
-        private void OnSwitchToggled(GeolocationAlarm model) => SwitchToggled?.Invoke(this, new AlarmItemEventArgs(model));
+        private void OnSwitchToggled(Alarm model) => SwitchToggled?.Invoke(this, new AlarmItemEventArgs(model));
 
-        private void OnSwypeToDeleteCompleted() => SwypeToDeleteCompleted?.Invoke(this, new AlarmItemEventArgs(DataContext as GeolocationAlarm));
+        private void OnSwypeToDeleteCompleted() => SwypeToDeleteCompleted?.Invoke(this, new AlarmItemEventArgs(DataContext as Alarm));
 
-        private void ToggleSwitch_OnToggled(object sender, RoutedEventArgs e) => OnSwitchToggled(DataContext as GeolocationAlarm);
+        private void ToggleSwitch_OnToggled(object sender, RoutedEventArgs e) => OnSwitchToggled(DataContext as Alarm);
     }
 }

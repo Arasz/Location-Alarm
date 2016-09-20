@@ -1,13 +1,14 @@
 ﻿using BackgroundTask.Toast;
-using CoreLibrary.Data;
 using CoreLibrary.Data.DataModel.PersistentModel;
 using CoreLibrary.Data.Persistence.Repository;
+using CoreLibrary.Extensions;
+using CoreLibrary.Logger;
 using CoreLibrary.Service;
 using CoreLibrary.Service.Geofencing;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
-using System.Threading.Tasks;
 using Windows.ApplicationModel.Background;
 using Windows.Devices.Geolocation.Geofencing;
 using Windows.UI.Notifications;
@@ -16,42 +17,80 @@ namespace BackgroundTask
 {
     public sealed class GeofenceTask : IBackgroundTask
     {
-        private IRepository<Alarm> _alarmsRepository;
-        private BackgroundTaskDeferral _deferral;
-        private IGeofenceService _geofenceService;
-        private IBackgroundTaskInstance _taskInstance;
-        private ToastNotifier _toastNotifier;
+        private readonly IRepository<Alarm> _alarmsRepository;
+        private readonly IGeofenceService _geofenceService;
+        private readonly ToastNotifier _toastNotifier;
+        private HashSet<Alarm> _alarmsToUpdate;
+        private ILogger _logger;
 
         public GeofenceTask()
         {
             _toastNotifier = ToastNotificationManager.CreateToastNotifier();
             _geofenceService = new GeofenceService();
             _alarmsRepository = new GenericRepository<Alarm>();
+            _logger = new DatabseLogger(new GenericRepository<Log>());
+            _alarmsToUpdate = new HashSet<Alarm>();
         }
 
-        public async void Run(IBackgroundTaskInstance taskInstance)
+        public void Run(IBackgroundTaskInstance taskInstance)
         {
-            _taskInstance = taskInstance;
-            _deferral = _taskInstance.GetDeferral();
+            try
+            {
+                var reports = _geofenceService.GeofenceStateChangeReports.ToList();
 
-            var reports = _geofenceService.GeofenceStateChangeReports;
+                var allAlarms = _alarmsRepository.GetAll().ToList();
 
-            var alarms = await FindActiveAlarmsAsync().ConfigureAwait(false);
+                var triggeredAlarms = GetTriggeredAlarms(reports, allAlarms);
 
-            var triggeredAlarms = GetTriggeredAlarmsAsync(reports, alarms).ToList();
+                var qualifiedToNotification = AlarmsQualifiedToNotification(reports, allAlarms);
 
-            var notificationService = new AlarmsNotificationService(_toastNotifier, triggeredAlarms);
+                var notificationService = new AlarmsNotificationService(_toastNotifier, qualifiedToNotification);
 
-            notificationService.Notify();
+                notificationService.Notify();
 
-            await DisableAlarmsAsync(triggeredAlarms.Select(triggeredAlarm => triggeredAlarm.Alarm)).ConfigureAwait(false);
+                ChangeFiredState(triggeredAlarms);
 
-            await ReregisterGeofences(triggeredAlarms).ConfigureAwait(false);
+                DisableAlarms(qualifiedToNotification.Select(alarm => alarm.Alarm).ToList());
 
-            _deferral.Complete();
+                UpdateAlarms();
+
+                RefreshGeofences(triggeredAlarms);
+            }
+            catch (Exception exception)
+            {
+                _logger.LogException($"Exception from {nameof(GeofenceTask)}", exception);
+            }
         }
 
-        private async Task DisableAlarmsAsync(IEnumerable<Alarm> alarms)
+        private IList<TriggeredAlarm> AlarmsQualifiedToNotification(IList<GeofenceStateChangeReport> reports, IList<Alarm> alarms)
+        {
+            var activeAlarms = FindActiveAlarms(alarms);
+
+            return GetTriggeredAlarms(reports, activeAlarms)
+                .Where(alarm => !alarm.Alarm.Fired && alarm.Report.NewState == GeofenceState.Entered)
+                .ToList();
+        }
+
+        private void ChangeFiredState(IList<TriggeredAlarm> triggeredAlarms)
+        {
+            triggeredAlarms
+                .Where(alarm => alarm.Report.NewState == GeofenceState.Entered && !alarm.Alarm.Fired)
+                .ForEach(alarm =>
+                {
+                    alarm.Alarm.Fired = true;
+                    _alarmsToUpdate.Add(alarm.Alarm);
+                });
+
+            triggeredAlarms
+                .Where(alarm => alarm.Report.NewState == GeofenceState.Exited && alarm.Alarm.Fired)
+                .ForEach(alarm =>
+                {
+                    alarm.Alarm.Fired = false;
+                    _alarmsToUpdate.Add(alarm.Alarm);
+                });
+        }
+
+        private void DisableAlarms(IList<Alarm> alarms)
         {
             var alarmsToDisable = alarms.Where(alarm => string.IsNullOrEmpty(alarm.ActiveDays)).ToArray();
 
@@ -59,24 +98,23 @@ namespace BackgroundTask
                 return;
 
             foreach (var alarm in alarmsToDisable)
+            {
                 alarm.IsActive = false;
-
-            await _alarmsRepository.UpdateAllAsync(alarmsToDisable).ConfigureAwait(false);
+                _alarmsToUpdate.Add(alarm);
+            }
         }
 
-        private async Task<IEnumerable<Alarm>> FindActiveAlarmsAsync()
-        {
-            var activeAlarms = await _alarmsRepository.FindAsync(alarm => alarm.IsActive).ConfigureAwait(false);
-            return activeAlarms.Where(IsActiveToday);
-        }
+        private IList<Alarm> FindActiveAlarms(IList<Alarm> allAlarms) => allAlarms.Where(alarm => alarm.IsActive && IsActiveToday(alarm)).ToList();
 
-        private IEnumerable<TriggeredAlarm> GetTriggeredAlarmsAsync(IEnumerable<GeofenceStateChangeReport> reports, IEnumerable<Alarm> alarms)
+        private IList<TriggeredAlarm> GetTriggeredAlarms(IList<GeofenceStateChangeReport> reports, IList<Alarm> alarms)
         {
             var activeGeofences = reports
-                .Where(report => report.NewState == GeofenceState.Entered)
+                .Where(report => report.NewState == GeofenceState.Entered || report.NewState == GeofenceState.Exited)
                 .Join(alarms, report => report.Geofence.Id,
-                      alarm => alarm.Name,
-                     (report, alarm) => new TriggeredAlarm(report, alarm));
+                      alarm => alarm.Name.ToString(),
+                     (report, alarm) => new TriggeredAlarm(report, alarm))
+                .Distinct(new TriggeredAlarmEqualityComparer())
+                .ToList();
 
             return activeGeofences;
         }
@@ -88,11 +126,11 @@ namespace BackgroundTask
             if (string.IsNullOrEmpty(activeDays))
                 return true;
 
-            var parsedDays = activeDays.Split(',').Select(dayName => new WeekDay(dayName).Day);
-            return parsedDays.Contains(DateTime.Today.DayOfWeek);
+            var parsedDays = activeDays.Split(',');
+            return parsedDays.Contains(DateTimeFormatInfo.CurrentInfo.GetDayName(DateTime.Today.DayOfWeek));
         }
 
-        private async Task ReregisterGeofences(List<TriggeredAlarm> triggeredAlarms)
+        private void RefreshGeofences(IList<TriggeredAlarm> triggeredAlarms)
         {
             var geofences = triggeredAlarms
                 .Where(alarm => !string.IsNullOrEmpty(alarm.Alarm.ActiveDays))
@@ -101,5 +139,7 @@ namespace BackgroundTask
             foreach (var geofence in geofences)
                 _geofenceService.ReplaceGeofence(geofence.Id, geofence);
         }
+
+        private void UpdateAlarms() => _alarmsRepository.UpdateAll(_alarmsToUpdate.ToList());
     }
 }

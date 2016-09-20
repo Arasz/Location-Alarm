@@ -8,7 +8,7 @@ namespace CoreLibrary.Data.DataModel.PersistentModel
     /// Simple data model of alarm 
     /// </summary>
     [DataContract]
-    public class Alarm : IEntity
+    public class Alarm : Entity
     {
         /// <summary>
         /// Days in which alarm is active. Each day is separated by , 
@@ -20,7 +20,7 @@ namespace CoreLibrary.Data.DataModel.PersistentModel
         /// Alarm sound name 
         /// </summary>
         [DataMember]
-        public string AlarmSound { get; set; } = "default";
+        public string AlarmSound { get; set; } = "ms-winsoundevent:Notification.Default";
 
         /// <summary>
         /// Type of alarm 
@@ -35,10 +35,10 @@ namespace CoreLibrary.Data.DataModel.PersistentModel
         public double Altitude { get; set; }
 
         /// <summary>
-        /// Entity id 
+        /// Was alarm fired 
         /// </summary>
-        [PrimaryKey, AutoIncrement]
-        public int Id { get; set; }
+        [DataMember]
+        public bool Fired { get; set; }
 
         /// <summary>
         /// Alarm state 
@@ -68,12 +68,14 @@ namespace CoreLibrary.Data.DataModel.PersistentModel
         /// Alarm name 
         /// </summary>
         [DataMember, Unique]
-        public string Name { get; set; }
+        public string Name { get; set; } = "";
 
         /// <summary>
         /// Monitored area radius 
         /// </summary>
         [DataMember]
         public double Radius { get; set; } = 500;
+
+        public Alarm Clone() => MemberwiseClone() as Alarm;
     }
 }

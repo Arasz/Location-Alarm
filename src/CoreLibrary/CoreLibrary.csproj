@@ -85,21 +85,18 @@
     <Content Include="FodyWeavers.xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Data\DataModel\AlarmType.cs" />
+    <Compile Include="Data\DataModel\Base\Entity.cs" />
+    <Compile Include="Data\DataModel\PersistentModel\AlarmType.cs" />
     <Compile Include="Data\DataModel\PersistentModel\Alarm.cs" />
-    <Compile Include="Data\DataModel\WeekDay.cs" />
-    <Compile Include="Data\Persistence\Mapping\AlarmMapper.cs" />
-    <Compile Include="Data\Persistence\Mapping\Configuration.cs" />
-    <Compile Include="Data\Persistence\Mapping\IConfiguration.cs" />
-    <Compile Include="Data\Persistence\Mapping\IMapper.cs" />
-    <Compile Include="Data\Persistence\Mapping\Mapper.cs" />
-    <Compile Include="Data\Persistence\Mapping\SimpleReflectionMapper.cs" />
-    <Compile Include="Data\Persistence\Repository\GelocationAlarmRepository.cs" />
-    <Compile Include="Data\GeofenceBuilder.cs" />
-    <Compile Include="Data\DataModel\GeolocationAlarm.cs" />
+    <Compile Include="Extensions\EnumerableExtension.cs" />
+    <Compile Include="Logger\Log.cs" />
+    <Compile Include="Data\Geofencing\GeofenceBuilder.cs" />
     <Compile Include="Data\DataModel\Base\IEntity.cs" />
     <Compile Include="Data\Persistence\Repository\GenericRepository.cs" />
     <Compile Include="Data\Persistence\Repository\IRepository.cs" />
+    <Compile Include="Logger\DatabseLogger.cs" />
+    <Compile Include="Logger\ILogger.cs" />
+    <Compile Include="Logger\LoggingLevels.cs" />
     <Compile Include="Service\Geofencing\GeofenceService.cs" />
     <Compile Include="Service\Geolocation\GeolocationService.cs" />
     <Compile Include="Service\Geofencing\IGeofenceService.cs" />
@@ -108,9 +105,12 @@
     <Compile Include="Service\Geolocation\ReadableLocationName.cs" />
     <Compile Include="Data\Persistence\SQLite\SQLite.cs" />
     <Compile Include="Data\Persistence\SQLite\SQLiteAsync.cs" />
-    <Compile Include="StateManagement\IRestorable.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="StateManagement\StateManager.cs" />
+    <Compile Include="Utils\AssetsReader\AssetsNamesReader.cs" />
+    <Compile Include="Utils\AssetsReader\IAssetsNamesReader.cs" />
+    <Compile Include="Utils\ScreenshotManager\IScreenshotManager.cs" />
+    <Compile Include="Utils\ScreenshotManager\ScreenshotManager.cs" />
+    <Compile Include="Utils\SystemSounds.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

@@ -1,8 +1,7 @@
-namespace CoreLibrary.Data.DataModel
+namespace CoreLibrary.Data.DataModel.PersistentModel
 {
     public enum AlarmType
     {
         Notification,
-        Sound,
     }
 }
