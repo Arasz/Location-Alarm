@@ -27,7 +27,7 @@ namespace LocationAlarm.Model
 
         private volatile bool _isDataReloading;
 
-        public ObservableCollection<Alarm> GeolocationAlarms { get; private set; }
+        public ObservableCollection<Alarm> GeolocationAlarms { get; }
 
         public LocationAlarmModel(IRepository<Alarm> repository, IGeofenceService geofenceService, BackgroundTaskManager<GeofenceTask> backgroundTaskManager, GeofenceBuilder builder)
         {

@@ -48,6 +48,8 @@ namespace ArrivalAlarm
 
         private ILogger _logger;
 
+        private IGeolocationService _geolocationService;
+
         /// <summary>
         /// Initializes the singleton application object. This is the first line of authored code
         /// executed, and as such is the logical equivalent of main() or WinMain().
@@ -139,14 +141,19 @@ namespace ArrivalAlarm
             DispatcherHelper.Initialize();
 
             RegisterBackgroundTaskAsync();
+
+            AskAboutLocationPermision();
         }
+
+        private async Task AskAboutLocationPermision() => await _geolocationService.GetActualPositionAsync().ConfigureAwait(false);
 
         private async Task RegisterBackgroundTaskAsync()
         {
             if (_backgroundTaskManager == null)
                 _backgroundTaskManager = Container.Resolve<BackgroundTaskManager<GeofenceTask>>();
 
-            await _backgroundTaskManager.RegisterBackgroundTaskAsync().ConfigureAwait(false);
+            if (!_backgroundTaskManager.IsTaskRegistered)
+                await _backgroundTaskManager.RegisterBackgroundTaskAsync().ConfigureAwait(false);
         }
 
         private static void InitializeIocContainer()
