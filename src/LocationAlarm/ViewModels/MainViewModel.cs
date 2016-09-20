@@ -70,6 +70,7 @@ namespace LocationAlarm.ViewModels
         [OnCommand("EditAlarmCommand")]
         private void EditAlarmExecute(SelectionChangedEventArgs selectionChangedEventArgs)
         {
+            //AccessViolationException thrown by microsoft behavior onEvent()
             var selectedModel = selectionChangedEventArgs.AddedItems.FirstOrDefault() as Alarm;
             if (selectedModel != null)
                 _navigationService.NavigateTo(nameof(AlarmSettingsPage), selectedModel, Token.None);

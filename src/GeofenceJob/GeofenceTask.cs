@@ -54,7 +54,7 @@ namespace BackgroundTask
 
                 UpdateAlarms();
 
-                RefreshGeofences(triggeredAlarms);
+                //RefreshGeofences(triggeredAlarms);
             }
             catch (Exception exception)
             {
@@ -140,6 +140,10 @@ namespace BackgroundTask
                 _geofenceService.ReplaceGeofence(geofence.Id, geofence);
         }
 
-        private void UpdateAlarms() => _alarmsRepository.UpdateAll(_alarmsToUpdate.ToList());
+        private void UpdateAlarms()
+        {
+            if (_alarmsToUpdate.Any())
+                _alarmsRepository.UpdateAll(_alarmsToUpdate.ToList());
+        }
     }
 }
