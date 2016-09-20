@@ -221,6 +221,10 @@
       <HintPath>..\..\packages\PropertyChanged.Fody.1.51.1\lib\dotnet\PropertyChanged.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="ToString, Version=1.7.3.0, Culture=neutral, PublicKeyToken=15432f00798e61a4, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\ToString.Fody.1.7.3.0\Lib\dotnet\ToString.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="Visualize, Version=0.4.5.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Visualize.Fody.0.4.5.0\lib\dotnet\Visualize.dll</HintPath>
       <Private>False</Private>

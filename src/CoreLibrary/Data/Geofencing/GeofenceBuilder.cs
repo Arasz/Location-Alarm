@@ -77,7 +77,7 @@ namespace CoreLibrary.Data.Geofencing
                 Longitude = alarm.Longitude,
                 Altitude = alarm.Altitude
             };
-            var dwellTime = TimeSpan.FromSeconds(1);
+            var dwellTime = TimeSpan.FromSeconds(120);
             var geoshape = new Geocircle(geoposition, alarm.Radius);
             return new Geofence(alarm.Name, geoshape, MonitoredGeofenceStates.Entered | MonitoredGeofenceStates.Exited,
                 string.IsNullOrEmpty(alarm.ActiveDays), dwellTime, DateTimeOffset.Now, TimeSpan.Zero);

@@ -124,6 +124,10 @@
       <HintPath>..\..\packages\Equals.Fody.1.6.2.0\Lib\dotnet\Equals.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="ToString, Version=1.7.3.0, Culture=neutral, PublicKeyToken=15432f00798e61a4, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\ToString.Fody.1.7.3.0\lib\dotnet\ToString.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <SDKReference Include="Microsoft.VCLibs, version=12.0">

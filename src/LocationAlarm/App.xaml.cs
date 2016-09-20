@@ -144,7 +144,7 @@ namespace ArrivalAlarm
 
             RegisterBackgroundTaskAsync();
 
-            AskAboutAccessToDevice();
+            //AskAboutAccessToDevice();
         }
 
         private async Task AskAboutAccessToDevice()
