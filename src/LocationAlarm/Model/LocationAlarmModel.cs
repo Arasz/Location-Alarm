@@ -86,10 +86,10 @@ namespace LocationAlarm.Model
             if (alarm.IsActive)
                 _geofenceService.RegisterGeofence(_builder.BuildFromAlarm(alarm));
             else
-            {
-                alarm.Fired = false;
                 _geofenceService.RemoveGeofence(alarm.Name);
-            }
+
+            // alarm.Fired = false;
+
             await _repository.UpdateAsync(alarm).ConfigureAwait(false);
         }
 

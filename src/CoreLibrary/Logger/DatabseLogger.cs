@@ -14,6 +14,18 @@ namespace CoreLibrary.Logger
             _loggingRepository = loggingRepository;
         }
 
+        public void LogError(string message)
+        {
+            _loggingRepository.Insert(new Log
+            {
+                Level = nameof(LoggingLevels.Error),
+                Message = message,
+                StackTrace = "",
+                Type = nameof(LoggingLevels.Error),
+                Time = DateTime.Now,
+            });
+        }
+
         public async Task LogErrorAsync(string message)
         {
             await _loggingRepository.InsertAsync(new Log
@@ -24,6 +36,20 @@ namespace CoreLibrary.Logger
                 Type = nameof(LoggingLevels.Error),
                 Time = DateTime.Now,
             }).ConfigureAwait(false);
+        }
+
+        public void LogException(string message, Exception exception)
+        {
+            _loggingRepository.Insert(new Log
+            {
+                Level = nameof(LoggingLevels.Error),
+                Message = message,
+                ExceptionMessage = exception.Message,
+                StackTrace = exception.StackTrace,
+                Type = nameof(Exception),
+                Exceptions = ParseExceptions(exception),
+                Time = DateTime.Now,
+            });
         }
 
         public async Task LogExceptionAsync(string message, Exception exception)
@@ -38,6 +64,18 @@ namespace CoreLibrary.Logger
                 Exceptions = ParseExceptions(exception),
                 Time = DateTime.Now,
             }).ConfigureAwait(false);
+        }
+
+        public void LogInfo(string message)
+        {
+            _loggingRepository.Insert(new Log
+            {
+                Level = nameof(LoggingLevels.Info),
+                Message = message,
+                StackTrace = "",
+                Type = nameof(LoggingLevels.Info),
+                Time = DateTime.Now,
+            });
         }
 
         public async Task LogInfoAsync(string message)

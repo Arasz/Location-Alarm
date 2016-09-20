@@ -60,11 +60,11 @@ namespace ArrivalAlarm
             InitializeIocContainer();
         }
 
-        private async void OnUnhandledException(object sender, UnhandledExceptionEventArgs unhandledExceptionEventArgs)
+        private void OnUnhandledException(object sender, UnhandledExceptionEventArgs unhandledExceptionEventArgs)
         {
-            unhandledExceptionEventArgs.Handled = true;
-            await _logger.LogExceptionAsync($"Unhandled exception: {unhandledExceptionEventArgs.Message}",
-                unhandledExceptionEventArgs.Exception).ConfigureAwait(false);
+            //unhandledExceptionEventArgs.Handled = true;
+            _logger.LogException($"Unhandled exception: {unhandledExceptionEventArgs.Message}",
+                unhandledExceptionEventArgs.Exception);
         }
 
         /// <summary>
