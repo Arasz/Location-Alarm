@@ -35,6 +35,12 @@ namespace CoreLibrary.Data.DataModel.PersistentModel
         public double Altitude { get; set; }
 
         /// <summary>
+        /// Was alarm fired 
+        /// </summary>
+        [DataMember]
+        public bool Fired { get; set; }
+
+        /// <summary>
         /// Alarm state 
         /// </summary>
         [DataMember]

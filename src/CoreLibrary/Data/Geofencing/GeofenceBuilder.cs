@@ -60,13 +60,13 @@ namespace CoreLibrary.Data.Geofencing
         public Geofence Build()
         {
             if (_monitoredStates == null)
-                return new Windows.Devices.Geolocation.Geofencing.Geofence(_id, _geoshape);
+                return new Geofence(_id, _geoshape);
             if (_dwellTime == null)
-                return new Windows.Devices.Geolocation.Geofencing.Geofence(_id, _geoshape, _monitoredStates.Value, _singleUse);
+                return new Geofence(_id, _geoshape, _monitoredStates.Value, _singleUse);
             if (_startTime == null || _duration == null)
-                return new Windows.Devices.Geolocation.Geofencing.Geofence(_id, _geoshape, _monitoredStates.Value, _singleUse, _dwellTime.Value);
+                return new Geofence(_id, _geoshape, _monitoredStates.Value, _singleUse, _dwellTime.Value);
 
-            return new Windows.Devices.Geolocation.Geofencing.Geofence(_id, _geoshape, _monitoredStates.Value, _singleUse, _dwellTime.Value, _startTime.Value, _duration.Value);
+            return new Geofence(_id, _geoshape, _monitoredStates.Value, _singleUse, _dwellTime.Value, _startTime.Value, _duration.Value);
         }
 
         public Geofence BuildFromAlarm(Alarm alarm)
@@ -79,7 +79,7 @@ namespace CoreLibrary.Data.Geofencing
             };
             var dwellTime = TimeSpan.FromSeconds(1);
             var geoshape = new Geocircle(geoposition, alarm.Radius);
-            return new Geofence(alarm.Name, geoshape, MonitoredGeofenceStates.Entered,
+            return new Geofence(alarm.Name, geoshape, MonitoredGeofenceStates.Entered | MonitoredGeofenceStates.Exited,
                 string.IsNullOrEmpty(alarm.ActiveDays), dwellTime);
         }
 
