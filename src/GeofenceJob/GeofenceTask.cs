@@ -47,7 +47,7 @@ namespace BackgroundTask
 
                 var triggeredAlarms = GetTriggeredAlarmsAsync(reports, alarms);
 
-                var qualifiedToNotification = triggeredAlarms.Where(alarm => !alarm.Alarm.Fired).ToList();
+                var qualifiedToNotification = AlarmsQualifiedToNotification(triggeredAlarms);
 
                 var notificationService = new AlarmsNotificationService(_toastNotifier, qualifiedToNotification);
 
@@ -68,6 +68,9 @@ namespace BackgroundTask
 
             _deferral.Complete();
         }
+
+        private static List<TriggeredAlarm> AlarmsQualifiedToNotification(IList<TriggeredAlarm> triggeredAlarms)
+            => triggeredAlarms.Where(alarm => !alarm.Alarm.Fired && alarm.Report.NewState == GeofenceState.Entered).ToList();
 
         private void ChangeFiredState(IList<TriggeredAlarm> triggeredAlarms)
         {
@@ -115,6 +118,7 @@ namespace BackgroundTask
                 .Join(alarms, report => report.Geofence.Id,
                       alarm => alarm.Name.ToString(),
                      (report, alarm) => new TriggeredAlarm(report, alarm))
+                .Distinct()
                 .ToList();
 
             return activeGeofences;

@@ -93,6 +93,7 @@
     <Compile Include="Notifications\IAlarmNotificationService.cs" />
     <Compile Include="Notifications\ToastTemplate\SimpleToast.cs" />
     <Compile Include="TriggeredAlarm.cs" />
+    <Compile Include="TriggeredAlarmEqualityComparer.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="LinqEx, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
