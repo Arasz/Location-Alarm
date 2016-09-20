@@ -1,4 +1,5 @@
 ﻿using CoreLibrary.Data.DataModel.Base;
+using System;
 using System.Runtime.Serialization;
 
 namespace CoreLibrary.Logger
@@ -20,6 +21,9 @@ namespace CoreLibrary.Logger
 
         [DataMember]
         public string StackTrace { get; set; }
+
+        [DataMember]
+        public DateTime Time { get; set; }
 
         [DataMember]
         public string Type { get; set; }

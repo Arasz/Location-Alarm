@@ -1,6 +1,7 @@
 ﻿using BackgroundTask.Toast;
 using CoreLibrary.Data.DataModel.PersistentModel;
 using CoreLibrary.Data.Persistence.Repository;
+using CoreLibrary.Logger;
 using CoreLibrary.Service;
 using CoreLibrary.Service.Geofencing;
 using System;
@@ -20,6 +21,7 @@ namespace BackgroundTask
         private readonly IGeofenceService _geofenceService;
         private readonly ToastNotifier _toastNotifier;
         private BackgroundTaskDeferral _deferral;
+        private ILogger _logger;
         private IBackgroundTaskInstance _taskInstance;
 
         public GeofenceTask()
@@ -27,6 +29,7 @@ namespace BackgroundTask
             _toastNotifier = ToastNotificationManager.CreateToastNotifier();
             _geofenceService = new GeofenceService();
             _alarmsRepository = new GenericRepository<Alarm>();
+            _logger = new DatabseLogger(new GenericRepository<Log>());
         }
 
         public async void Run(IBackgroundTaskInstance taskInstance)
@@ -34,19 +37,26 @@ namespace BackgroundTask
             _taskInstance = taskInstance;
             _deferral = _taskInstance.GetDeferral();
 
-            var reports = _geofenceService.GeofenceStateChangeReports;
+            try
+            {
+                var reports = _geofenceService.GeofenceStateChangeReports;
 
-            var alarms = await FindActiveAlarmsAsync().ConfigureAwait(false);
+                var alarms = await FindActiveAlarmsAsync().ConfigureAwait(false);
 
-            var triggeredAlarms = GetTriggeredAlarmsAsync(reports, alarms).ToList();
+                var triggeredAlarms = GetTriggeredAlarmsAsync(reports, alarms).ToList();
 
-            var notificationService = new AlarmsNotificationService(_toastNotifier, triggeredAlarms);
+                var notificationService = new AlarmsNotificationService(_toastNotifier, triggeredAlarms);
 
-            notificationService.Notify();
+                notificationService.Notify();
 
-            await DisableAlarmsAsync(triggeredAlarms.Select(triggeredAlarm => triggeredAlarm.Alarm)).ConfigureAwait(false);
+                await DisableAlarmsAsync(triggeredAlarms.Select(triggeredAlarm => triggeredAlarm.Alarm)).ConfigureAwait(false);
 
-            await ReregisterGeofences(triggeredAlarms).ConfigureAwait(false);
+                await ReregisterGeofences(triggeredAlarms).ConfigureAwait(false);
+            }
+            catch (Exception exception)
+            {
+                await _logger.LogExceptionAsync($"Exception from {nameof(GeofenceTask)}", exception).ConfigureAwait(false);
+            }
 
             _deferral.Complete();
         }

@@ -21,7 +21,8 @@ namespace CoreLibrary.Logger
                 Level = nameof(LoggingLevels.Error),
                 Message = message,
                 StackTrace = "",
-                Type = nameof(LoggingLevels.Error)
+                Type = nameof(LoggingLevels.Error),
+                Time = DateTime.Now,
             }).ConfigureAwait(false);
         }
 
@@ -35,6 +36,7 @@ namespace CoreLibrary.Logger
                 StackTrace = exception.StackTrace,
                 Type = nameof(Exception),
                 Exceptions = ParseExceptions(exception),
+                Time = DateTime.Now,
             }).ConfigureAwait(false);
         }
 
@@ -46,6 +48,7 @@ namespace CoreLibrary.Logger
                 Message = message,
                 StackTrace = "",
                 Type = nameof(LoggingLevels.Info),
+                Time = DateTime.Now,
             }).ConfigureAwait(false);
         }
 

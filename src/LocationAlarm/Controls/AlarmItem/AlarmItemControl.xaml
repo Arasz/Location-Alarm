@@ -10,7 +10,7 @@
     d:DesignWidth="300"
     Width="350"
     Height="140"
-    MaxHeight="400"
+    MaxHeight="450"
     x:Name="Control"
     d:DataContext="{d:DesignInstance persistentModel:Alarm, IsDesignTimeCreatable=True}"
     ManipulationStarted="AlarmItemControl_OnManipulationStarted"
@@ -41,7 +41,7 @@
             </Grid.ColumnDefinitions>
             <SymbolIcon Grid.Column="0" Symbol="Map" Margin="0,0,10,0" />
             <TextBlock Grid.Column="1" Text="{Binding Path=Name}" TextWrapping="Wrap"
-                       FontSize="20"
+                       FontSize="18"
                        HorizontalAlignment="Left" VerticalAlignment="Center" />
         </Grid>
 
