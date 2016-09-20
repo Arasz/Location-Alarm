@@ -4,14 +4,15 @@ using LocationAlarm.Common;
 using LocationAlarm.Controls.AlarmItem;
 using LocationAlarm.Model;
 using LocationAlarm.Navigation;
-using LocationAlarm.View;
 using PropertyChanged;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using Windows.UI.Xaml.Controls;
+using AlarmSettingsPage = LocationAlarm.Views.AlarmSettingsPage;
+using MapPage = LocationAlarm.Views.MapPage;
 
-namespace LocationAlarm.ViewModel
+namespace LocationAlarm.ViewModels
 {
     [ImplementPropertyChanged]
     public class MainViewModel : ViewModelBaseEx<Alarm>

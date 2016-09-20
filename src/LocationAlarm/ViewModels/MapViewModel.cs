@@ -6,7 +6,6 @@ using LocationAlarm.Common;
 using LocationAlarm.Extensions;
 using LocationAlarm.Location.LocationAutosuggestion;
 using LocationAlarm.Navigation;
-using LocationAlarm.View;
 using PropertyChanged;
 using System;
 using System.Collections.ObjectModel;
@@ -14,8 +13,9 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 using Windows.Devices.Geolocation;
 using Windows.Services.Maps;
+using AlarmSettingsPage = LocationAlarm.Views.AlarmSettingsPage;
 
-namespace LocationAlarm.ViewModel
+namespace LocationAlarm.ViewModels
 {
     [ImplementPropertyChanged]
     public class MapViewModel : ViewModelBaseEx<Alarm>
@@ -44,6 +44,8 @@ namespace LocationAlarm.ViewModel
 
         public bool IsMapLoaded { get; private set; }
 
+        public bool IsntUpdatingLocation { get; set; } = true;
+
         public string MapScreenshotPath { get; set; }
 
         public double MaxGeocircleRadius { get; } = 5000;
@@ -58,7 +60,7 @@ namespace LocationAlarm.ViewModel
 
         public ICommand TextChangeCommand { get; private set; }
 
-        public double ZoomLevel { get; private set; }
+        public double ZoomLevel { get; set; } = 15;
 
         public MapViewModel(NavigationServiceWithToken navigationService, IGeolocationService geolocationService) : base(navigationService)
         {
@@ -173,6 +175,7 @@ namespace LocationAlarm.ViewModel
 
         private async Task UpdateUserLocationAsync(bool fetchActualLocation = false)
         {
+            IsntUpdatingLocation = false;
             // Catch UI thread context
             var locationData = await FetchGeolocationDataFromServiceAsync(fetchActualLocation)
                 .ConfigureAwait(true);
@@ -181,10 +184,11 @@ namespace LocationAlarm.ViewModel
 
             ActualLocation = locationData.Item1; // UI
             AutoSuggestionLocationQuery = AlarmName; // UI
-            ZoomLevel = 12; // UI
+            //ZoomLevel = 12; // UI
             PushpinVisible = true; // UI
             IsMapLoaded = true; //UI
 
+            IsntUpdatingLocation = true;
             MessengerInstance.Send(new Geopoint(ActualLocation));
         }
     }

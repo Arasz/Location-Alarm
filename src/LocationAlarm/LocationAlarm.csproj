@@ -97,13 +97,13 @@
     <Compile Include="Navigation\INavigationServiceWithToken.cs" />
     <Compile Include="Navigation\NavigationServiceWithToken.cs" />
     <Compile Include="Tasks\BackgroundTaskManager.cs" />
-    <Compile Include="ViewModel\AlarmSettingsViewModel.cs" />
-    <Compile Include="ViewModel\DataTemplates\DayOfWeekDataTemplate.cs" />
-    <Compile Include="ViewModel\ViewModelBaseEx.cs" />
-    <Compile Include="View\AlarmSettingsPage.xaml.cs">
-      <DependentUpon>AlarmSettingsPage.xaml</DependentUpon>
+    <Compile Include="ViewModels\AlarmSettingsViewModel.cs" />
+    <Compile Include="ViewModels\DataTemplates\DayOfWeekDataTemplate.cs" />
+    <Compile Include="ViewModels\ViewModelBaseEx.cs" />
+    <Compile Include="Views\SettingsPage.xaml.cs">
+      <DependentUpon>SettingsPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\BindablePage.cs" />
+    <Compile Include="Views\Base\BindablePage.cs" />
     <Compile Include="Navigation\INavigable.cs" />
     <Compile Include="Common\NavigationHelper.cs" />
     <Compile Include="Common\ObservableDictionary.cs" />
@@ -112,22 +112,22 @@
     <Compile Include="Converters\VisibilityConverter.cs" />
     <Compile Include="Common\Token.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ViewModel\MainViewModel.cs" />
-    <Compile Include="ViewModel\MapViewModel.cs" />
-    <Compile Include="ViewModel\ViewModelLocator.cs" />
+    <Compile Include="ViewModels\MainViewModel.cs" />
+    <Compile Include="ViewModels\MapViewModel.cs" />
+    <Compile Include="ViewModels\ViewModelLocator.cs" />
     <Compile Include="Controls\AlarmItem\AlarmItemControl.xaml.cs">
       <DependentUpon>AlarmItemControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Converters\AutoSuggestBoxSuggestionChosenEventArgsToSelectedItemConverter.cs" />
     <Compile Include="Converters\AutoSuggestionBoxTextChangeToBoolConverter.cs" />
     <Compile Include="Converters\DayNameConverter.cs" />
-    <Compile Include="View\MainPage.xaml.cs">
+    <Compile Include="Views\MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\MapPage.xaml.cs">
+    <Compile Include="Views\MapPage.xaml.cs">
       <DependentUpon>MapPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\Map\MapCircleDrawer.cs" />
+    <Compile Include="Views\Utils\MapCircleDrawer.cs" />
   </ItemGroup>
   <ItemGroup>
     <AppxManifest Include="Package.appxmanifest">
@@ -161,15 +161,15 @@
       <Generator>MSBuild:Compile</Generator>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Page>
-    <Page Include="View\AlarmSettingsPage.xaml">
+    <Page Include="Views\SettingsPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="View\MainPage.xaml">
+    <Page Include="Views\MainPage.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="View\MapPage.xaml">
+    <Page Include="Views\MapPage.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

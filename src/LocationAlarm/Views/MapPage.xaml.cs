@@ -2,8 +2,8 @@
 using GalaSoft.MvvmLight.Messaging;
 using GalaSoft.MvvmLight.Threading;
 using LocationAlarm.Common;
-using LocationAlarm.View.Map;
-using LocationAlarm.ViewModel;
+using LocationAlarm.ViewModels;
+using LocationAlarm.Views.Utils;
 using System;
 using System.Linq;
 using Windows.Devices.Geolocation;
@@ -19,7 +19,7 @@ using Windows.UI.Xaml.Shapes;
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkID=390556
 
-namespace LocationAlarm.View
+namespace LocationAlarm.Views
 {
     public sealed partial class MapPage
     {
@@ -67,7 +67,11 @@ namespace LocationAlarm.View
 
         private void MapControlOnTapped(object sender, TappedRoutedEventArgs tappedRoutedEventArgs) => mapControl.Focus(FocusState.Pointer);
 
-        private void MapControlOnZoomLevelChanged(MapControl sender, object args) => _mapCircleDrawer.Draw(_viewModel?.ActualLocation, _viewModel.GeocircleRadius);
+        private void MapControlOnZoomLevelChanged(MapControl sender, object args)
+        {
+            _viewModel.ZoomLevel = sender.ZoomLevel;
+            _mapCircleDrawer.Draw(_viewModel?.ActualLocation, _viewModel.GeocircleRadius);
+        }
 
         private void RangeBase_OnValueChanged(object sender, RangeBaseValueChangedEventArgs e) => _mapCircleDrawer.Draw(_viewModel?.ActualLocation, _viewModel.GeocircleRadius);
 

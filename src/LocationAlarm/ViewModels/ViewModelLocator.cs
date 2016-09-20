@@ -1,6 +1,6 @@
 using Autofac;
 
-namespace LocationAlarm.ViewModel
+namespace LocationAlarm.ViewModels
 {
     public class ViewModelLocator
     {

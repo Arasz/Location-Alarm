@@ -16,8 +16,7 @@ using LocationAlarm.BackgroundTask;
 using LocationAlarm.Location.LocationAutosuggestion;
 using LocationAlarm.Model;
 using LocationAlarm.Navigation;
-using LocationAlarm.View;
-using LocationAlarm.ViewModel;
+using LocationAlarm.ViewModels;
 using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
@@ -29,7 +28,9 @@ using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media.Animation;
 using Windows.UI.Xaml.Navigation;
-using MainPage = LocationAlarm.View.MainPage;
+using AlarmSettingsPage = LocationAlarm.Views.AlarmSettingsPage;
+using MainPage = LocationAlarm.Views.MainPage;
+using MapPage = LocationAlarm.Views.MapPage;
 
 // The Blank Application template is documented at http://go.microsoft.com/fwlink/?LinkId=391641
 

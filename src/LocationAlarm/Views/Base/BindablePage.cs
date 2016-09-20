@@ -3,7 +3,7 @@ using Windows.Phone.UI.Input;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
 
-namespace LocationAlarm.View
+namespace LocationAlarm.Views.Base
 {
     /// <summary>
     /// Page implementation with navigation event handlers consistent with MVVM pattern 

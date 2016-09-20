@@ -3,7 +3,6 @@ using CoreLibrary.Data.DataModel.PersistentModel;
 using CoreLibrary.Utils;
 using CoreLibrary.Utils.ScreenshotManager;
 using LocationAlarm.Navigation;
-using LocationAlarm.View;
 using PropertyChanged;
 using System;
 using System.Collections.Generic;
@@ -13,8 +12,10 @@ using System.Threading.Tasks;
 using Windows.ApplicationModel.Resources;
 using Windows.Media.Playback;
 using Windows.UI.Xaml.Media.Imaging;
+using MainPage = LocationAlarm.Views.MainPage;
+using MapPage = LocationAlarm.Views.MapPage;
 
-namespace LocationAlarm.ViewModel
+namespace LocationAlarm.ViewModels
 {
     [ImplementPropertyChanged]
     public class AlarmSettingsViewModel : ViewModelBaseEx<Alarm>

@@ -4,7 +4,7 @@ using Windows.Devices.Geolocation;
 using Windows.UI.Xaml.Controls.Maps;
 using Windows.UI.Xaml.Shapes;
 
-namespace LocationAlarm.View.Map
+namespace LocationAlarm.Views.Utils
 {
     public class MapCircleDrawer
     {

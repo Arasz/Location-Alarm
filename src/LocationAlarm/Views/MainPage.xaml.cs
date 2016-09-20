@@ -1,8 +1,8 @@
 ﻿// The Basic Page item template is documented at http://go.microsoft.com/fwlink/?LinkID=390556
 
-using LocationAlarm.ViewModel;
+using LocationAlarm.ViewModels;
 
-namespace LocationAlarm.View
+namespace LocationAlarm.Views
 {
     /// <summary>
     /// An empty page that can be used on its own or navigated to within a Frame. 

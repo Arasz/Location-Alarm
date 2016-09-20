@@ -2,7 +2,7 @@
 using LocationAlarm.Navigation;
 using System.Threading.Tasks;
 
-namespace LocationAlarm.ViewModel
+namespace LocationAlarm.ViewModels
 {
     public abstract class ViewModelBaseEx<TModel> : ViewModelBase, INavigable
         where TModel : new()

@@ -68,6 +68,7 @@ namespace BackgroundTask
 
             return GetTriggeredAlarms(reports, activeAlarms)
                 .Where(alarm => !alarm.Alarm.Fired && alarm.Report.NewState == GeofenceState.Entered)
+                .Distinct(new TriggeredAlarmEqualityComparer())
                 .ToList();
         }
 
@@ -113,7 +114,6 @@ namespace BackgroundTask
                 .Join(alarms, report => report.Geofence.Id,
                       alarm => alarm.Name.ToString(),
                      (report, alarm) => new TriggeredAlarm(report, alarm))
-                .Distinct(new TriggeredAlarmEqualityComparer())
                 .ToList();
 
             return activeGeofences;

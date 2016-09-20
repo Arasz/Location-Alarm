@@ -1,11 +1,12 @@
 ﻿// The Basic Page item template is documented at http://go.microsoft.com/fwlink/?LinkID=390556
 
-using LocationAlarm.ViewModel;
+using LocationAlarm.ViewModels;
+using LocationAlarm.Views.Base;
 using System.Globalization;
 using System.Linq;
 using Windows.UI.Xaml.Controls;
 
-namespace LocationAlarm.View
+namespace LocationAlarm.Views
 {
     public sealed partial class AlarmSettingsPage : BindablePage
     {

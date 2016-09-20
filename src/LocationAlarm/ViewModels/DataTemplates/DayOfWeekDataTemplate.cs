@@ -1,4 +1,4 @@
-﻿namespace LocationAlarm.ViewModel.DataTemplates
+﻿namespace LocationAlarm.ViewModels.DataTemplates
 {
     public class DayOfWeekDataTemplate
     {
