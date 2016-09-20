@@ -13,6 +13,7 @@ using CoreLibrary.Utils.ScreenshotManager;
 using GalaSoft.MvvmLight.Threading;
 using GalaSoft.MvvmLight.Views;
 using LocationAlarm.BackgroundTask;
+using LocationAlarm.DeviceAccess;
 using LocationAlarm.Location.LocationAutosuggestion;
 using LocationAlarm.Model;
 using LocationAlarm.Navigation;
@@ -49,7 +50,7 @@ namespace ArrivalAlarm
 
         private ILogger _logger;
 
-        private IGeolocationService _geolocationService;
+        private IAccessManager _accessManager;
 
         /// <summary>
         /// Initializes the singleton application object. This is the first line of authored code
@@ -143,15 +144,15 @@ namespace ArrivalAlarm
 
             RegisterBackgroundTaskAsync();
 
-            AskAboutLocationPermision();
+            AskAboutAccessToDevice();
         }
 
-        private async Task AskAboutLocationPermision()
+        private async Task AskAboutAccessToDevice()
         {
-            if (_geolocationService == null)
-                _geolocationService = Container.Resolve<IGeolocationService>();
+            if (_accessManager == null)
+                _accessManager = Container.Resolve<IAccessManager>();
 
-            await _geolocationService.GetActualPositionAsync().ConfigureAwait(false);
+            await _accessManager.AskForPermissionsAsync().ConfigureAwait(false);
         }
 
         private async Task RegisterBackgroundTaskAsync()
@@ -171,6 +172,11 @@ namespace ArrivalAlarm
 
             builder.RegisterType<GenericRepository<Log>>()
                 .As<IRepository<Log>>();
+
+            builder.RegisterType<AccessManager>()
+                .AsSelf()
+                .AsImplementedInterfaces()
+                .SingleInstance();
 
             builder.RegisterType<DatabseLogger>()
                 .AsImplementedInterfaces();

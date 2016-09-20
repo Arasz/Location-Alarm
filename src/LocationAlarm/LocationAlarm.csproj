@@ -82,6 +82,7 @@
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="DeviceAccess\AccesManager.cs" />
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
@@ -91,6 +92,7 @@
     <Compile Include="Converters\BooleanToBrushConverter.cs" />
     <Compile Include="Converters\GeopositionToGeopointConverter.cs" />
     <Compile Include="Converters\SliderValueConverter.cs" />
+    <Compile Include="DeviceAccess\IAccessManager.cs" />
     <Compile Include="Extensions\BasicGeopositionExtension.cs" />
     <Compile Include="Location\LocationAutosuggestion\LocationAutosuggestion.cs" />
     <Compile Include="Model\LocationAlarmModel.cs" />
