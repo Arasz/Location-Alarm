@@ -6,27 +6,22 @@ namespace CoreLibrary.Service.Geofencing
 {
     public class GeofenceService : IGeofenceService
     {
-        private readonly GeofenceMonitor _geofenceMonitor;
+        public IEnumerable<Geofence> AllActiveGeofences => GeofenceMonitor.Geofences.ToList();
 
-        public IEnumerable<Geofence> AllActiveGeofences => _geofenceMonitor.Geofences.ToList();
+        public IReadOnlyList<GeofenceStateChangeReport> GeofenceStateChangeReports => GeofenceMonitor.ReadReports().ToList();
 
-        public IReadOnlyList<GeofenceStateChangeReport> GeofenceStateChangeReports => _geofenceMonitor.ReadReports().ToList();
+        public GeofenceMonitorStatus Status => GeofenceMonitor.Status;
 
-        public GeofenceMonitorStatus Status => _geofenceMonitor.Status;
+        private GeofenceMonitor GeofenceMonitor => GeofenceMonitor.Current;
 
-        public GeofenceService()
-        {
-            _geofenceMonitor = GeofenceMonitor.Current;
-        }
+        public bool IsGeofenceRegistered(string id) => GeofenceMonitor.Geofences.Any(geofence => geofence.Id == id);
 
-        public bool IsGeofenceRegistered(string id) => _geofenceMonitor.Geofences.Any(geofence => geofence.Id == id);
-
-        public Geofence ReadGeofence(string id) => _geofenceMonitor.Geofences.FirstOrDefault(geofence => geofence.Id == id);
+        public Geofence ReadGeofence(string id) => GeofenceMonitor.Geofences.FirstOrDefault(geofence => geofence.Id == id);
 
         public void RegisterGeofence(Geofence geofence)
         {
             if (!IsGeofenceRegistered(geofence.Id))
-                _geofenceMonitor.Geofences.Add(geofence);
+                GeofenceMonitor.Geofences.Add(geofence);
             else
                 ReplaceGeofence(geofence.Id, geofence);
         }
@@ -38,18 +33,18 @@ namespace CoreLibrary.Service.Geofencing
             if (!IsGeofenceRegistered(id))
                 return;
             var toRemove = ReadGeofence(id);
-            _geofenceMonitor.Geofences.Remove(toRemove);
+            GeofenceMonitor.Geofences.Remove(toRemove);
         }
 
         public void ReplaceGeofence(string id, Geofence geofence)
         {
-            var searchResult = _geofenceMonitor.Geofences.FirstOrDefault(searchedGeofence => searchedGeofence.Id == id);
+            var searchResult = GeofenceMonitor.Geofences.FirstOrDefault(searchedGeofence => searchedGeofence.Id == id);
             if (searchResult == null)
-                _geofenceMonitor.Geofences.Add(geofence);
+                GeofenceMonitor.Geofences.Add(geofence);
             else
             {
-                _geofenceMonitor.Geofences.Remove(searchResult);
-                _geofenceMonitor.Geofences.Add(geofence);
+                GeofenceMonitor.Geofences.Remove(searchResult);
+                GeofenceMonitor.Geofences.Add(geofence);
             }
         }
     }

@@ -145,15 +145,20 @@ namespace ArrivalAlarm
             AskAboutLocationPermision();
         }
 
-        private async Task AskAboutLocationPermision() => await _geolocationService.GetActualPositionAsync().ConfigureAwait(false);
+        private async Task AskAboutLocationPermision()
+        {
+            if (_geolocationService == null)
+                _geolocationService = Container.Resolve<IGeolocationService>();
+
+            await _geolocationService.GetActualPositionAsync().ConfigureAwait(false);
+        }
 
         private async Task RegisterBackgroundTaskAsync()
         {
             if (_backgroundTaskManager == null)
                 _backgroundTaskManager = Container.Resolve<BackgroundTaskManager<GeofenceTask>>();
 
-            if (!_backgroundTaskManager.IsTaskRegistered)
-                await _backgroundTaskManager.RegisterBackgroundTaskAsync().ConfigureAwait(false);
+            await _backgroundTaskManager.RegisterBackgroundTaskAsync().ConfigureAwait(false);
         }
 
         private static void InitializeIocContainer()
