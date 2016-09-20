@@ -21,9 +21,9 @@ namespace CoreLibrary.Service.Geolocation
 
         public TimeSpan LocationFetchInterval { get; set; } = TimeSpan.FromMinutes(1);
 
-        public double MovementThreshold { get; set; } = 500;
+        public double MovementThreshold { get; set; } = 100;
 
-        public uint ReportInterval { get; set; } = 1000;
+        public uint ReportInterval { get; set; } = 2000;
 
         public GeolocationService()
         {

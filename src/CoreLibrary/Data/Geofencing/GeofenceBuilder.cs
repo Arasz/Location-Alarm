@@ -80,7 +80,7 @@ namespace CoreLibrary.Data.Geofencing
             var dwellTime = TimeSpan.FromSeconds(1);
             var geoshape = new Geocircle(geoposition, alarm.Radius);
             return new Geofence(alarm.Name, geoshape, MonitoredGeofenceStates.Entered | MonitoredGeofenceStates.Exited,
-                string.IsNullOrEmpty(alarm.ActiveDays), dwellTime);
+                string.IsNullOrEmpty(alarm.ActiveDays), dwellTime, DateTimeOffset.Now, TimeSpan.Zero);
         }
 
         public GeofenceBuilder ConfigureMonitoredStates(MonitoredGeofenceStates states)

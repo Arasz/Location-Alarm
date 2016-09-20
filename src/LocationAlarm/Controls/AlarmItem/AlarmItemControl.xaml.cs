@@ -1,7 +1,6 @@
 ﻿using CoreLibrary.Data.DataModel.PersistentModel;
 using System;
 using System.ComponentModel;
-using Windows.Foundation;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
@@ -12,11 +11,10 @@ namespace LocationAlarm.Controls.AlarmItem
 {
     public sealed partial class AlarmItemControl
     {
-        private double _deltaXSum = 0;
-        private Point _endPosition;
-        private double _manipulationDeltaXThreshold;
+        private readonly double ManipulationDeltaXThreshold;
+        private readonly double ManipulationStartThreshold;
+        private double _deltaXSum;
         private bool _manipulationStarted;
-        private Point _startPosition;
 
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -27,29 +25,38 @@ namespace LocationAlarm.Controls.AlarmItem
         public AlarmItemControl()
         {
             InitializeComponent();
-            _manipulationDeltaXThreshold = Width - 80;
+            ManipulationDeltaXThreshold = Width - 80;
+            ManipulationStartThreshold = Width * 0.15;
         }
 
         private void AlarmItemControl_OnManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs e)
         {
+            e.Handled = true;
             if (!_manipulationStarted) return;
 
-            _manipulationStarted = false;
-            _endPosition = e.Position;
-
-            if (_deltaXSum >= _manipulationDeltaXThreshold)
+            if (_deltaXSum >= ManipulationDeltaXThreshold)
+            {
                 OnSwypeToDeleteCompleted();
+                _manipulationStarted = false;
+                return;
+            }
 
             _deltaXSum = 0;
             RenderTransform = new TranslateTransform()
             {
                 X = 0,
             };
+
+            _manipulationStarted = false;
         }
 
         private void AlarmItemControl_OnManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
-            if (!_manipulationStarted) return;
+            e.Handled = true;
+
+            if (!_manipulationStarted)
+                return;
+
             _deltaXSum += e.Delta.Translation.X;
             RenderTransform = new TranslateTransform()
             {
@@ -59,10 +66,10 @@ namespace LocationAlarm.Controls.AlarmItem
 
         private void AlarmItemControl_OnManipulationStarted(object sender, ManipulationStartedRoutedEventArgs e)
         {
-            if (_manipulationStarted) return;
+            e.Handled = true;
+            if (_manipulationStarted && e.Position.X > ManipulationStartThreshold) return;
 
             _manipulationStarted = true;
-            _startPosition = e.Position;
         }
 
         private void OnSwitchToggled(Alarm model) => SwitchToggled?.Invoke(this, new AlarmItemEventArgs(model));
